@@ -1,0 +1,55 @@
+{
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/.DS_Store": true,
+    "**/*.tsbuildinfo": true,
+    ".git": true,
+    ".pnpm-store": true,
+    "prettier.config.js": true,
+    "tsconfig.json": true,
+    "pnpm-workspace.yaml": true,
+    ".markdownlint-cli2.yaml": true,
+    ".gitignore": true,
+    "commitlint.config.js": true,
+    "eslint.config.js": true,
+    "lint-staged.config.js": true,
+    "vitest.config.ts": true,
+    "vitest.workspace.ts": true
+  },
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.expand": false,
+  "explorer.fileNesting.patterns": {
+    "package.json": "pnpm-workspace.yaml,tsconfig.json,prettier.config.js,.markdownlint-cli2.yaml,.gitignore,commitlint.config.js,eslint.config.js,lint-staged.config.js,vitest.config.ts,vitest.workspace.ts,pnpm-lock.yaml"
+  },
+  "typescript.preferences.includePackageJsonAutoImports": "auto",
+  "typescript.suggest.autoImports": true,
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "[markdown]": {
+    "editor.wordWrap": "on",
+    "editor.quickSuggestions": {
+      "comments": "off",
+      "strings": "off",
+      "other": "off"
+    }
+  },
+  "markdownlint.config": {
+    "MD013": false,
+    "MD033": false,
+    "MD041": false
+  },
+  "files.associations": {
+    "*.md": "markdown"
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/.git": true,
+    "**/coverage": true,
+    "**/*.tsbuildinfo": true
+  }
+}
