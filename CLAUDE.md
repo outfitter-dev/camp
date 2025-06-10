@@ -1,10 +1,15 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with
+code in this repository.
+
+About you: @.agents/prompts/mode-max-eng.md
 
 ## Repository Overview
 
-This is the `@outfitter/camp` monorepo - a collection of shared configurations and utilities for Outfitter projects. It uses pnpm workspaces and contains 8 packages that provide development tools, configurations, and coding standards.
+This is the `@outfitter/camp` monorepo - a collection of shared configurations
+and utilities for Outfitter projects. It uses pnpm workspaces and contains 8
+packages that provide development tools, configurations, and coding standards.
 
 ## Key Commands
 
@@ -64,22 +69,26 @@ pnpm changeset:publish
 
 ```bash
 # Run tests for a specific package
-pnpm test --filter @outfitter/typescript-utils
+pnpm test --filter @outfitter/contracts
 
 # Run a single test file
-pnpm test packages/typescript-utils/src/__tests__/result.test.ts
+pnpm test packages/contracts/typescript/src/__tests__/result.test.ts
 ```
 
 ## Architecture
 
 ### Package Structure
+
 The monorepo follows a clear separation of concerns:
 
 1. **Core Libraries** (must build first):
-   - `typescript-utils`: Zero-dependency utilities using Result pattern for error handling
+
+   - `contracts/typescript`: Zero-dependency utilities using Result pattern for
+     error handling (renamed from typescript-utils)
    - `packlist`: Configuration manager that orchestrates development setup
 
 2. **Configuration Packages** (shared configs):
+
    - `eslint-config`: Shared ESLint rules (currently relaxed for initial setup)
    - `typescript-config`: Base tsconfig.json files for different project types
    - `husky-config`: Git hooks configuration
@@ -87,21 +96,24 @@ The monorepo follows a clear separation of concerns:
 
 3. **Tools & Documentation**:
    - `cli`: Command-line tool that consumes packlist as a library
-   - `fieldguides`: Living documentation system with content in `content/` subdirectory
+   - `fieldguides`: Living documentation system with content in `content/`
+     subdirectory
 
 ### Build Order
+
 Due to TypeScript project references, packages must build in this order:
 
-1. `typescript-utils` (no dependencies)
-2. All other packages (may depend on typescript-utils)
+1. `contracts/typescript` (no dependencies)
+2. All other packages (may depend on contracts)
 
 ### Key Design Patterns
 
 #### Result Pattern
-All packages use the Result pattern from `typescript-utils` for error handling:
+
+All packages use the Result pattern from `contracts` for error handling:
 
 ```typescript
-import { Result, success, failure, makeError } from '@outfitter/typescript-utils';
+import { Result, success, failure, makeError } from '@outfitter/contracts';
 
 function doSomething(): Result<string, AppError> {
   if (condition) {
@@ -112,24 +124,26 @@ function doSomething(): Result<string, AppError> {
 ```
 
 #### Workspace Dependencies
+
 Internal packages use `workspace:*` protocol:
 
 ```json
 {
   "dependencies": {
-    "@outfitter/typescript-utils": "workspace:*"
+    "@outfitter/contracts": "workspace:*"
   }
 }
 ```
 
 #### TypeScript Project References
+
 The root `tsconfig.json` uses project references for incremental builds:
 
 ```json
 {
   "references": [
     { "path": "./packages/typescript-config" },
-    { "path": "./packages/typescript-utils" },
+    { "path": "./packages/contracts/typescript" }
     // ... other packages
   ]
 }
@@ -138,10 +152,12 @@ The root `tsconfig.json` uses project references for incremental builds:
 ## Important Conventions
 
 ### Commit Messages
+
 Use conventional commits (enforced by commitlint):
 
 - Format: `type(scope): subject`
-- Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `perf`, `ci`, `build`, `revert`
+- Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `perf`,
+  `ci`, `build`, `revert`
 - Example: `feat(cli): add update command for supplies`
 
 ### Code Style
@@ -162,20 +178,25 @@ Use conventional commits (enforced by commitlint):
 ### Package Publishing
 
 - All packages are published to npm under `@outfitter/` scope
-- Packages use `tsup` for building (except `cli` and `fieldguides` which use `tsc`)
+- Packages use `tsup` for building (except `cli` and `fieldguides` which use
+  `tsc`)
 - Both CJS and ESM formats are built for maximum compatibility
 
 ## Known Issues & Workarounds
 
 ### ESLint Warnings
-The project currently has ~200 ESLint warnings (mostly type safety warnings). These don't block functionality but should be addressed:
+
+The project currently has ~200 ESLint warnings (mostly type safety warnings).
+These don't block functionality but should be addressed:
 
 - Many `@typescript-eslint/no-unsafe-*` warnings due to `any` types
 - Array type syntax needs updating in some files
 - Empty catch blocks in some packages
 
 ### CJS/ESM Compatibility
-Some packages show warnings about `import.meta` in CJS builds. This is expected and doesn't affect functionality.
+
+Some packages show warnings about `import.meta` in CJS builds. This is expected
+and doesn't affect functionality.
 
 ## Package-Specific Notes
 
@@ -193,12 +214,13 @@ Some packages show warnings about `import.meta` in CJS builds. This is expected 
 - Uses adventure/exploration theme in internal docs only
 - External-facing guidebooks use professional language
 
-### @outfitter/typescript-utils
+### @outfitter/contracts
 
 - Zero runtime dependencies (critical requirement)
 - All functions must use Result pattern
 - 100% test coverage requirement
 - Used by all other packages for error handling
+- Renamed from typescript-utils with enhanced structure
 
 ## Development Workflow
 

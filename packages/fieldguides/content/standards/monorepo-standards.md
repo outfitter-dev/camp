@@ -45,6 +45,60 @@ Choose multi-repo when you have:
 - Separate teams with different standards
 - Security boundaries between projects
 
+## Apps vs Packages
+
+### When to use `apps/`
+
+Place code in `apps/` when it:
+
+- **Is an end-user application** (web app, mobile app, CLI tool)
+- **Has no library consumers** - not imported by other packages
+- **Deploys independently** with its own versioning
+- **Contains application-specific logic** not reusable elsewhere
+- **Has unique runtime requirements** (Node version, environment)
+
+### When to use `packages/`
+
+Place code in `packages/` when it:
+
+- **Provides shared functionality** used by multiple apps/packages
+- **Exports a public API** for programmatic use
+- **Contains reusable business logic** or utilities
+- **Publishes to a package registry** (npm, internal registry)
+- **Serves as a building block** for other parts of the system
+
+### Mixed-Language Monorepos
+
+For projects combining multiple languages (e.g., Go backend + TypeScript
+frontend):
+
+```text
+monorepo/
+├── apps/
+│   ├── api/               # Go backend
+│   │   ├── main.go
+│   │   ├── go.mod
+│   │   └── internal/
+│   ├── web/              # TypeScript Next.js app
+│   │   ├── src/
+│   │   └── package.json
+│   └── tui/              # TypeScript React TUI
+│       ├── src/
+│       └── package.json
+├── packages/             # Shared TypeScript packages
+│   ├── ui/              # Shared components
+│   ├── types/           # Shared TypeScript types
+│   └── client/          # API client library
+└── tools/               # Build tooling
+```
+
+Key considerations:
+
+- Language-specific apps maintain their own dependency management
+- Shared TypeScript code lives in `packages/`
+- Build orchestration handles cross-language dependencies
+- Clear interfaces between language boundaries
+
 ## Core Architecture
 
 ### Project Structure
@@ -218,6 +272,39 @@ monorepo/
   }
 }
 ```
+
+### Workspace Dependency Versioning
+
+The `workspace:*` protocol has specific behaviors:
+
+```json
+// During development - flexible version
+{
+  "dependencies": {
+    "@company/utils": "workspace:*"  // Uses current workspace version
+  }
+}
+
+// After publishing - fixed version
+{
+  "dependencies": {
+    "@company/utils": "1.2.3"  // Resolved to actual version
+  }
+}
+```
+
+**Key points:**
+
+- `workspace:*` always uses the current local version during development
+- Publishing tools (changesets, pnpm publish) replace with actual versions
+- Ensures atomic updates - all packages in a release use consistent versions
+- No need to manually update versions in dependent packages
+
+**Alternative protocols:**
+
+- `workspace:^` - Publishes as `^currentVersion`
+- `workspace:~` - Publishes as `~currentVersion`
+- `workspace:1.2.3` - Errors if workspace version doesn't match exactly
 
 ## Development Workflow
 

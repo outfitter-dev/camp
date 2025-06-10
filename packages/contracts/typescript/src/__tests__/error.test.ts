@@ -1,11 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { z } from 'zod';
 
 import {
   ErrorCode,
   makeError,
   tryMakeError,
-  fromZod,
   isAppError,
   toAppError,
 } from '../error';
@@ -20,27 +18,6 @@ describe('AppError', () => {
     expect(error.message).toBe('Invalid input');
     expect(error.details).toEqual({ field: 'email' });
     expect(isAppError(error)).toBe(true);
-  });
-
-  it('should convert Zod errors', () => {
-    const schema = z.object({
-      email: z.string().email(),
-      age: z.number().min(18),
-    });
-
-    const parseResult = schema.safeParse({
-      email: 'invalid-email',
-      age: 15,
-    });
-
-    if (!parseResult.success) {
-      const appError = fromZod(parseResult.error);
-
-      expect(appError.code).toBe(ErrorCode.VALIDATION_ERROR);
-      expect(appError.message).toBe('Validation failed');
-      expect(appError.details?.issues).toBeDefined();
-      expect(Array.isArray(appError.details?.issues)).toBe(true);
-    }
   });
 
   it('should identify app errors correctly', () => {
@@ -103,7 +80,7 @@ describe('AppError', () => {
 
     it('should validate details is plain object', () => {
       expect(() =>
-        makeError(ErrorCode.VALIDATION_ERROR, 'message', [])
+        makeError(ErrorCode.VALIDATION_ERROR, 'message', [] as any)
       ).toThrow('Error details must be a plain object');
       expect(() =>
         makeError(ErrorCode.VALIDATION_ERROR, 'message', null as any)

@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import type { DeepReadonly } from './types';
 
 /**
  * Standard error codes for application errors
@@ -42,10 +42,12 @@ export function isErrorInCategory(
  * Application error with structured metadata
  */
 export interface AppError {
+  readonly name: 'AppError';
   readonly code: ErrorCode;
   readonly message: string;
-  readonly details?: Record<string, unknown>;
-  readonly cause?: Error;
+  readonly details?: DeepReadonly<Record<string, unknown>>;
+  readonly originalError?: Error;
+  readonly stack?: string;
 }
 
 /**
@@ -54,8 +56,8 @@ export interface AppError {
 export function makeError(
   code: ErrorCode,
   message: string,
-  details?: Record<string, unknown>,
-  cause?: Error
+  details?: DeepReadonly<Record<string, unknown>>,
+  originalError?: Error
 ): AppError {
   // Validate inputs
   if (!Object.values(ErrorCode).includes(code)) {
@@ -77,23 +79,18 @@ export function makeError(
     throw new Error('Error details must be a plain object');
   }
 
-  if (cause !== undefined && !(cause instanceof Error)) {
-    throw new Error('Error cause must be an Error instance');
+  if (originalError !== undefined && !(originalError instanceof Error)) {
+    throw new Error('Error originalError must be an Error instance');
   }
 
-  if (details !== undefined && cause !== undefined) {
-    return { code, message, details, cause };
-  }
-
-  if (details !== undefined) {
-    return { code, message, details };
-  }
-
-  if (cause !== undefined) {
-    return { code, message, cause };
-  }
-
-  return { code, message };
+  return {
+    name: 'AppError',
+    code,
+    message,
+    details,
+    originalError,
+    stack: originalError?.stack ?? new Error(message).stack,
+  };
 }
 
 /**
@@ -103,7 +100,7 @@ export function tryMakeError(
   code: unknown,
   message: unknown,
   details?: unknown,
-  cause?: unknown
+  originalError?: unknown
 ): { success: true; data: AppError } | { success: false; error: string } {
   try {
     // Type validation
@@ -134,15 +131,18 @@ export function tryMakeError(
       return { success: false, error: 'Error details must be a plain object' };
     }
 
-    if (cause !== undefined && !(cause instanceof Error)) {
-      return { success: false, error: 'Error cause must be an Error instance' };
+    if (originalError !== undefined && !(originalError instanceof Error)) {
+      return {
+        success: false,
+        error: 'Error originalError must be an Error instance',
+      };
     }
 
     const error = makeError(
       code as ErrorCode,
       message as string,
-      details as Record<string, unknown> | undefined,
-      cause as Error | undefined
+      details as DeepReadonly<Record<string, unknown>> | undefined,
+      originalError as Error | undefined
     );
 
     return { success: true, data: error };
@@ -155,20 +155,6 @@ export function tryMakeError(
           : 'Unknown error in tryMakeError',
     };
   }
-}
-
-/**
- * Convert Zod error to AppError
- */
-export function fromZod(error: z.ZodError): AppError {
-  return makeError(ErrorCode.VALIDATION_ERROR, 'Validation failed', {
-    issues: error.issues.map(issue => ({
-      path: issue.path.join('.'),
-      message: issue.message,
-      code: issue.code,
-      received: 'received' in issue ? issue.received : undefined,
-    })),
-  });
 }
 
 /**
@@ -192,15 +178,14 @@ export function toAppError(error: unknown): AppError {
     return error;
   }
 
-  if (error instanceof z.ZodError) {
-    return fromZod(error);
-  }
-
   if (error instanceof Error) {
     return makeError(ErrorCode.INTERNAL_ERROR, error.message, undefined, error);
   }
 
-  return makeError(ErrorCode.INTERNAL_ERROR, 'Unknown error occurred', {
-    originalError: error,
-  });
+  return makeError(
+    ErrorCode.INTERNAL_ERROR,
+    'Unknown error occurred',
+    { raw: error },
+    undefined
+  );
 }

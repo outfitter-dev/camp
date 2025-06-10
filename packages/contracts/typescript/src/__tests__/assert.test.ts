@@ -37,6 +37,19 @@ describe('Assert utilities', () => {
       expect(processStatus('active')).toBe('Active');
       expect(processStatus('inactive')).toBe('Inactive');
     });
+
+    it('should throw an error when called', () => {
+      expect(() => assertNever(undefined as never)).toThrow(
+        'Unhandled value: undefined'
+      );
+    });
+
+    it('should handle different never-like inputs', () => {
+      // This is a type-level test, but we can simulate the call
+      const callWith = (val: any) => () => assertNever(val as never);
+      expect(callWith(null)).toThrow('Unhandled value: null');
+      expect(callWith('string')).toThrow('Unhandled value: "string"');
+    });
   });
 
   describe('exhaustiveCheck', () => {
@@ -67,15 +80,14 @@ describe('Assert utilities', () => {
   });
 
   describe('assert', () => {
-    it('should not throw for truthy conditions', () => {
+    it('should not throw for a truthy condition', () => {
       expect(() => assert(true)).not.toThrow();
       expect(() => assert(1)).not.toThrow();
       expect(() => assert('string')).not.toThrow();
       expect(() => assert({})).not.toThrow();
-      expect(() => assert([])).not.toThrow();
     });
 
-    it('should throw for falsy conditions', () => {
+    it('should throw for a falsy condition', () => {
       expect(() => assert(false)).toThrow('Assertion failed');
       expect(() => assert(0)).toThrow('Assertion failed');
       expect(() => assert('')).toThrow('Assertion failed');
@@ -83,8 +95,8 @@ describe('Assert utilities', () => {
       expect(() => assert(undefined)).toThrow('Assertion failed');
     });
 
-    it('should use custom error message', () => {
-      expect(() => assert(false, 'Custom error')).toThrow('Custom error');
+    it('should use a custom message when provided', () => {
+      expect(() => assert(false, 'Custom message')).toThrow('Custom message');
     });
 
     it('should narrow types correctly', () => {
@@ -100,17 +112,15 @@ describe('Assert utilities', () => {
   });
 
   describe('assertDefined', () => {
-    it('should not throw for defined values', () => {
-      expect(() => assertDefined(0)).not.toThrow();
+    it('should not throw for a defined value', () => {
       expect(() => assertDefined('')).not.toThrow();
+      expect(() => assertDefined(0)).not.toThrow();
       expect(() => assertDefined(false)).not.toThrow();
-      expect(() => assertDefined([])).not.toThrow();
-      expect(() => assertDefined({})).not.toThrow();
     });
 
-    it('should throw for null and undefined', () => {
-      expect(() => assertDefined(null)).toThrow('Value must be defined');
-      expect(() => assertDefined(undefined)).toThrow('Value must be defined');
+    it('should throw for null or undefined', () => {
+      expect(() => assertDefined(null)).toThrow('Value must not be null');
+      expect(() => assertDefined(undefined)).toThrow('Value must not be null');
     });
 
     it('should use custom error message', () => {

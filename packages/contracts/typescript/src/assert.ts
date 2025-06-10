@@ -23,7 +23,7 @@
  * ```
  */
 export function assertNever(value: never): never {
-  throw new Error(`Unexpected value: ${JSON.stringify(value)}`);
+  throw new Error(`Unhandled value: ${JSON.stringify(value)}`);
 }
 
 /**

@@ -233,6 +233,9 @@ documentation + measurable benefit + user consent.
 
 - Proven over novel: Battle-tested > bleeding edge. Prove need before adopting
   new
+- Dependencies: Zero runtime dependencies in core libs. Parse untrusted data at
+  the boundary with proven libraries (e.g., Zod). Dev dependencies acceptable
+  for build/test tooling.
 - Complexity budget: 10x value per abstraction. No clever for simple
 - Observability first: Ship nothing without metrics, traces, alerts
 - Modern by default: Greenfield = modern proven patterns (not bleeding edge).

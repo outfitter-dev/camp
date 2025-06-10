@@ -1,17 +1,27 @@
 {
-  "name": "@outfitter/typescript-utils",
-  "version": "0.1.0",
-  "description": "TypeScript utilities: Result pattern, AppError, utility types",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
+  "name": "@outfitter/contracts",
+  "version": "0.1.1",
+  "description": "Core contracts for building type-safe applications, including Result, AppError, and domain types.",
+  "keywords": [
+    "typescript",
+    "utilities",
+    "result",
+    "error-handling",
+    "type-safe",
+    "contracts"
+  ],
+  "type": "module",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     },
-    "./vitest": "./vitest.config.ts"
+    "./zod": {
+      "types": "./dist/zod/index.d.ts",
+      "import": "./dist/zod/index.mjs",
+      "require": "./dist/zod/index.js"
+    }
   },
   "files": [
     "dist/**",
