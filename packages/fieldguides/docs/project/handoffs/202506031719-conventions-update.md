@@ -2,7 +2,8 @@
 
 ## Overview
 
-Updated the fieldguides conventions to align with 2025 best practices, emphasizing modern tooling and patterns while removing outdated approaches.
+Updated the fieldguides conventions to align with 2025 best practices,
+emphasizing modern tooling and patterns while removing outdated approaches.
 
 ## Key Updates Made
 
@@ -21,7 +22,8 @@ Updated the fieldguides conventions to align with 2025 best practices, emphasizi
 - Updated to use `tseslint.configs.strictTypeChecked` and `stylisticTypeChecked`
 - Enabled `projectService` API for better performance
 - Removed outdated `I` prefix convention for interfaces
-- Added modern rules like `strict-boolean-expressions` and `prefer-ts-expect-error`
+- Added modern rules like `strict-boolean-expressions` and
+  `prefer-ts-expect-error`
 
 **New Security Patterns:**
 

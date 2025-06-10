@@ -1,6 +1,7 @@
 # Project Handoffs
 
-This directory contains handoff documents that capture significant changes, migrations, or feature implementations in the project.
+This directory contains handoff documents that capture significant changes,
+migrations, or feature implementations in the project.
 
 ## Naming Convention
 
@@ -22,7 +23,8 @@ Where:
 ## Current Handoffs
 
 - `202506021654-phase4-migration.md` - Migration to v2 fieldguides structure
-- `202506031719-conventions-update.md` - Update conventions to 2025 best practices
+- `202506031719-conventions-update.md` - Update conventions to 2025 best
+  practices
 
 ## Purpose
 

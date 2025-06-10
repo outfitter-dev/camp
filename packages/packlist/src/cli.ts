@@ -7,7 +7,9 @@ const version = '0.0.0'; // TODO: Import from package.json when resolveJsonModul
 
 program
   .name('packlist')
-  .description('Unified development configuration manager for Outfitter projects')
+  .description(
+    'Unified development configuration manager for Outfitter projects'
+  )
   .version(version);
 
 program

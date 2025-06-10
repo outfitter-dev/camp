@@ -1,5 +1,5 @@
-import { AppError, makeError, ErrorCode } from '../error';
-import { Result, success, failure } from '../result';
+import { type AppError, makeError, ErrorCode } from '../error';
+import { type Result, success, failure } from '../result';
 
 /**
  * Create a branded type for compile-time safety
@@ -40,7 +40,9 @@ export function isPositiveInteger(value: unknown): value is PositiveInteger {
   return typeof value === 'number' && Number.isInteger(value) && value > 0;
 }
 
-export function isNonNegativeInteger(value: unknown): value is NonNegativeInteger {
+export function isNonNegativeInteger(
+  value: unknown
+): value is NonNegativeInteger {
   return typeof value === 'number' && Number.isInteger(value) && value >= 0;
 }
 
@@ -57,7 +59,9 @@ export function isUrl(value: unknown): value is Url {
 export function isUuid(value: unknown): value is Uuid {
   return (
     typeof value === 'string' &&
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+      value
+    )
   );
 }
 
@@ -74,7 +78,9 @@ export function isTimestamp(value: unknown): value is Timestamp {
  */
 export function createUserId(id: string): Result<UserId, AppError> {
   if (!id.trim()) {
-    return failure(makeError(ErrorCode.VALIDATION_ERROR, 'User ID cannot be empty'));
+    return failure(
+      makeError(ErrorCode.VALIDATION_ERROR, 'User ID cannot be empty')
+    );
   }
   if (!/^[a-zA-Z0-9_-]+$/.test(id)) {
     return failure(
@@ -103,17 +109,24 @@ export function createEmail(email: string): Result<Email, AppError> {
   return success(trimmed as Email);
 }
 
-export function createNonEmptyString(str: string): Result<NonEmptyString, AppError> {
+export function createNonEmptyString(
+  str: string
+): Result<NonEmptyString, AppError> {
   const trimmed = str.trim();
   if (!trimmed) {
     return failure(
-      makeError(ErrorCode.VALIDATION_ERROR, 'String cannot be empty or contain only whitespace')
+      makeError(
+        ErrorCode.VALIDATION_ERROR,
+        'String cannot be empty or contain only whitespace'
+      )
     );
   }
   return success(trimmed as NonEmptyString);
 }
 
-export function createPositiveInteger(num: number): Result<PositiveInteger, AppError> {
+export function createPositiveInteger(
+  num: number
+): Result<PositiveInteger, AppError> {
   if (!Number.isInteger(num)) {
     return failure(
       makeError(ErrorCode.VALIDATION_ERROR, 'Value must be an integer', {
@@ -131,7 +144,9 @@ export function createPositiveInteger(num: number): Result<PositiveInteger, AppE
   return success(num as PositiveInteger);
 }
 
-export function createNonNegativeInteger(num: number): Result<NonNegativeInteger, AppError> {
+export function createNonNegativeInteger(
+  num: number
+): Result<NonNegativeInteger, AppError> {
   if (!Number.isInteger(num)) {
     return failure(
       makeError(ErrorCode.VALIDATION_ERROR, 'Value must be an integer', {
@@ -166,7 +181,8 @@ export function createUrl(url: string): Result<Url, AppError> {
 }
 
 export function createUuid(uuid: string): Result<Uuid, AppError> {
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  const uuidRegex =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
   if (!uuidRegex.test(uuid)) {
     return failure(
@@ -182,9 +198,13 @@ export function createUuid(uuid: string): Result<Uuid, AppError> {
 export function createPercentage(value: number): Result<Percentage, AppError> {
   if (value < 0 || value > 100) {
     return failure(
-      makeError(ErrorCode.VALIDATION_ERROR, 'Percentage must be between 0 and 100', {
-        providedValue: value,
-      })
+      makeError(
+        ErrorCode.VALIDATION_ERROR,
+        'Percentage must be between 0 and 100',
+        {
+          providedValue: value,
+        }
+      )
     );
   }
   return success(value as Percentage);

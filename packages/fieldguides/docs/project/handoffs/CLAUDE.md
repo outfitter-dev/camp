@@ -1,6 +1,7 @@
 # Handoff Formatting Guide
 
-This guide provides the structure and formatting conventions for creating project handoff documents.
+This guide provides the structure and formatting conventions for creating
+project handoff documents.
 
 ## Template Structure
 
@@ -15,16 +16,14 @@ Every handoff should follow this structure:
 
 ## Context
 
-[Background information that led to this work]
-[Problem statement or requirements]
-[Links to related issues/PRs if applicable]
+[Background information that led to this work] [Problem statement or
+requirements] [Links to related issues/PRs if applicable]
 
 ## Key Changes
 
 ### 1. [Major Change Area]
 
-[Description of what changed]
-[Why this approach was chosen]
+[Description of what changed] [Why this approach was chosen]
 
 ### 2. [Another Change Area]
 
@@ -34,19 +33,15 @@ Every handoff should follow this structure:
 
 ### Architecture Decisions
 
-[Key architectural choices made]
-[Trade-offs considered]
+[Key architectural choices made] [Trade-offs considered]
 
 ### Implementation Notes
 
-[Important implementation details]
-[Patterns used]
-[Dependencies added/removed]
+[Important implementation details] [Patterns used] [Dependencies added/removed]
 
 ## Breaking Changes
 
-[List any breaking changes]
-[Migration steps required]
+[List any breaking changes] [Migration steps required]
 
 ## Verification
 
@@ -57,8 +52,7 @@ Every handoff should follow this structure:
 
 ## Next Steps
 
-[What should happen next]
-[Known limitations or future improvements]
+[What should happen next] [Known limitations or future improvements]
 
 ## References
 
@@ -71,7 +65,8 @@ Every handoff should follow this structure:
 
 1. **Be Specific**: Include file paths, function names, and concrete examples
 2. **Explain Why**: Document not just what changed, but why decisions were made
-3. **Think Future**: Write for someone (including yourself) reading this months later
+3. **Think Future**: Write for someone (including yourself) reading this months
+   later
 4. **Include Examples**: Show code snippets for complex changes
 5. **List Commands**: Include any commands needed for migration or testing
 

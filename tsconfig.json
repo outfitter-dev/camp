@@ -41,12 +41,6 @@
       "path": "./packages/fieldguides"
     }
   ],
-  "exclude": [
-    "**/node_modules",
-    "**/dist",
-    "**/*.config.ts",
-    "**/*.config.mjs",
-    "prettier.config.ts"
-  ],
+  "exclude": ["**/node_modules", "**/dist", "**/*.config.ts", "**/*.config.mjs", "prettier.config.ts"],
   "files": []
 }

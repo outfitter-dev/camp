@@ -40,7 +40,9 @@ describe('Environment validation', () => {
       if (result.success) {
         expect(result.data.NODE_ENV).toBe('development');
         expect(result.data.PORT).toBe(3000);
-        expect(result.data.DATABASE_URL).toBe('postgresql://localhost:5432/test');
+        expect(result.data.DATABASE_URL).toBe(
+          'postgresql://localhost:5432/test'
+        );
       }
     });
 
@@ -53,7 +55,10 @@ describe('Environment validation', () => {
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error.code).toBe(ErrorCode.VALIDATION_ERROR);
-        expect(result.error.details?.missingVariables).toEqual(['DATABASE_URL', 'API_KEY']);
+        expect(result.error.details?.missingVariables).toEqual([
+          'DATABASE_URL',
+          'API_KEY',
+        ]);
       }
     });
 
@@ -167,7 +172,10 @@ describe('Environment validation', () => {
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error.code).toBe(ErrorCode.VALIDATION_ERROR);
-        expect(result.error.details?.missingVariables).toEqual(['VAR2', 'VAR3']);
+        expect(result.error.details?.missingVariables).toEqual([
+          'VAR2',
+          'VAR3',
+        ]);
         expect(result.error.message).toContain('VAR2, VAR3');
       }
     });
@@ -199,7 +207,8 @@ describe('Environment validation', () => {
       const result = CommonEnvSchemas.DATABASE_URL.safeParse(validUrl);
       expect(result.success).toBe(true);
 
-      const invalidResult = CommonEnvSchemas.DATABASE_URL.safeParse('not-a-url');
+      const invalidResult =
+        CommonEnvSchemas.DATABASE_URL.safeParse('not-a-url');
       expect(invalidResult.success).toBe(false);
     });
   });

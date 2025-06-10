@@ -14,7 +14,9 @@ describe('Assert utilities', () => {
   describe('assertNever', () => {
     it('should throw error with unexpected value', () => {
       const value = 'unexpected' as never;
-      expect(() => assertNever(value)).toThrow('Unexpected value: "unexpected"');
+      expect(() => assertNever(value)).toThrow(
+        'Unexpected value: "unexpected"'
+      );
     });
 
     it('should provide compile-time exhaustiveness checking', () => {
@@ -112,7 +114,9 @@ describe('Assert utilities', () => {
     });
 
     it('should use custom error message', () => {
-      expect(() => assertDefined(null, 'Custom message')).toThrow('Custom message');
+      expect(() => assertDefined(null, 'Custom message')).toThrow(
+        'Custom message'
+      );
     });
 
     it('should narrow types correctly', () => {
@@ -142,7 +146,13 @@ describe('Assert utilities', () => {
     });
 
     it('should work as a filter', () => {
-      const values: (string | null | undefined)[] = ['a', null, 'b', undefined, 'c'];
+      const values: (string | null | undefined)[] = [
+        'a',
+        null,
+        'b',
+        undefined,
+        'c',
+      ];
       const defined = values.filter(isDefined);
 
       expect(defined).toEqual(['a', 'b', 'c']);
@@ -168,7 +178,9 @@ describe('Assert utilities', () => {
 
   describe('assertUnreachable', () => {
     it('should throw error', () => {
-      expect(() => assertUnreachable()).toThrow('This code should be unreachable');
+      expect(() => assertUnreachable()).toThrow(
+        'This code should be unreachable'
+      );
     });
 
     it('should be used to ensure all paths are covered', () => {

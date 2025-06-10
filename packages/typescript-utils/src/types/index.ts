@@ -8,8 +8,8 @@
  * Make all properties deeply readonly
  */
 export type DeepReadonly<T> = {
-  readonly [P in keyof T]: T[P] extends (infer U)[]
-    ? DeepReadonly<U>[]
+  readonly [P in keyof T]: T[P] extends Array<infer U>
+    ? Array<DeepReadonly<U>>
     : T[P] extends Record<string, unknown>
       ? DeepReadonly<T[P]>
       : T[P];
@@ -19,8 +19,8 @@ export type DeepReadonly<T> = {
  * Make all properties deeply partial
  */
 export type DeepPartial<T> = {
-  [P in keyof T]?: T[P] extends (infer U)[]
-    ? DeepPartial<U>[]
+  [P in keyof T]?: T[P] extends Array<infer U>
+    ? Array<DeepPartial<U>>
     : T[P] extends Record<string, unknown>
       ? DeepPartial<T[P]>
       : T[P];
@@ -48,7 +48,7 @@ export type Flatten<T> = T extends infer U ? { [K in keyof U]: U[K] } : never;
 /**
  * Get the value type of an array
  */
-export type ArrayElement<T> = T extends (infer U)[] ? U : never;
+export type ArrayElement<T> = T extends Array<infer U> ? U : never;
 
 /**
  * Create a union of all object values
@@ -58,7 +58,10 @@ export type ValueOf<T> = T[keyof T];
 /**
  * Create a type that requires at least one of the given keys
  */
-export type RequireAtLeastOne<T, Keys extends keyof T = keyof T> = Pick<T, Exclude<keyof T, Keys>> &
+export type RequireAtLeastOne<T, Keys extends keyof T = keyof T> = Pick<
+  T,
+  Exclude<keyof T, Keys>
+> &
   {
     [K in Keys]-?: Required<Pick<T, K>> & Partial<Pick<T, Exclude<Keys, K>>>;
   }[Keys];
@@ -71,7 +74,7 @@ export type JsonValue =
   | number
   | boolean
   | null
-  | JsonValue[]
+  | Array<JsonValue>
   | { [key: string]: JsonValue };
 
 /**
@@ -79,10 +82,10 @@ export type JsonValue =
  */
 export type Jsonify<T> = T extends JsonValue
   ? T
-  : T extends bigint | symbol | ((...args: unknown[]) => unknown)
+  : T extends bigint | symbol | ((...args: Array<unknown>) => unknown)
     ? never
-    : T extends (infer U)[]
-      ? Jsonify<U>[]
+    : T extends Array<infer U>
+      ? Array<Jsonify<U>>
       : T extends Record<string, unknown>
         ? { [K in keyof T]: Jsonify<T[K]> }
         : never;

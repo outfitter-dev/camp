@@ -7,16 +7,17 @@ type: reference
 
 # Frontmatter Schema
 
-All fieldguide documents (except STANDARDS) must include frontmatter with the following fields:
+All fieldguide documents (except STANDARDS) must include frontmatter with the
+following fields:
 
 ## Required Fields
 
 ```yaml
 ---
-slug: typescript-error-handling  # Unique ID, kebab-case, no special chars
-title: Handle errors with type-safe Result patterns  # ~60 chars max, sentence case
-description: Type-safe error handling without throwing exceptions.  # One sentence, 72 char line limit
-type: pattern  # ENUM: convention|pattern|guide|template|reference
+slug: typescript-error-handling # Unique ID, kebab-case, no special chars
+title: Handle errors with type-safe Result patterns # ~60 chars max, sentence case
+description: Type-safe error handling without throwing exceptions. # One sentence, 72 char line limit
+type: pattern # ENUM: convention|pattern|guide|template|reference
 ---
 ```
 
@@ -64,10 +65,10 @@ type: pattern  # ENUM: convention|pattern|guide|template|reference
 ```yaml
 ---
 # ... required fields ...
-category: typescript  # For grouping/filtering
-tags: [error-handling, fp, typescript]  # For discovery
-related: [typescript-conventions, validation-patterns]  # Cross-references
-status: stable  # ENUM: draft|stable|deprecated
+category: typescript # For grouping/filtering
+tags: [error-handling, fp, typescript] # For discovery
+related: [typescript-conventions, validation-patterns] # Cross-references
+status: stable # ENUM: draft|stable|deprecated
 ---
 ```
 
@@ -137,7 +138,8 @@ pnpm run lint
 
 ### Pre-commit Validation
 
-Frontmatter is automatically validated before commits via lint-staged. Any files with invalid or missing frontmatter will prevent the commit.
+Frontmatter is automatically validated before commits via lint-staged. Any files
+with invalid or missing frontmatter will prevent the commit.
 
 ### Validation Script
 
@@ -152,4 +154,5 @@ The validation script (`scripts/validate-frontmatter.js`) checks:
 
 ### Continuous Integration
 
-Pull requests automatically validate all documentation changes to ensure consistency across the codebase.
+Pull requests automatically validate all documentation changes to ensure
+consistency across the codebase.

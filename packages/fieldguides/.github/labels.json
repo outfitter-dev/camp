@@ -1,0 +1,182 @@
+[
+  {
+    "name": "type/bug",
+    "color": "d73a4a",
+    "description": "Something isn't working or is incorrect"
+  },
+  {
+    "name": "type/feature",
+    "color": "a2eeef",
+    "description": "New feature or enhancement request"
+  },
+  {
+    "name": "type/fix",
+    "color": "0075ca",
+    "description": "Fix for existing functionality"
+  },
+  {
+    "name": "type/improvement",
+    "color": "7057ff",
+    "description": "Enhancement to existing features"
+  },
+  {
+    "name": "type/chore",
+    "color": "fef2c0",
+    "description": "Maintenance tasks and housekeeping"
+  },
+  {
+    "name": "type/refactor",
+    "color": "fbca04",
+    "description": "Code restructuring without changing functionality"
+  },
+  {
+    "name": "type/question",
+    "color": "d876e3",
+    "description": "Request for information or clarification"
+  },
+  {
+    "name": "type/proposal",
+    "color": "0e8a16",
+    "description": "Proposal for new approaches or significant changes"
+  },
+  {
+    "name": "priority/critical",
+    "color": "b60205",
+    "description": "Must be resolved immediately - blocks core functionality"
+  },
+  {
+    "name": "priority/high",
+    "color": "d93f0b",
+    "description": "Should be resolved soon - impacts important use cases"
+  },
+  {
+    "name": "priority/medium",
+    "color": "fbca04",
+    "description": "Moderate importance - can be scheduled normally"
+  },
+  {
+    "name": "priority/low",
+    "color": "0e8a16",
+    "description": "Nice to have - can be addressed when convenient"
+  },
+  {
+    "name": "area/dependencies",
+    "color": "5319e7",
+    "description": "Package dependencies and version management"
+  },
+  {
+    "name": "area/ci",
+    "color": "1d76db",
+    "description": "Continuous integration and automated workflows"
+  },
+  {
+    "name": "area/api",
+    "color": "0052cc",
+    "description": "API design, endpoints, and interfaces"
+  },
+  {
+    "name": "area/deployment",
+    "color": "006b75",
+    "description": "Deployment processes and infrastructure"
+  },
+  {
+    "name": "area/docs",
+    "color": "0075ca",
+    "description": "Documentation and fieldguides"
+  },
+  {
+    "name": "area/security",
+    "color": "d4c5f9",
+    "description": "Security-related issues and improvements"
+  },
+  {
+    "name": "area/performance",
+    "color": "c2e0c6",
+    "description": "Performance optimization and efficiency"
+  },
+  {
+    "name": "area/tests",
+    "color": "0e8a16",
+    "description": "Testing infrastructure and test cases"
+  },
+  {
+    "name": "area/ui-ux",
+    "color": "f9d0c4",
+    "description": "User interface and experience improvements"
+  },
+  {
+    "name": "needs/triage",
+    "color": "fef2c0",
+    "description": "Requires initial review and categorization"
+  },
+  {
+    "name": "needs/review",
+    "color": "fbca04",
+    "description": "Awaiting code or design review"
+  },
+  {
+    "name": "needs/docs",
+    "color": "0075ca",
+    "description": "Documentation must be updated or created"
+  },
+  {
+    "name": "needs/dev",
+    "color": "1d76db",
+    "description": "Ready for development work"
+  },
+  {
+    "name": "needs/approval",
+    "color": "d876e3",
+    "description": "Awaiting stakeholder or maintainer approval"
+  },
+  {
+    "name": "needs/testing",
+    "color": "0e8a16",
+    "description": "Requires testing or test coverage"
+  },
+  {
+    "name": "impact/breaking",
+    "color": "b60205",
+    "description": "Breaking change that affects existing functionality"
+  },
+  {
+    "name": "impact/high",
+    "color": "d93f0b",
+    "description": "Significant impact on users or system behavior"
+  },
+  {
+    "name": "impact/medium",
+    "color": "fbca04",
+    "description": "Moderate impact with manageable changes required"
+  },
+  {
+    "name": "impact/low",
+    "color": "0e8a16",
+    "description": "Minimal impact on existing functionality"
+  },
+  {
+    "name": "closed-as/wontfix",
+    "color": "ffffff",
+    "description": "Issue acknowledged but will not be addressed"
+  },
+  {
+    "name": "closed-as/invalid",
+    "color": "e4e669",
+    "description": "Issue is not valid or incorrectly reported"
+  },
+  {
+    "name": "closed-as/duplicate",
+    "color": "cfd3d7",
+    "description": "Duplicate of an existing issue"
+  },
+  {
+    "name": "closed-as/obsolete",
+    "color": "fef2c0",
+    "description": "Issue is no longer relevant or applicable"
+  },
+  {
+    "name": "closed-as/stale",
+    "color": "d1ecf1",
+    "description": "Issue closed due to inactivity"
+  }
+]

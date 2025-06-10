@@ -31,7 +31,9 @@ export function failure<E>(error: E): Failure<E> {
 /**
  * Wrap an async function to return a Result instead of throwing
  */
-export async function tryAsync<T, E = Error>(fn: () => Promise<T>): Promise<Result<T, E>> {
+export async function tryAsync<T, E = Error>(
+  fn: () => Promise<T>
+): Promise<Result<T, E>> {
   try {
     const data = await fn();
     return success(data);
@@ -40,7 +42,9 @@ export async function tryAsync<T, E = Error>(fn: () => Promise<T>): Promise<Resu
     if (error instanceof Error) {
       return failure(error as E extends Error ? E : Error as E);
     }
-    return failure(new Error(String(error)) as E extends Error ? E : Error as E);
+    return failure(
+      new Error(String(error)) as E extends Error ? E : Error as E
+    );
   }
 }
 
@@ -56,7 +60,9 @@ export function trySync<T, E = Error>(fn: () => T): Result<T, E> {
     if (error instanceof Error) {
       return failure(error as E extends Error ? E : Error as E);
     }
-    return failure(new Error(String(error)) as E extends Error ? E : Error as E);
+    return failure(
+      new Error(String(error)) as E extends Error ? E : Error as E
+    );
   }
 }
 
@@ -80,7 +86,10 @@ export function isFailure<T, E>(result: Result<T, E>): result is Failure<E> {
  * @param fn The function to apply to the success value
  * @returns A new result with the mapped value or the original error
  */
-export function map<T, U, E>(result: Result<T, E>, fn: (value: T) => U): Result<U, E> {
+export function map<T, U, E>(
+  result: Result<T, E>,
+  fn: (value: T) => U
+): Result<U, E> {
   return result.success ? success(fn(result.data)) : result;
 }
 
@@ -90,7 +99,10 @@ export function map<T, U, E>(result: Result<T, E>, fn: (value: T) => U): Result<
  * @param fn The function to apply to the error value
  * @returns A new result with the original value or the mapped error
  */
-export function mapError<T, E, F>(result: Result<T, E>, fn: (error: E) => F): Result<T, F> {
+export function mapError<T, E, F>(
+  result: Result<T, E>,
+  fn: (error: E) => F
+): Result<T, F> {
   return result.success ? result : failure(fn(result.error));
 }
 
@@ -121,7 +133,7 @@ export function flatten<T, E>(result: Result<Result<T, E>, E>): Result<T, E> {
  * @param results Array of Results to combine
  * @returns Success with array of values if all succeed, or first failure
  */
-export function all<T extends readonly Result<unknown, unknown>[]>(
+export function all<T extends ReadonlyArray<Result<unknown, unknown>>>(
   results: T
 ): Result<
   { [K in keyof T]: T[K] extends Result<infer U, unknown> ? U : never },
@@ -132,7 +144,7 @@ export function all<T extends readonly Result<unknown, unknown>[]>(
   };
   type ErrorType = T[number] extends Result<unknown, infer E> ? E : never;
 
-  const values: unknown[] = [];
+  const values: Array<unknown> = [];
 
   for (const result of results) {
     if (!result.success) {
@@ -160,7 +172,10 @@ export function getOrElse<T, E>(result: Result<T, E>, defaultValue: T): T {
  * @param fn Function to compute the default value from the error
  * @returns The success value or the computed default
  */
-export function getOrElseWith<T, E>(result: Result<T, E>, fn: (error: E) => T): T {
+export function getOrElseWith<T, E>(
+  result: Result<T, E>,
+  fn: (error: E) => T
+): T {
   return result.success ? result.data : fn(result.error);
 }
 
@@ -170,7 +185,10 @@ export function getOrElseWith<T, E>(result: Result<T, E>, fn: (error: E) => T): 
  * @param fn The side effect to execute on success
  * @returns The original Result unchanged
  */
-export function tap<T, E>(result: Result<T, E>, fn: (value: T) => void): Result<T, E> {
+export function tap<T, E>(
+  result: Result<T, E>,
+  fn: (value: T) => void
+): Result<T, E> {
   if (result.success) {
     fn(result.data);
   }
@@ -183,7 +201,10 @@ export function tap<T, E>(result: Result<T, E>, fn: (value: T) => void): Result<
  * @param fn The side effect to execute on failure
  * @returns The original Result unchanged
  */
-export function tapError<T, E>(result: Result<T, E>, fn: (error: E) => void): Result<T, E> {
+export function tapError<T, E>(
+  result: Result<T, E>,
+  fn: (error: E) => void
+): Result<T, E> {
   if (!result.success) {
     fn(result.error);
   }
@@ -196,7 +217,9 @@ export function tapError<T, E>(result: Result<T, E>, fn: (error: E) => void): Re
  * @returns A Promise that resolves on success or rejects on failure
  */
 export function toPromise<T, E>(result: Result<T, E>): Promise<T> {
-  return result.success ? Promise.resolve(result.data) : Promise.reject(result.error);
+  return result.success
+    ? Promise.resolve(result.data)
+    : Promise.reject(result.error);
 }
 
 /**
@@ -209,5 +232,7 @@ export function fromNullable<T, E>(
   value: T | null | undefined,
   error: E
 ): Result<NonNullable<T>, E> {
-  return value !== null && value !== undefined ? success(value as NonNullable<T>) : failure(error);
+  return value !== null && value !== undefined
+    ? success(value as NonNullable<T>)
+    : failure(error);
 }

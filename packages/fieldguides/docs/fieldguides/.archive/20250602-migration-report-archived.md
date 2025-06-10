@@ -1,7 +1,8 @@
 ---
 slug: migration-report
 title: Documentation restructure migration report
-description: Summary of fieldguides restructure from nested to flat organization.
+description:
+  Summary of fieldguides restructure from nested to flat organization.
 type: reference
 ---
 
@@ -9,7 +10,10 @@ type: reference
 
 ## Executive Summary
 
-The documentation restructure from `fieldguides/` to `fieldguides-v2/` has been successfully completed. The new structure exceeds the original target of ~4,200 lines, providing more comprehensive documentation at ~8,001 lines due to expanded patterns and examples.
+The documentation restructure from `fieldguides/` to `fieldguides-v2/` has been
+successfully completed. The new structure exceeds the original target of ~4,200
+lines, providing more comprehensive documentation at ~8,001 lines due to
+expanded patterns and examples.
 
 ## Line Count Comparison
 
@@ -30,6 +34,7 @@ The documentation restructure from `fieldguides/` to `fieldguides-v2/` has been 
 ### Universal Standards (825 lines)
 
 - **CODING.md** (290 lines) ← Extracted from:
+
   - typescript-conventions.md (design principles)
   - component-architecture.md (organization)
   - result-pattern.md (error philosophy)
@@ -37,6 +42,7 @@ The documentation restructure from `fieldguides/` to `fieldguides-v2/` has been 
   - documentation.md (documentation standards)
 
 - **TESTING.md** (291 lines) ← Extracted from:
+
   - test-driven-development.md
   - testing-strategy.md
   - ci-cd-pipelines.md
@@ -63,7 +69,8 @@ The documentation restructure from `fieldguides/` to `fieldguides-v2/` has been 
 ### Library Categories (2,094 lines)
 
 - **libraries/configuration/** (379 lines) ← From environment-config.md
-- **libraries/testing/** (1,715 lines) ← From testing-strategy.md, test-driven-development.md
+- **libraries/testing/** (1,715 lines) ← From testing-strategy.md,
+  test-driven-development.md
 
 ### Operations (1,189 lines)
 
@@ -73,14 +80,16 @@ The documentation restructure from `fieldguides/` to `fieldguides-v2/` has been 
 ### Architecture (1,478 lines)
 
 - **architecture/monorepo/** (773 lines) ← Direct from monorepo.md
-- **architecture/components/** (435 lines) ← From component-architecture.md (non-React)
+- **architecture/components/** (435 lines) ← From component-architecture.md
+  (non-React)
 - **architecture/documentation.md** (270 lines) ← Direct from documentation.md
 
 ## Key Improvements
 
 ### 1. Better Organization
 
-- Clear separation between universal principles and technology-specific implementation
+- Clear separation between universal principles and technology-specific
+  implementation
 - Logical categorization by type (languages, frameworks, libraries, operations)
 - Improved discoverability through consistent structure
 
@@ -128,7 +137,8 @@ The following cross-references need updating in fieldguides-v2:
 
 ### Empty/Placeholder Files
 
-- `operations/deployment/patterns/environments.md` - Empty (content covered in github-actions.md)
+- `operations/deployment/patterns/environments.md` - Empty (content covered in
+  github-actions.md)
 
 ## Recommendations
 
@@ -147,4 +157,6 @@ The migration successfully achieves:
 - ✅ Better AI-friendly chunking
 - ✅ No content loss (actually expanded coverage)
 
-The new structure provides a more maintainable and navigable documentation system while exceeding the original scope with additional valuable patterns and examples.
+The new structure provides a more maintainable and navigable documentation
+system while exceeding the original scope with additional valuable patterns and
+examples.

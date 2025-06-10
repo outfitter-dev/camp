@@ -12,10 +12,15 @@ interface InitOptions {
 }
 
 const presets = {
-  nextjs: ['typescript-standards', 'react-patterns', 'nextjs-patterns', 'testing-standards'],
+  nextjs: [
+    'typescript-standards',
+    'react-patterns',
+    'nextjs-patterns',
+    'testing-standards',
+  ],
   react: ['typescript-standards', 'react-patterns', 'testing-standards'],
   node: ['typescript-standards', 'testing-standards', 'security-standards'],
-  minimal: ['typescript-standards']
+  minimal: ['typescript-standards'],
 };
 
 export const initCommand = new Command('init')
@@ -26,10 +31,12 @@ export const initCommand = new Command('init')
   .action(async (options: InitOptions) => {
     const cwd = process.cwd();
     const outfitterDir = join(cwd, '.outfitter');
-    
+
     // Check if already initialized
-    if (await pathExists(outfitterDir) && !options.force) {
-      console.error(chalk.red('Project already initialized. Use --force to reinitialize.'));
+    if ((await pathExists(outfitterDir)) && !options.force) {
+      console.error(
+        chalk.red('Project already initialized. Use --force to reinitialize.')
+      );
       process.exit(1);
     }
 
@@ -45,9 +52,9 @@ export const initCommand = new Command('init')
             { name: 'Next.js Full Stack', value: 'nextjs' },
             { name: 'React SPA', value: 'react' },
             { name: 'Node.js Backend', value: 'node' },
-            { name: 'Minimal (TypeScript only)', value: 'minimal' }
-          ]
-        }
+            { name: 'Minimal (TypeScript only)', value: 'minimal' },
+          ],
+        },
       ]);
       selectedPreset = answers.preset;
     }
@@ -57,24 +64,31 @@ export const initCommand = new Command('init')
     try {
       // Create .outfitter directory
       await ensureDir(outfitterDir);
-      
+
       // Create config
       const config = {
         version: '1.0.0',
         preset: selectedPreset,
         supplies: presets[selectedPreset as keyof typeof presets],
-        installed: new Date().toISOString()
+        installed: new Date().toISOString(),
       };
-      
+
       await writeJSON(join(outfitterDir, 'config.json'), config, { spaces: 2 });
-      
+
       spinner.succeed('Outfitter initialized successfully!');
-      
+
       console.log('\n' + chalk.green('✓') + ' Created .outfitter/config.json');
       console.log('\n' + chalk.cyan('Next steps:'));
-      console.log('  1. Run ' + chalk.yellow('outfitter add <supply>') + ' to add specific supplies');
-      console.log('  2. Run ' + chalk.yellow('outfitter list') + ' to see available supplies');
-      
+      console.log(
+        '  1. Run ' +
+          chalk.yellow('outfitter add <supply>') +
+          ' to add specific supplies'
+      );
+      console.log(
+        '  2. Run ' +
+          chalk.yellow('outfitter list') +
+          ' to see available supplies'
+      );
     } catch (error) {
       spinner.fail('Failed to initialize Outfitter');
       throw error;

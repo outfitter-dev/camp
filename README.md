@@ -8,20 +8,28 @@ This monorepo contains the following packages:
 
 ### Core Libraries
 
-- **[@outfitter/packlist](./packages/packlist)** - Unified development configuration manager
-- **[@outfitter/typescript-utils](./packages/typescript-utils)** - Type-safe utility functions and error handling
+- **[@outfitter/packlist](./packages/packlist)** - Unified development
+  configuration manager
+- **[@outfitter/typescript-utils](./packages/typescript-utils)** - Type-safe
+  utility functions and error handling
 
 ### Development Configurations
 
-- **[@outfitter/eslint-config](./packages/eslint-config)** - Shared ESLint configuration
-- **[@outfitter/typescript-config](./packages/typescript-config)** - Shared TypeScript configurations
-- **[@outfitter/husky-config](./packages/husky-config)** - Git hooks configuration
-- **[@outfitter/changeset-config](./packages/changeset-config)** - Release management configuration
+- **[@outfitter/eslint-config](./packages/eslint-config)** - Shared ESLint
+  configuration
+- **[@outfitter/typescript-config](./packages/typescript-config)** - Shared
+  TypeScript configurations
+- **[@outfitter/husky-config](./packages/husky-config)** - Git hooks
+  configuration
+- **[@outfitter/changeset-config](./packages/changeset-config)** - Release
+  management configuration
 
 ### Tools & Documentation
 
-- **[@outfitter/cli](./packages/cli)** - Command-line tool for project setup and management
-- **[@outfitter/fieldguides](./packages/fieldguides)** - Comprehensive coding guidelines and best practices
+- **[@outfitter/cli](./packages/cli)** - Command-line tool for project setup and
+  management
+- **[@outfitter/fieldguides](./packages/fieldguides)** - Comprehensive coding
+  guidelines and best practices
 
 ## Development
 
@@ -41,7 +49,8 @@ pnpm ci:local
 
 ## Publishing
 
-This monorepo uses [Changesets](https://github.com/changesets/changesets) for version management and publishing.
+This monorepo uses [Changesets](https://github.com/changesets/changesets) for
+version management and publishing.
 
 ```bash
 # Add a changeset

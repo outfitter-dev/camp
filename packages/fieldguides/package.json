@@ -1,44 +1,62 @@
 {
   "name": "@outfitter/fieldguides",
   "version": "0.1.0",
-  "description": "Comprehensive coding guidelines, standards, and best practices for Outfitter projects",
+  "description": "Living documentation system that equips AI agents with consistent development practices",
   "type": "module",
+  "main": "./src/index.ts",
   "files": [
+    "src/",
+    "content/",
+    "docs/",
+    "scripts/",
     "*.md",
-    "conventions/",
-    "guides/",
-    "operations/",
-    "patterns/",
-    "references/",
-    "standards/",
-    "templates/",
-    "docs/"
+    "!node_modules/"
   ],
   "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "prebuild": "pnpm run clean",
+    "clean": "rm -f scripts/*.js scripts/*.js.map",
+    "lint": "pnpm run lint:md && pnpm run lint:frontmatter",
+    "lint:md": "markdownlint-cli2 \"**/*.md\" \"!node_modules/**\" \"!.pnpm/**\"",
+    "lint:frontmatter": "node scripts/validate-frontmatter.js",
+    "lint:fix": "pnpm run lint:md:fix",
+    "lint:md:fix": "markdownlint-cli2 \"**/*.md\" \"!node_modules/**\" \"!.pnpm/**\" --fix",
+    "format": "prettier --check \"**/*.md\"",
+    "format:fix": "prettier --write \"**/*.md\"",
+    "check": "pnpm run lint",
+    "ci": "pnpm run check",
     "test": "echo 'No tests for documentation package'",
-    "lint": "markdownlint-cli2 '**/*.md'",
-    "format": "prettier --check '**/*.md'",
-    "format:fix": "prettier --write '**/*.md'"
+    "prepare": "pnpm run build",
+    "postinstall": "pnpm run build"
   },
   "devDependencies": {
+    "@types/node": "^20.0.0",
+    "glob": "^11.0.2",
+    "gray-matter": "^4.0.3",
     "markdownlint-cli2": "^0.15.0",
-    "prettier": "^3.5.3"
+    "prettier": "^3.5.3",
+    "typescript": "^5.3.3"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
   },
   "keywords": [
     "outfitter",
+    "fieldguides",
+    "documentation",
+    "ai-agents",
+    "development-standards",
+    "coding-standards",
     "guidelines",
     "standards",
     "best-practices",
-    "coding-standards",
-    "documentation",
     "typescript",
     "react",
     "testing"
   ],
-  "author": "Matt Galligan",
+  "author": "Matt Galligan <mg@maybegoods.com>",
   "license": "MIT",
   "repository": {
     "type": "git",

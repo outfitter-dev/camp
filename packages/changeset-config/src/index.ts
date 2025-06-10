@@ -12,7 +12,11 @@ export interface ChangesetInitOptions {
 }
 
 export function initChangesets(options: ChangesetInitOptions = {}): void {
-  const { cwd = process.cwd(), access = 'public', baseBranch = 'main' } = options;
+  const {
+    cwd = process.cwd(),
+    access = 'public',
+    baseBranch = 'main',
+  } = options;
 
   try {
     // Create .changeset directory
@@ -27,7 +31,9 @@ export function initChangesets(options: ChangesetInitOptions = {}): void {
 
     if (!existsSync(configTarget)) {
       // Read and modify config based on options
-      const config = JSON.parse(require('fs').readFileSync(configSource, 'utf8'));
+      const config = JSON.parse(
+        require('fs').readFileSync(configSource, 'utf8')
+      );
       config.access = access;
       config.baseBranch = baseBranch;
 

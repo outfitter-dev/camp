@@ -1,6 +1,7 @@
 # @outfitter/cli
 
-> Command-line tool for managing development standards, patterns, and project setup
+> Command-line tool for managing development standards, patterns, and project
+> setup
 
 ## Installation
 
@@ -39,8 +40,9 @@ outfitter init --with-claude      # Include CLAUDE.md for AI assistance
 ```
 
 **Available presets:**
+
 - `nextjs` - Next.js full-stack applications
-- `react` - React single-page applications  
+- `react` - React single-page applications
 - `node` - Node.js backend services
 - `minimal` - Just TypeScript standards
 
@@ -136,11 +138,7 @@ outfitter pack import frontend-standard.json
 {
   "name": "Frontend Standard",
   "version": "1.0.0",
-  "supplies": [
-    "typescript-standards",
-    "react-patterns",
-    "testing-standards"
-  ],
+  "supplies": ["typescript-standards", "react-patterns", "testing-standards"],
   "created": "2024-01-20T10:30:00Z"
 }
 ```
@@ -148,18 +146,21 @@ outfitter pack import frontend-standard.json
 ## Available Supplies
 
 ### Standards
+
 - `typescript-standards` - Core TypeScript patterns and conventions
-- `testing-standards` - Comprehensive testing methodology  
+- `testing-standards` - Comprehensive testing methodology
 - `security-standards` - Security baseline and best practices
 - `documentation-standards` - Clear documentation guidelines
 
 ### Patterns
+
 - `react-patterns` - React component and hook patterns
 - `nextjs-patterns` - Next.js specific patterns
 - `typescript-error-handling` - Error handling patterns
 - `performance-patterns` - Performance optimization patterns
 
 ### Guides
+
 - `react-hook-form` - Form handling with React Hook Form
 - `react-query` - Data fetching with React Query
 - `zustand-guide` - State management with Zustand
@@ -168,13 +169,15 @@ outfitter pack import frontend-standard.json
 
 ## Integration with AI Assistants
 
-Use the `--with-claude` flag during initialization to create a `CLAUDE.md` file that references your installed supplies:
+Use the `--with-claude` flag during initialization to create a `CLAUDE.md` file
+that references your installed supplies:
 
 ```bash
 outfitter init --preset react --with-claude
 ```
 
-This creates a CLAUDE.md that helps AI assistants understand your project's standards and patterns.
+This creates a CLAUDE.md that helps AI assistants understand your project's
+standards and patterns.
 
 ## Development
 

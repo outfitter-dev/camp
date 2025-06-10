@@ -1,0 +1,4 @@
+- Decisions: `docs/project/decisions`
+  - Filename format: `NNN-<title>.md`
+- Proposals: `docs/project/proposals`
+  - Filename format: `YYYY-MM-DD-<title>.md`

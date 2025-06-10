@@ -31,8 +31,11 @@ export const ErrorCategory = {
 /**
  * Check if an error code belongs to a category
  */
-export function isErrorInCategory(code: ErrorCode, category: keyof typeof ErrorCategory): boolean {
-  return (ErrorCategory[category] as readonly ErrorCode[]).includes(code);
+export function isErrorInCategory(
+  code: ErrorCode,
+  category: keyof typeof ErrorCategory
+): boolean {
+  return (ErrorCategory[category] as ReadonlyArray<ErrorCode>).includes(code);
 }
 
 /**
@@ -124,7 +127,9 @@ export function tryMakeError(
 
     if (
       details !== undefined &&
-      (typeof details !== 'object' || details === null || Array.isArray(details))
+      (typeof details !== 'object' ||
+        details === null ||
+        Array.isArray(details))
     ) {
       return { success: false, error: 'Error details must be a plain object' };
     }
@@ -144,7 +149,10 @@ export function tryMakeError(
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error in tryMakeError',
+      error:
+        error instanceof Error
+          ? error.message
+          : 'Unknown error in tryMakeError',
     };
   }
 }

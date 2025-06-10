@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
-import { AppError, ErrorCode, makeError } from './error';
-import { Result, success, failure } from './result';
+import { type AppError, ErrorCode, makeError } from './error';
+import { type Result, success, failure } from './result';
 
 /**
  * Create a validated environment configuration from a Zod schema
@@ -25,16 +25,23 @@ export function createEnvSchema<T extends z.ZodRawShape>(
             received: 'received' in issue ? issue.received : undefined,
           })),
           missingVariables: error.issues
-            .filter(issue => issue.code === 'invalid_type' && issue.received === 'undefined')
+            .filter(
+              issue =>
+                issue.code === 'invalid_type' && issue.received === 'undefined'
+            )
             .map(issue => issue.path.join('.')),
         })
       );
     }
 
     return failure(
-      makeError(ErrorCode.INTERNAL_ERROR, 'Unexpected error during environment validation', {
-        cause: error,
-      })
+      makeError(
+        ErrorCode.INTERNAL_ERROR,
+        'Unexpected error during environment validation',
+        {
+          cause: error,
+        }
+      )
     );
   }
 }
@@ -43,7 +50,9 @@ export function createEnvSchema<T extends z.ZodRawShape>(
  * Common environment variable schemas for reuse
  */
 export const CommonEnvSchemas = {
-  NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
+  NODE_ENV: z
+    .enum(['development', 'production', 'test'])
+    .default('development'),
   PORT: z.coerce.number().min(1).max(65535).default(3000),
   DATABASE_URL: z.string().url(),
   API_KEY: z.string().min(1),
@@ -57,7 +66,9 @@ export const CommonEnvSchemas = {
 /**
  * Type-safe environment configuration for Next.js applications
  */
-export function createNextEnvSchema<T extends z.ZodRawShape>(additionalSchema: T = {} as T) {
+export function createNextEnvSchema<T extends z.ZodRawShape>(
+  additionalSchema: T = {} as T
+) {
   return createEnvSchema({
     NODE_ENV: CommonEnvSchemas.NODE_ENV,
     PORT: CommonEnvSchemas.PORT,
@@ -70,7 +81,9 @@ export function createNextEnvSchema<T extends z.ZodRawShape>(additionalSchema: T
 /**
  * Type-safe environment configuration for Node.js applications
  */
-export function createNodeEnvSchema<T extends z.ZodRawShape>(additionalSchema: T = {} as T) {
+export function createNodeEnvSchema<T extends z.ZodRawShape>(
+  additionalSchema: T = {} as T
+) {
   return createEnvSchema({
     NODE_ENV: CommonEnvSchemas.NODE_ENV,
     PORT: CommonEnvSchemas.PORT,
@@ -99,15 +112,19 @@ export function parseEnvVar<T>(
   } catch (error) {
     if (error instanceof z.ZodError) {
       return failure(
-        makeError(ErrorCode.VALIDATION_ERROR, `Invalid environment variable: ${name}`, {
-          variable: name,
-          value: value,
-          issues: error.issues.map(issue => ({
-            message: issue.message,
-            code: issue.code,
-            received: 'received' in issue ? issue.received : undefined,
-          })),
-        })
+        makeError(
+          ErrorCode.VALIDATION_ERROR,
+          `Invalid environment variable: ${name}`,
+          {
+            variable: name,
+            value: value,
+            issues: error.issues.map(issue => ({
+              message: issue.message,
+              code: issue.code,
+              received: 'received' in issue ? issue.received : undefined,
+            })),
+          }
+        )
       );
     }
 
@@ -125,9 +142,9 @@ export function parseEnvVar<T>(
  * Check if all required environment variables are set
  */
 export function validateRequiredEnvVars(
-  ...variables: string[]
+  ...variables: Array<string>
 ): Result<Record<string, string>, AppError> {
-  const missing: string[] = [];
+  const missing: Array<string> = [];
   const values: Record<string, string> = {};
 
   for (const variable of variables) {

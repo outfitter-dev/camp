@@ -2,9 +2,12 @@ import { execa } from 'execa';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import pc from 'picocolors';
-import { Result, success, failure } from '@outfitter/typescript-utils';
+import { type Result, success, failure } from '@outfitter/typescript-utils';
 import { initHusky, addPrepareScript } from '@outfitter/husky-config';
-import { initChangesets, addChangesetScripts } from '@outfitter/changeset-config';
+import {
+  initChangesets,
+  addChangesetScripts,
+} from '@outfitter/changeset-config';
 
 interface InitOptions {
   force?: boolean;
@@ -31,7 +34,9 @@ function isPackageJson(value: unknown): value is PackageJson {
   );
 }
 
-export async function init(options: InitOptions = {}): Promise<Result<void, Error>> {
+export async function init(
+  options: InitOptions = {}
+): Promise<Result<void, Error>> {
   console.log(pc.cyan('🎒 Initializing Outfitter Packlist...'));
 
   const cwd = process.cwd();
@@ -41,7 +46,9 @@ export async function init(options: InitOptions = {}): Promise<Result<void, Erro
   const packageJsonResult = await readPackageJson(packageJsonPath);
   if (!packageJsonResult.success) {
     console.error(
-      pc.red('❌ No package.json found. Please run this command in your project root.')
+      pc.red(
+        '❌ No package.json found. Please run this command in your project root.'
+      )
     );
     return failure(packageJsonResult.error);
   }
@@ -53,8 +60,8 @@ export async function init(options: InitOptions = {}): Promise<Result<void, Erro
   console.log(pc.gray(`📦 Using ${packageManager}`));
 
   // Dependencies to install
-  const dependencies: string[] = [];
-  const devDependencies: string[] = [];
+  const dependencies: Array<string> = [];
+  const devDependencies: Array<string> = [];
 
   // Add configurations based on options
   if (options.eslint !== false) {
@@ -97,14 +104,22 @@ export async function init(options: InitOptions = {}): Promise<Result<void, Erro
     console.log(pc.cyan('📦 Installing dependencies...'));
 
     if (dependencies.length > 0) {
-      const installResult = await installDependencies(packageManager, dependencies, false);
+      const installResult = await installDependencies(
+        packageManager,
+        dependencies,
+        false
+      );
       if (!installResult.success) {
         return failure(installResult.error);
       }
     }
 
     if (devDependencies.length > 0) {
-      const installResult = await installDependencies(packageManager, devDependencies, true);
+      const installResult = await installDependencies(
+        packageManager,
+        devDependencies,
+        true
+      );
       if (!installResult.success) {
         return failure(installResult.error);
       }
@@ -184,7 +199,9 @@ export async function init(options: InitOptions = {}): Promise<Result<void, Erro
   return success(undefined);
 }
 
-async function readPackageJson(path: string): Promise<Result<PackageJson, Error>> {
+async function readPackageJson(
+  path: string
+): Promise<Result<PackageJson, Error>> {
   try {
     await fs.access(path);
     const content = await fs.readFile(path, 'utf8');
@@ -239,7 +256,7 @@ async function detectPackageManager(): Promise<string> {
 
 async function installDependencies(
   packageManager: string,
-  deps: readonly string[],
+  deps: ReadonlyArray<string>,
   dev: boolean
 ): Promise<Result<void, Error>> {
   const args = dev ? ['add', '-D'] : ['add'];
@@ -272,7 +289,9 @@ async function createEslintConfig(
   if (!force) {
     try {
       await fs.access(eslintConfigPath);
-      console.log(pc.yellow('⚠️  .eslintrc.js already exists. Use --force to overwrite.'));
+      console.log(
+        pc.yellow('⚠️  .eslintrc.js already exists. Use --force to overwrite.')
+      );
       return success(undefined);
     } catch {
       // File doesn't exist, continue
@@ -299,13 +318,18 @@ async function createEslintConfig(
   }
 }
 
-async function createTsConfig(projectRoot: string, force?: boolean): Promise<Result<void, Error>> {
+async function createTsConfig(
+  projectRoot: string,
+  force?: boolean
+): Promise<Result<void, Error>> {
   const tsconfigPath = path.join(projectRoot, 'tsconfig.json');
 
   if (!force) {
     try {
       await fs.access(tsconfigPath);
-      console.log(pc.yellow('⚠️  tsconfig.json already exists. Use --force to overwrite.'));
+      console.log(
+        pc.yellow('⚠️  tsconfig.json already exists. Use --force to overwrite.')
+      );
       return success(undefined);
     } catch {
       // File doesn't exist, continue
@@ -345,7 +369,9 @@ async function createLintStagedConfig(
     try {
       await fs.access(configPath);
       console.log(
-        pc.yellow('⚠️  lint-staged.config.mjs already exists. Use --force to overwrite.')
+        pc.yellow(
+          '⚠️  lint-staged.config.mjs already exists. Use --force to overwrite.'
+        )
       );
       return success(undefined);
     } catch {
@@ -380,7 +406,11 @@ async function createCommitlintConfig(
   if (!force) {
     try {
       await fs.access(configPath);
-      console.log(pc.yellow('⚠️  commitlint.config.mjs already exists. Use --force to overwrite.'));
+      console.log(
+        pc.yellow(
+          '⚠️  commitlint.config.mjs already exists. Use --force to overwrite.'
+        )
+      );
       return success(undefined);
     } catch {
       // File doesn't exist, continue

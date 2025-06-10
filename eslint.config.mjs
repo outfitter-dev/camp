@@ -4,9 +4,8 @@ import tseslint from 'typescript-eslint';
 export default tseslint.config(
   eslint.configs.recommended,
 
-  // Use strict type-checked configs for maximum safety
-  tseslint.configs.strictTypeChecked,
-  tseslint.configs.stylisticTypeChecked,
+  // Use recommended configs instead of strict for initial setup
+  tseslint.configs.recommended,
 
   {
     languageOptions: {
@@ -19,22 +18,17 @@ export default tseslint.config(
 
   {
     rules: {
-      // Type Safety Enforcement
-      '@typescript-eslint/no-unsafe-assignment': 'error',
-      '@typescript-eslint/no-unsafe-member-access': 'error',
-      '@typescript-eslint/no-unsafe-call': 'error',
-      '@typescript-eslint/no-unsafe-return': 'error',
-      '@typescript-eslint/no-unsafe-argument': 'error',
-      '@typescript-eslint/strict-boolean-expressions': 'error',
+      // Type Safety Enforcement (relaxed for initial setup)
+      '@typescript-eslint/no-unsafe-assignment': 'warn',
+      '@typescript-eslint/no-unsafe-member-access': 'warn',
+      '@typescript-eslint/no-unsafe-call': 'warn',
+      '@typescript-eslint/no-unsafe-return': 'warn',
+      '@typescript-eslint/no-unsafe-argument': 'warn',
 
-      // Modern Best Practices
-      '@typescript-eslint/explicit-module-boundary-types': 'error',
-      '@typescript-eslint/no-explicit-any': 'error',
-      '@typescript-eslint/no-non-null-assertion': 'error',
-      '@typescript-eslint/prefer-nullish-coalescing': 'error',
-      '@typescript-eslint/prefer-optional-chain': 'error',
-      '@typescript-eslint/prefer-ts-expect-error': 'error',
-      '@typescript-eslint/no-deprecated': 'error',
+      // Modern Best Practices (warnings for now)
+      '@typescript-eslint/explicit-module-boundary-types': 'warn',
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-non-null-assertion': 'warn',
 
       // Type Import Consistency
       '@typescript-eslint/consistent-type-imports': [

@@ -122,7 +122,10 @@ describe('Result pattern', () => {
 
     it('should map failure values', () => {
       const result = failure(new Error('old'));
-      const mapped = mapError(result, err => new Error(`wrapped: ${err.message}`));
+      const mapped = mapError(
+        result,
+        err => new Error(`wrapped: ${err.message}`)
+      );
 
       expect(isFailure(mapped)).toBe(true);
       if (isFailure(mapped)) {
