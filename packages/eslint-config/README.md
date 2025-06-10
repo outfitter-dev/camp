@@ -83,47 +83,13 @@ export default [
 
 ## Migration Guide
 
-### From Legacy to Flat Config
-
-1. Rename `.eslintrc.*` to `eslint.config.mjs`
-2. Convert the configuration:
-
-```javascript
-// Before (.eslintrc.js)
-module.exports = {
-  extends: ['@outfitter/eslint-config/legacy'],
-  rules: {
-    'no-console': 'warn'
-  }
-};
-
-// After (eslint.config.mjs)
-import outfitterConfig from '@outfitter/eslint-config';
-
-export default [
-  ...outfitterConfig,
-  {
-    rules: {
-      'no-console': 'warn'
-    }
-  }
-];
-```
+For detailed instructions on migrating from legacy ESLint configuration to flat config, see the [ESLint Migration Guide](../../docs/migration/legacy-to-flat-config.md).
 
 ## Development
 
 This package is part of the [@outfitter/camp](https://github.com/outfitter-dev/camp) monorepo.
 
-```bash
-# Install dependencies
-pnpm install
-
-# Build the package
-pnpm build
-
-# Type check
-pnpm type-check
-```
+See the [Development Guide](../../docs/contributing/development.md) for instructions on building, testing, and contributing to this package.
 
 ## License
 

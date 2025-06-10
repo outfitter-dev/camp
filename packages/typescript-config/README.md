@@ -137,36 +137,13 @@ Override any setting in your local `tsconfig.json`:
 
 ## Migration Guide
 
-### From Loose to Strict
-
-When migrating from a less strict configuration:
-
-1. **Start with `strict: true`** and fix errors incrementally
-2. **Enable one check at a time** if needed:
-   ```json
-   {
-     "extends": "@outfitter/typescript-config/base",
-     "compilerOptions": {
-       // Temporarily disable while migrating
-       "noUncheckedIndexedAccess": false,
-       "exactOptionalPropertyTypes": false
-     }
-   }
-   ```
-3. **Fix the underlying issues** rather than suppressing errors
-4. **Re-enable all checks** once migration is complete
+For detailed instructions on migrating from a loose TypeScript configuration to strict settings, see the [TypeScript Migration Guide](../../docs/migration/loose-to-strict-typescript.md).
 
 ## Development
 
 This package is part of the [@outfitter/camp](https://github.com/outfitter-dev/camp) monorepo.
 
-```bash
-# Install dependencies
-pnpm install
-
-# Type check
-pnpm type-check
-```
+See the [Development Guide](../../docs/contributing/development.md) for instructions on building, testing, and contributing to this package.
 
 ## License
 

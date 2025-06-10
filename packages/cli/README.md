@@ -181,23 +181,9 @@ standards and patterns.
 
 ## Development
 
-```bash
-# Clone the repo
-git clone https://github.com/outfitter-dev/cli
-cd cli
+This package is part of the [@outfitter/camp](https://github.com/outfitter-dev/camp) monorepo.
 
-# Install dependencies
-pnpm install
-
-# Run in development
-pnpm dev
-
-# Build
-pnpm build
-
-# Run tests
-pnpm test
-```
+See the [Development Guide](../../docs/contributing/development.md) for instructions on building, testing, and contributing to this package.
 
 ## Roadmap
 

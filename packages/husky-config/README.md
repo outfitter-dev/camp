@@ -123,16 +123,7 @@ git commit --no-verify -m "emergency: bypass hooks"
 
 This package is part of the [@outfitter/camp](https://github.com/outfitter-dev/camp) monorepo.
 
-```bash
-# Install dependencies
-pnpm install
-
-# Build the package
-pnpm build
-
-# Type check
-pnpm typecheck
-```
+See the [Development Guide](../../docs/contributing/development.md) for instructions on building, testing, and contributing to this package.
 
 ## License
 

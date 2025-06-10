@@ -127,19 +127,9 @@ Packlist creates a `.packlist.json` file to track your project's configuration:
 
 This package is part of the [@outfitter/camp](https://github.com/outfitter-dev/camp) monorepo.
 
-```bash
-# Install dependencies
-pnpm install
+See the [Development Guide](../../docs/contributing/development.md) for instructions on building, testing, and contributing to this package.
 
-# Build the package
-pnpm build
-
-# Run tests
-pnpm test
-
-# Type check
-pnpm type-check
-```
+For architectural details about how this package relates to `@outfitter/cli`, see [CLI and Packlist Architecture](../../docs/architecture/cli-and-packlist.md).
 
 ## License
 
