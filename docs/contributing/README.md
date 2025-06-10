@@ -1,6 +1,6 @@
-# Contributing to Camp
+# Contributing to the Outfitter Monorepo
 
-Welcome to the Camp monorepo contributing guide!
+Welcome to the Outfitter monorepo contributing guide!
 
 ## Guides
 
@@ -18,8 +18,8 @@ Welcome to the Camp monorepo contributing guide!
 1. **Clone the repository**:
 
    ```bash
-   git clone https://github.com/outfitter-dev/camp
-   cd camp
+   git clone https://github.com/outfitter-dev/monorepo
+   cd monorepo
    ```
 
 2. **Install dependencies**:

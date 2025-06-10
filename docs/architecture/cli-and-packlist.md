@@ -6,10 +6,10 @@ configuration management system.
 
 ## Overview
 
-The Camp monorepo contains two complementary packages for configuration
+The Outfitter monorepo contains two complementary packages for configuration
 management:
 
-- **`@outfitter/cli`**: User-facing command-line interface (the `camp` command)
+- **`@outfitter/cli`**: User-facing command-line interface (the `outfitter` command)
 - **`@outfitter/packlist`**: Core configuration engine and programmatic API
 
 ## Architecture Design
@@ -71,12 +71,12 @@ management:
 
 ## How They Work Together
 
-### Example: `camp init` Command
+### Example: `outfitter packlist init` Command
 
 ```typescript
 // CLI Layer (packages/cli/src/commands/init.ts)
 import { init } from '@outfitter/packlist';
-import { isSuccess } from '@outfitter/typescript-utils';
+import { isSuccess } from '@outfitter/contracts';
 
 export async function initCommand(options: InitOptions) {
   // 1. CLI handles user interaction
@@ -265,5 +265,5 @@ The separation between CLI and Packlist provides:
 4. **Flexibility**: CLI can be replaced without changing core logic
 5. **Type safety**: Result pattern ensures error handling
 
-This architecture allows the Camp monorepo to provide both an excellent user
+This architecture allows the Outfitter monorepo to provide both an excellent user
 experience through the CLI and a robust programmatic API through Packlist.

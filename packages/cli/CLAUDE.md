@@ -7,7 +7,7 @@ code in this repository.
 
 This is the `@outfitter/cli` package - a command-line tool for managing
 Outfitter supplies (development standards, patterns, and guides) in projects.
-It's part of the `@outfitter/camp` monorepo and provides commands to initialize
+It's part of the `@outfitter/monorepo` and provides commands to initialize
 projects, add/update supplies, and manage supply configurations (packlists).
 
 ## Key Commands

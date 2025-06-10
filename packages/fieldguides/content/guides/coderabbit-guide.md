@@ -28,14 +28,14 @@ different project types with structured output for AI implementation.
 # - Small team or solo → Less noise preferred
 # - Mature codebase → Good practices established
 # - Open source → Community-friendly approach
-profile: "chill"
+profile: "chill" # Preferred for most projects
 
 # Use "assertive" profile when:
 # - Security-critical apps → Every issue matters
 # - Training juniors → Detailed feedback helps
 # - AI agent workflows → Structured output needed
 # - Large teams → Consistency enforcement critical
-profile: "assertive"
+profile: "assertive" # Comprehensive feedback mode
 ```
 
 ### Tool Selection Strategy

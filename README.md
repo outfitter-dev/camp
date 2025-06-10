@@ -1,4 +1,4 @@
-# @outfitter/camp
+# @outfitter/monorepo
 
 Core shared configurations and utilities for Outfitter projects.
 
@@ -10,7 +10,7 @@ This monorepo contains the following packages:
 
 - **[@outfitter/packlist](./packages/packlist)** - Unified development
   configuration manager
-- **[@outfitter/typescript-utils](./packages/typescript-utils)** - Type-safe
+- **[@outfitter/contracts](./packages/contracts/typescript)** - Type-safe
   utility functions and error handling
 
 ### Development Configurations
