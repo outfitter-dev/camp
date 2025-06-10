@@ -283,7 +283,7 @@ The `@outfitter/contracts/zod` sub-path has a peer dependency on `zod`.
 ## Development
 
 This package is part of the
-[@outfitter/camp](https://github.com/outfitter-dev/camp) monorepo.
+[@outfitter/monorepo](https://github.com/outfitter-dev/monorepo) monorepo.
 
 ```bash
 # Install dependencies

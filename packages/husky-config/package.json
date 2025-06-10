@@ -34,13 +34,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/outfitter-dev/camp.git",
+    "url": "https://github.com/outfitter-dev/monorepo.git",
     "directory": "packages/husky-config"
   },
   "bugs": {
-    "url": "https://github.com/outfitter-dev/camp/issues"
+    "url": "https://github.com/outfitter-dev/monorepo/issues"
   },
-  "homepage": "https://github.com/outfitter-dev/camp/tree/main/packages/husky-config#readme",
+  "homepage": "https://github.com/outfitter-dev/monorepo/tree/main/packages/husky-config#readme",
   "publishConfig": {
     "access": "public"
   }

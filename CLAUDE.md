@@ -7,7 +7,7 @@ About you: @.agents/prompts/mode-max-eng.md
 
 ## Repository Overview
 
-This is the `@outfitter/camp` monorepo - a collection of shared configurations
+This is the `@outfitter/monorepo` - a collection of shared configurations
 and utilities for Outfitter projects. It uses pnpm workspaces and contains 8
 packages that provide development tools, configurations, and coding standards.
 
@@ -95,7 +95,7 @@ The monorepo follows a clear separation of concerns:
    - `changeset-config`: Release management configuration
 
 3. **Tools & Documentation**:
-   - `cli`: Command-line tool that consumes packlist as a library
+   - `cli`: Command-line tool (globally installable as `outfitter`) that consumes packlist as a library
    - `fieldguides`: Living documentation system with content in `content/`
      subdirectory
 

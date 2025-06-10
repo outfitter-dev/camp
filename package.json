@@ -1,5 +1,5 @@
 {
-  "name": "@outfitter/camp",
+  "name": "@outfitter/monorepo",
   "version": "0.0.0",
   "description": "Core shared configurations and utilities for Outfitter projects",
   "private": true,
@@ -45,10 +45,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/outfitter-dev/camp.git"
+    "url": "https://github.com/outfitter-dev/monorepo.git"
   },
-  "homepage": "https://github.com/outfitter-dev/camp#readme",
+  "homepage": "https://github.com/outfitter-dev/monorepo#readme",
   "bugs": {
-    "url": "https://github.com/outfitter-dev/camp/issues"
+    "url": "https://github.com/outfitter-dev/monorepo/issues"
   }
 }

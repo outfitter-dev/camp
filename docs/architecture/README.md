@@ -1,6 +1,6 @@
 # Architecture Documentation
 
-This directory contains architectural documentation for the Camp monorepo.
+This directory contains architectural documentation for the Outfitter monorepo.
 
 ## Contents
 

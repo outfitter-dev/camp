@@ -2,12 +2,12 @@
 
 **Status**: Accepted  
 **Date**: 2025-01-06  
-**Deciders**: Camp maintainers
+**Deciders**: Outfitter monorepo maintainers
 
 ## Context
 
 The `@outfitter/cli` currently resides in `packages/cli/` and provides the
-`camp` command for managing development configurations. As the monorepo evolves,
+`outfitter` command for managing development configurations. As the monorepo evolves,
 we need to decide whether it should remain a package or move to an `apps/`
 directory.
 

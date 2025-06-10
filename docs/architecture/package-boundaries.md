@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document defines how packages in the Camp monorepo are organized, their
+This document defines how packages in the Outfitter monorepo are organized, their
 responsibilities, and their interaction patterns.
 
 ## Package Categories
@@ -31,7 +31,7 @@ responsibilities, and their interaction patterns.
 
 **Examples**:
 
-- `@outfitter/typescript-utils`
+- `@outfitter/contracts`
 - `@outfitter/packlist`
 
 **Characteristics**:

@@ -1,6 +1,6 @@
 # Development Guide
 
-This guide covers development workflows for the Camp monorepo and all its
+This guide covers development workflows for the Outfitter monorepo and all its
 packages.
 
 ## Prerequisites
@@ -13,8 +13,8 @@ packages.
 
 ```bash
 # Clone the repository
-git clone https://github.com/outfitter-dev/camp
-cd camp
+git clone https://github.com/outfitter-dev/monorepo
+cd monorepo
 
 # Install dependencies
 pnpm install
@@ -34,7 +34,7 @@ Due to TypeScript project references, packages must build in order:
 pnpm build
 
 # Build specific package
-pnpm build --filter @outfitter/typescript-utils
+pnpm build --filter @outfitter/contracts
 
 # Build with dependencies
 pnpm build --filter @outfitter/cli...
@@ -42,8 +42,8 @@ pnpm build --filter @outfitter/cli...
 
 **Build Order**:
 
-1. `typescript-utils` (no dependencies)
-2. All other packages (may depend on typescript-utils)
+1. `contracts` (no dependencies)
+2. All other packages (may depend on contracts)
 
 ### 2. Testing
 

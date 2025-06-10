@@ -1,8 +1,8 @@
-# Camp Monorepo Architecture
+# Outfitter Monorepo Architecture
 
 ## Overview
 
-Camp is structured as a monorepo containing shared development configurations,
+The Outfitter monorepo is structured as a monorepo containing shared development configurations,
 utilities, and tools for Outfitter projects. This document outlines the
 architectural decisions behind this structure.
 
@@ -10,15 +10,15 @@ architectural decisions behind this structure.
 
 ### 1. Zero-Dependency Core
 
-The `@outfitter/typescript-utils` package maintains zero runtime dependencies,
+The `@outfitter/contracts` package maintains zero runtime dependencies,
 serving as the foundational error handling layer for all other packages.
 
 ### 2. Clear Build Order
 
 TypeScript project references enforce a clear dependency graph:
 
-- `typescript-utils` builds first (no dependencies)
-- All other packages may depend on `typescript-utils`
+- `contracts` builds first (no dependencies)
+- All other packages may depend on `contracts`
 - Circular dependencies are prohibited
 
 ### 3. Workspace Protocol
@@ -35,7 +35,7 @@ All internal dependencies use `workspace:*` protocol to ensure:
 
 Located in `packages/`, these provide shared functionality:
 
-- **typescript-utils**: Result pattern and error handling
+- **contracts**: Result pattern and error handling
 - **packlist**: Configuration orchestration
 - **eslint-config**: Shared linting rules
 - **typescript-config**: Base TypeScript configurations
@@ -44,7 +44,7 @@ Located in `packages/`, these provide shared functionality:
 
 Command-line tools and utilities:
 
-- **cli**: The `camp` command for managing configurations
+- **cli**: The `outfitter` command for managing configurations
 - **husky-config**: Git hooks setup
 
 ### Documentation Package

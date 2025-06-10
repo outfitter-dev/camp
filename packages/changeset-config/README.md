@@ -70,7 +70,7 @@ pnpm changeset:publish
 ## Development
 
 This package is part of the
-[@outfitter/camp](https://github.com/outfitter-dev/camp) monorepo.
+[@outfitter/monorepo](https://github.com/outfitter-dev/monorepo) monorepo.
 
 See the [Development Guide](../../docs/contributing/development.md) for
 instructions on building, testing, and contributing to this package.
