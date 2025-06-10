@@ -58,7 +58,7 @@ pnpm test --run
 pnpm test --filter @outfitter/packlist
 
 # Run specific test file
-pnpm test packages/typescript-utils/src/__tests__/result.test.ts
+pnpm test packages/contracts/typescript/src/__tests__/result.test.ts
 ```
 
 ### 3. Linting and Formatting

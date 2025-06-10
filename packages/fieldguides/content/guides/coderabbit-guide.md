@@ -35,7 +35,7 @@ profile: "chill" # Preferred for most projects
 # - Training juniors → Detailed feedback helps
 # - AI agent workflows → Structured output needed
 # - Large teams → Consistency enforcement critical
-profile: "assertive"
+profile: "assertive" # Comprehensive feedback mode
 ```
 
 ### Tool Selection Strategy
