@@ -1,7 +1,9 @@
 ---
 slug: why-monorepo
 title: Why choose a monorepo architecture
-description: Deep dive into the reasoning and benefits of monorepo architecture for modern development teams.
+description:
+  Deep dive into the reasoning and benefits of monorepo architecture for modern
+  development teams.
 type: convention
 ---
 
@@ -17,12 +19,14 @@ Monorepos solve three fundamental problems in modern software development:
 ### 1. Coordination Overhead
 
 In multi-repo setups, making a change that spans multiple packages requires:
+
 - Multiple PRs across repositories
 - Careful coordination of merge order
 - Version bumping and dependency updates
 - Potential breaking changes between releases
 
 With a monorepo:
+
 - One atomic commit updates everything
 - Changes are tested together before merge
 - No version mismatches possible
@@ -31,12 +35,14 @@ With a monorepo:
 ### 2. Inconsistent Standards
 
 Multiple repositories naturally drift apart:
+
 - Different linting rules
 - Varying test frameworks
 - Inconsistent build processes
 - Divergent coding styles
 
 Monorepos enforce consistency:
+
 - Single source of configuration
 - Shared tooling and scripts
 - Unified CI/CD pipeline
@@ -45,12 +51,14 @@ Monorepos enforce consistency:
 ### 3. Knowledge Silos
 
 Separate repositories create barriers:
+
 - Developers specialize in "their" repo
 - Cross-team collaboration requires context switching
 - Shared patterns are discovered, not designed
 - Documentation lives in scattered locations
 
 Monorepos promote knowledge sharing:
+
 - All code is discoverable
 - Patterns emerge and propagate naturally
 - Single location for all documentation
@@ -63,12 +71,14 @@ Monorepos promote knowledge sharing:
 **Scenario**: Startup building a SaaS product with web app, mobile app, and API
 
 **Why monorepo works**:
+
 - Feature development touches all layers
 - Shared types ensure API contract safety
 - Design system components used everywhere
 - Quick pivots don't break version dependencies
 
 **Example structure**:
+
 ```
 apps/
   web/          # Next.js customer portal
@@ -86,6 +96,7 @@ packages/
 **Scenario**: Building internal developer platform with multiple tools
 
 **Why monorepo works**:
+
 - Tools share common abstractions
 - Configuration standards propagate instantly
 - Updates to core affect all tools atomically
@@ -99,6 +110,7 @@ fix immediately - no waiting for downstream updates.
 **Scenario**: Multiple services sharing authentication, logging, and monitoring
 
 **Why monorepo works**:
+
 - Shared libraries evolve with their consumers
 - Breaking changes are impossible to miss
 - Service boundaries remain clear
@@ -114,6 +126,7 @@ sharing code at build time.
 **Challenge**: External contributors need to understand entire repository
 
 **Why it's hard**:
+
 - Large codebases intimidate new contributors
 - CI runs everything, even for small changes
 - Permissions become all-or-nothing
@@ -128,6 +141,7 @@ contribution paths.
 (TypeScript)
 
 **Why it's hard**:
+
 - No shared tooling benefits
 - Different build systems fight each other
 - CI complexity explodes
@@ -141,6 +155,7 @@ or APIs.
 **Challenge**: Healthcare app with HIPAA-compliant services
 
 **Why it's hard**:
+
 - Audit requirements for entire repository
 - Access control needs are different
 - Compliance tools may scan everything
@@ -154,6 +169,7 @@ audit trails.
 ### Build Time Complexity
 
 Monorepos require sophisticated build orchestration:
+
 - Dependency graph analysis
 - Incremental builds
 - Remote caching
@@ -164,11 +180,13 @@ Monorepos require sophisticated build orchestration:
 ### Git Performance
 
 Large monorepos can strain Git:
+
 - Clone times increase
 - History becomes massive
 - Git operations slow down
 
 **Mitigations needed**:
+
 - Shallow clones
 - Git LFS for large files
 - Sparse checkouts
@@ -177,6 +195,7 @@ Large monorepos can strain Git:
 ### Mental Model Shift
 
 Teams must think differently:
+
 - "My code" becomes "our code"
 - Local changes can break distant packages
 - Testing burden increases
@@ -216,6 +235,7 @@ quarterly
 ### Start Small
 
 Begin with 2-3 closely related projects:
+
 - Prove the tooling works
 - Establish patterns
 - Build team confidence
@@ -224,6 +244,7 @@ Begin with 2-3 closely related projects:
 ### Invest in Tooling
 
 Budget significant time for:
+
 - Build system optimization
 - CI/CD pipeline setup
 - Developer scripts
@@ -232,6 +253,7 @@ Budget significant time for:
 ### Define Ownership
 
 Clear ownership prevents chaos:
+
 - CODEOWNERS files for each package
 - Team responsibilities documented
 - Review requirements defined
@@ -240,6 +262,7 @@ Clear ownership prevents chaos:
 ### Measure Success
 
 Track metrics that matter:
+
 - Time from commit to deploy
 - Cross-package refactoring time
 - Build cache hit rates
@@ -252,12 +275,14 @@ situations. The key is understanding whether your situation matches their
 strengths.
 
 The best monorepo is one where:
+
 - Developers barely notice it's a monorepo
 - Tooling handles all the complexity
 - Benefits clearly outweigh costs
 - Teams actively choose to add new projects
 
 The worst monorepo is one where:
+
 - Build times frustrate developers
 - Unrelated changes break your code
 - Deployment becomes a nightmare

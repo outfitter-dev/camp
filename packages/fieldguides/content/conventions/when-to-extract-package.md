@@ -1,7 +1,9 @@
 ---
 slug: when-to-extract-package
 title: When to extract code into a package
-description: Guidelines for identifying when code should be extracted into a standalone package in a monorepo.
+description:
+  Guidelines for identifying when code should be extracted into a standalone
+  package in a monorepo.
 type: convention
 ---
 
@@ -18,11 +20,13 @@ patterns for making these decisions.
 **Don't extract until you have three consumers**
 
 The most common mistake is premature extraction. Wait until:
+
 - Three different apps/packages need the same code
 - The duplication is causing actual maintenance burden
 - The shared API has stabilized through real usage
 
-**Example**: 
+**Example**:
+
 ```typescript
 // ❌ Premature extraction - only used in one place
 packages/
@@ -38,12 +42,14 @@ packages/
 **Extract when code represents a distinct domain**
 
 Good candidates:
+
 - **Authentication logic** - Clear boundaries, multiple consumers
 - **Data formatting utilities** - Pure functions, widely useful
 - **Design system components** - Visual consistency across apps
 - **API clients** - Centralized endpoint management
 
 Poor candidates:
+
 - **App-specific business logic** - Tightly coupled to one app
 - **One-off utilities** - Too specific to generalize
 - **Temporary abstractions** - Still evolving rapidly
@@ -53,6 +59,7 @@ Poor candidates:
 **Extract when version independence matters**
 
 Consider extraction when:
+
 - The code has its own semantic versioning needs
 - External projects might consume it
 - Breaking changes need careful management
@@ -66,12 +73,14 @@ apps and legacy systems that can't upgrade immediately.
 ### Pattern 1: UI Component Library
 
 **When to extract**:
+
 - ✅ Components used in 3+ applications
 - ✅ Design system established
 - ✅ Clear component API boundaries
 - ✅ Dedicated design/UX ownership
 
 **Structure**:
+
 ```
 packages/ui/
   src/
@@ -88,6 +97,7 @@ packages/ui/
 ```
 
 **Key indicators**:
+
 - Designers reference component names
 - "Can we use the same button as..." conversations
 - Copy-paste happening between apps
@@ -95,12 +105,14 @@ packages/ui/
 ### Pattern 2: Shared Business Logic
 
 **When to extract**:
+
 - ✅ Core calculations used everywhere
 - ✅ Domain rules that must be consistent
 - ✅ Logic has stabilized
 - ✅ Clear input/output contracts
 
 **Example**:
+
 ```typescript
 // packages/pricing/src/index.ts
 export function calculateDiscount(
@@ -113,6 +125,7 @@ export function calculateDiscount(
 ```
 
 **Key indicators**:
+
 - Business logic being duplicated
 - Fear of logic getting out of sync
 - Domain experts define the rules
@@ -120,12 +133,14 @@ export function calculateDiscount(
 ### Pattern 3: Infrastructure Utilities
 
 **When to extract**:
+
 - ✅ Multiple services need same infrastructure
 - ✅ Configuration complexity warrants abstraction
 - ✅ Team expertise can be centralized
 - ✅ Security/compliance requirements
 
 **Examples**:
+
 - Logging with correlation IDs
 - Metrics collection
 - Error tracking integration
@@ -134,12 +149,14 @@ export function calculateDiscount(
 ### Pattern 4: Type Definitions
 
 **When to extract**:
+
 - ✅ Types shared between frontend/backend
 - ✅ API contracts need enforcement
 - ✅ Multiple consumers need type safety
 - ✅ Types represent stable domain models
 
 **Structure**:
+
 ```typescript
 // packages/types/src/index.ts
 export interface User {
@@ -166,7 +183,7 @@ packages/
   utils/          # Bad: becomes a junk drawer
     strings.ts    # Random string functions
     dates.ts      # Random date functions
-    misc.ts       # ??? 
+    misc.ts       # ???
 ```
 
 ✅ **Do create focused packages**
@@ -183,6 +200,7 @@ packages/
 ❌ **Don't extract "just in case"**
 
 Signs of premature extraction:
+
 - "We might need this elsewhere someday"
 - Only one consumer exists
 - API changes with every use
@@ -223,6 +241,7 @@ Signs of premature extraction:
 ### Step 1: Identify Candidates
 
 Look for:
+
 - Code copied between projects
 - Imports reaching across app boundaries
 - "It would be nice if..." conversations
@@ -231,6 +250,7 @@ Look for:
 ### Step 2: Design the API
 
 Before extracting:
+
 - Document the intended API
 - Consider all current use cases
 - Plan for reasonable flexibility
@@ -272,6 +292,7 @@ cp ../other-package/vitest.config.ts .
 ### When to Merge Packages
 
 Consider merging when:
+
 - Packages always change together
 - Import cycles develop
 - Artificial boundaries create friction
@@ -280,6 +301,7 @@ Consider merging when:
 ### When to Split Packages
 
 Consider splitting when:
+
 - Package serves multiple unrelated purposes
 - Different parts have different dependencies
 - Teams want separate ownership
@@ -288,6 +310,7 @@ Consider splitting when:
 ### Version Management
 
 For extracted packages:
+
 - Follow semantic versioning strictly
 - Document breaking changes clearly
 - Consider supporting multiple major versions
@@ -312,18 +335,21 @@ If you answered "no" to any of these, reconsider extraction.
 ### Successful Extractions
 
 **Design System** → `@company/ui`
+
 - Started with 3 apps sharing components
 - Clear ownership by design team
 - Stable component APIs
 - Storybook documentation
 
 **API Client** → `@company/api-client`
+
 - All apps needed same endpoints
 - Type safety crucial
 - Version locked to API version
 - Generated from OpenAPI spec
 
 **Analytics** → `@company/analytics`
+
 - Multiple apps tracked events
 - Consistent event schemas needed
 - Privacy compliance centralized
@@ -332,18 +358,21 @@ If you answered "no" to any of these, reconsider extraction.
 ### Failed Extractions
 
 **"Common" Utils** → Deleted
+
 - Grab bag of unrelated functions
 - No clear ownership
 - Each app used different parts
 - Became a dumping ground
 
 **Super Form Component** → Split up
+
 - Tried to handle every form case
 - 50+ props
 - Impossible to maintain
 - Split into focused components
 
 **Business Logic "Core"** → Merged back
+
 - Premature extraction
 - Only one app actually used it
 - Slowed down development
@@ -355,11 +384,13 @@ Package extraction is a powerful tool for code organization, but it's not free.
 Every package adds complexity, maintenance burden, and cognitive overhead.
 
 Extract packages when:
+
 - Multiple consumers genuinely need shared code
 - Clear boundaries exist
 - The benefits outweigh the costs
 
 Keep code in apps when:
+
 - It's truly app-specific
 - Still evolving rapidly
 - Complexity would increase

@@ -1,22 +1,27 @@
 # ESLint: Legacy to Flat Config Migration
 
-This guide helps you migrate from ESLint's legacy configuration format to the new flat config format.
+This guide helps you migrate from ESLint's legacy configuration format to the
+new flat config format.
 
 ## Overview
 
-ESLint 9.0 introduced a new "flat config" format that replaces the traditional `.eslintrc.*` files with `eslint.config.js` (or `.mjs`). This new format is more explicit, powerful, and easier to understand.
+ESLint 9.0 introduced a new "flat config" format that replaces the traditional
+`.eslintrc.*` files with `eslint.config.js` (or `.mjs`). This new format is more
+explicit, powerful, and easier to understand.
 
 ## Key Differences
 
 ### File Names
 
 **Legacy**:
+
 - `.eslintrc.js`
 - `.eslintrc.json`
 - `.eslintrc.yml`
 - `.eslintrc`
 
 **Flat Config**:
+
 - `eslint.config.js`
 - `eslint.config.mjs` (recommended)
 - `eslint.config.cjs`
@@ -24,26 +29,28 @@ ESLint 9.0 introduced a new "flat config" format that replaces the traditional `
 ### Configuration Structure
 
 **Legacy** uses an object with specific properties:
+
 ```javascript
 module.exports = {
   env: { browser: true },
   extends: ['eslint:recommended'],
   parserOptions: { ecmaVersion: 2022 },
-  rules: { 'no-console': 'warn' }
+  rules: { 'no-console': 'warn' },
 };
 ```
 
 **Flat Config** uses an array of configuration objects:
+
 ```javascript
 export default [
   {
     files: ['**/*.js'],
     languageOptions: {
       ecmaVersion: 2022,
-      globals: { window: 'readonly' }
+      globals: { window: 'readonly' },
     },
-    rules: { 'no-console': 'warn' }
-  }
+    rules: { 'no-console': 'warn' },
+  },
 ];
 ```
 
@@ -59,25 +66,27 @@ mv .eslintrc.js eslint.config.mjs
 ### 2. Convert Basic Configuration
 
 **Legacy `.eslintrc.js`:**
+
 ```javascript
 module.exports = {
   env: {
     browser: true,
     es2022: true,
-    node: true
+    node: true,
   },
   parserOptions: {
     ecmaVersion: 2022,
-    sourceType: 'module'
+    sourceType: 'module',
   },
   rules: {
     'no-console': 'warn',
-    'no-unused-vars': 'error'
-  }
+    'no-unused-vars': 'error',
+  },
 };
 ```
 
 **Flat Config `eslint.config.mjs`:**
+
 ```javascript
 import globals from 'globals';
 
@@ -89,34 +98,36 @@ export default [
       globals: {
         ...globals.browser,
         ...globals.es2021,
-        ...globals.node
-      }
+        ...globals.node,
+      },
     },
     rules: {
       'no-console': 'warn',
-      'no-unused-vars': 'error'
-    }
-  }
+      'no-unused-vars': 'error',
+    },
+  },
 ];
 ```
 
 ### 3. Convert Extended Configurations
 
 **Legacy with `extends`:**
+
 ```javascript
 module.exports = {
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
-    '@outfitter/eslint-config/legacy'
+    '@outfitter/eslint-config/legacy',
   ],
   rules: {
-    'no-console': 'warn'
-  }
+    'no-console': 'warn',
+  },
 };
 ```
 
 **Flat Config with imports:**
+
 ```javascript
 import js from '@eslint/js';
 import typescript from '@typescript-eslint/eslint-plugin';
@@ -129,38 +140,37 @@ export default [
   {
     files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
-      parser: tsParser
+      parser: tsParser,
     },
     plugins: {
-      '@typescript-eslint': typescript
+      '@typescript-eslint': typescript,
     },
     rules: {
       ...typescript.configs.recommended.rules,
-      'no-console': 'warn'
-    }
-  }
+      'no-console': 'warn',
+    },
+  },
 ];
 ```
 
 ### 4. Convert Plugin Usage
 
 **Legacy:**
+
 ```javascript
 module.exports = {
   plugins: ['react', 'jsx-a11y'],
-  extends: [
-    'plugin:react/recommended',
-    'plugin:jsx-a11y/recommended'
-  ],
+  extends: ['plugin:react/recommended', 'plugin:jsx-a11y/recommended'],
   settings: {
     react: {
-      version: 'detect'
-    }
-  }
+      version: 'detect',
+    },
+  },
 };
 ```
 
 **Flat Config:**
+
 ```javascript
 import react from 'eslint-plugin-react';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
@@ -170,44 +180,46 @@ export default [
     files: ['**/*.jsx', '**/*.tsx'],
     plugins: {
       react,
-      'jsx-a11y': jsxA11y
+      'jsx-a11y': jsxA11y,
     },
     rules: {
       ...react.configs.recommended.rules,
-      ...jsxA11y.configs.recommended.rules
+      ...jsxA11y.configs.recommended.rules,
     },
     settings: {
       react: {
-        version: 'detect'
-      }
-    }
-  }
+        version: 'detect',
+      },
+    },
+  },
 ];
 ```
 
 ### 5. Convert Overrides
 
 **Legacy with overrides:**
+
 ```javascript
 module.exports = {
   rules: {
-    'no-console': 'error'
+    'no-console': 'error',
   },
   overrides: [
     {
       files: ['**/*.test.js'],
       env: {
-        jest: true
+        jest: true,
       },
       rules: {
-        'no-console': 'off'
-      }
-    }
-  ]
+        'no-console': 'off',
+      },
+    },
+  ],
 };
 ```
 
 **Flat Config (naturally handles overrides):**
+
 ```javascript
 import globals from 'globals';
 
@@ -215,27 +227,28 @@ export default [
   // Base config
   {
     rules: {
-      'no-console': 'error'
-    }
+      'no-console': 'error',
+    },
   },
   // Test files override
   {
     files: ['**/*.test.js'],
     languageOptions: {
       globals: {
-        ...globals.jest
-      }
+        ...globals.jest,
+      },
     },
     rules: {
-      'no-console': 'off'
-    }
-  }
+      'no-console': 'off',
+    },
+  },
 ];
 ```
 
 ### 6. Convert Ignore Patterns
 
 **Legacy `.eslintignore`:**
+
 ```
 node_modules/
 dist/
@@ -244,15 +257,11 @@ build/
 ```
 
 **Flat Config (in `eslint.config.mjs`):**
+
 ```javascript
 export default [
   {
-    ignores: [
-      'node_modules/**',
-      'dist/**',
-      'build/**',
-      '**/*.min.js'
-    ]
+    ignores: ['node_modules/**', 'dist/**', 'build/**', '**/*.min.js'],
   },
   // ... other configs
 ];
@@ -268,7 +277,7 @@ module.exports = {
   extends: ['@outfitter/eslint-config/legacy'],
   rules: {
     // Custom overrides
-  }
+  },
 };
 ```
 
@@ -283,8 +292,8 @@ export default [
   {
     rules: {
       // Custom overrides
-    }
-  }
+    },
+  },
 ];
 ```
 
@@ -314,12 +323,12 @@ In flat config, if you don't specify `files`, the config applies to all files:
 export default [
   // Applies to ALL files
   { rules: { 'no-console': 'warn' } },
-  
+
   // Only applies to TypeScript files
   {
     files: ['**/*.ts', '**/*.tsx'],
-    rules: { '@typescript-eslint/no-explicit-any': 'error' }
-  }
+    rules: { '@typescript-eslint/no-explicit-any': 'error' },
+  },
 ];
 ```
 
@@ -352,20 +361,23 @@ export default [{
 ## Testing Your Migration
 
 1. **Dry run** to see what would be linted:
+
    ```bash
    npx eslint . --debug
    ```
 
 2. **Check specific files**:
+
    ```bash
    npx eslint src/index.js --format=verbose
    ```
 
 3. **Compare with legacy** (if both configs exist):
+
    ```bash
    # Using legacy
    npx eslint . --config .eslintrc.old.js
-   
+
    # Using flat config
    npx eslint .
    ```

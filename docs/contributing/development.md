@@ -1,6 +1,7 @@
 # Development Guide
 
-This guide covers development workflows for the Camp monorepo and all its packages.
+This guide covers development workflows for the Camp monorepo and all its
+packages.
 
 ## Prerequisites
 
@@ -40,6 +41,7 @@ pnpm build --filter @outfitter/cli...
 ```
 
 **Build Order**:
+
 1. `typescript-utils` (no dependencies)
 2. All other packages (may depend on typescript-utils)
 
@@ -87,6 +89,7 @@ pnpm ci:local
 ```
 
 This runs:
+
 - `format:fix` - Auto-fix formatting
 - `lint` - ESLint checks
 - `lint:md` - Markdown linting
@@ -121,17 +124,20 @@ pnpm update <package> --latest
 ## Creating a New Package
 
 1. Create package directory:
+
    ```bash
    mkdir -p packages/new-package/src
    cd packages/new-package
    ```
 
 2. Initialize package:
+
    ```bash
    pnpm init
    ```
 
 3. Set up package.json:
+
    ```json
    {
      "name": "@outfitter/new-package",
@@ -150,6 +156,7 @@ pnpm update <package> --latest
    ```
 
 4. Add TypeScript config:
+
    ```json
    {
      "extends": "../../tsconfig.json",
@@ -164,9 +171,7 @@ pnpm update <package> --latest
 5. Update root tsconfig.json references:
    ```json
    {
-     "references": [
-       { "path": "./packages/new-package" }
-     ]
+     "references": [{ "path": "./packages/new-package" }]
    }
    ```
 
@@ -184,6 +189,7 @@ git commit -m "docs(packlist): update API examples"
 ```
 
 **Types**:
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation changes
@@ -232,6 +238,7 @@ pnpm changeset:publish
 ### Build Failures
 
 1. Clean and rebuild:
+
    ```bash
    pnpm clean
    pnpm install
@@ -246,6 +253,7 @@ pnpm changeset:publish
 ### Type Errors
 
 1. Restart TypeScript server in VS Code:
+
    - Cmd+Shift+P → "TypeScript: Restart TS Server"
 
 2. Clean TypeScript cache:
@@ -256,6 +264,7 @@ pnpm changeset:publish
 ### Test Failures
 
 1. Update snapshots if needed:
+
    ```bash
    pnpm test -- -u
    ```
@@ -267,7 +276,9 @@ pnpm changeset:publish
 
 ## Tips
 
-1. **Use workspace protocol**: Always use `workspace:*` for internal dependencies
-2. **Run targeted commands**: Use `--filter` to run commands for specific packages
+1. **Use workspace protocol**: Always use `workspace:*` for internal
+   dependencies
+2. **Run targeted commands**: Use `--filter` to run commands for specific
+   packages
 3. **Leverage Turbo cache**: Build outputs are cached automatically
 4. **Check before pushing**: Always run `pnpm ci:local` before pushing

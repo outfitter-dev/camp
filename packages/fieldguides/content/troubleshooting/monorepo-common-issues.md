@@ -1,7 +1,8 @@
 ---
 slug: monorepo-common-issues
 title: Common monorepo issues and solutions
-description: Troubleshooting guide for frequent problems in pnpm workspace monorepos.
+description:
+  Troubleshooting guide for frequent problems in pnpm workspace monorepos.
 type: troubleshooting
 ---
 
@@ -14,6 +15,7 @@ Solutions for frequent problems encountered in pnpm workspace monorepos.
 ### Phantom Dependencies
 
 **Problem**: Code works locally but fails in CI or production
+
 ```typescript
 // Works locally but fails elsewhere
 import lodash from 'lodash'; // Not in package.json!
@@ -22,6 +24,7 @@ import lodash from 'lodash'; // Not in package.json!
 **Cause**: Package is available through hoisting but not declared
 
 **Solution**:
+
 ```bash
 # Find phantom dependencies
 pnpm ls --depth=Infinity | grep "lodash"
@@ -36,11 +39,13 @@ echo "hoist-pattern[]=''" >> .npmrc
 ### Peer Dependency Conflicts
 
 **Problem**: Multiple versions of React or other peer dependencies
+
 ```
 ERR_PNPM_PEER_DEP_ISSUES  Unmet peer dependencies
 ```
 
 **Solution**:
+
 ```json
 // pnpm-workspace.yaml
 packages:
@@ -64,11 +69,13 @@ module.exports = {
 ### Workspace Protocol Not Resolving
 
 **Problem**: `workspace:*` not resolving in builds
+
 ```
 Cannot find module '@company/utils'
 ```
 
 **Solution**:
+
 ```bash
 # Ensure proper TypeScript configuration
 # tsconfig.json
@@ -90,12 +97,14 @@ pnpm build --filter @company/app
 ### Circular Dependencies
 
 **Problem**: Packages depend on each other
+
 ```
-Circular dependency detected: 
+Circular dependency detected:
 @company/ui -> @company/utils -> @company/ui
 ```
 
 **Solution**:
+
 ```bash
 # Detect cycles
 pnpm add -D madge
@@ -104,19 +113,21 @@ pnpm madge --circular packages/
 # Fix by extracting shared code
 packages/
   ui/          # Depends on types
-  utils/       # Depends on types  
+  utils/       # Depends on types
   types/       # No dependencies
 ```
 
 ### TypeScript Project References Not Working
 
 **Problem**: Changes not picked up, stale types
+
 ```typescript
 // Types not updating when source changes
 import { User } from '@company/types'; // Old types!
 ```
 
 **Solution**:
+
 ```json
 // Root tsconfig.json
 {
@@ -150,17 +161,19 @@ pnpm build
 ### Build Order Issues
 
 **Problem**: Builds fail due to missing dependencies
+
 ```
 Error: Cannot find module '@company/utils/dist/index.js'
 ```
 
 **Solution**:
+
 ```json
 // turbo.json
 {
   "pipeline": {
     "build": {
-      "dependsOn": ["^build"],  // Build dependencies first
+      "dependsOn": ["^build"], // Build dependencies first
       "outputs": ["dist/**"]
     }
   }
@@ -174,6 +187,7 @@ Error: Cannot find module '@company/utils/dist/index.js'
 **Problem**: Changes in packages not reflected in apps
 
 **Solution**:
+
 ```json
 // Package package.json
 {
@@ -192,11 +206,13 @@ module.exports = {
 ### Symlink Issues on Windows
 
 **Problem**: Symlinks not working on Windows
+
 ```
 EPERM: operation not permitted, symlink
 ```
 
 **Solution**:
+
 ```bash
 # Run as administrator or enable developer mode
 
@@ -211,11 +227,13 @@ prefer-symlinks=false
 ### Package Not Found After Adding
 
 **Problem**: Just added package not recognized
+
 ```
 Cannot resolve '@company/new-package'
 ```
 
 **Solution**:
+
 ```bash
 # Reinstall to update symlinks
 pnpm install
@@ -236,6 +254,7 @@ pnpm install
 **Problem**: `pnpm install` takes too long
 
 **Solution**:
+
 ```bash
 # Use frozen lockfile in CI
 pnpm install --frozen-lockfile
@@ -254,6 +273,7 @@ pnpm store prune # Clean old versions
 **Problem**: Clone and operations slow
 
 **Solution**:
+
 ```bash
 # Use shallow clone
 git clone --depth 1 <repo>
@@ -271,6 +291,7 @@ git sparse-checkout set packages/my-package
 **Problem**: JavaScript heap out of memory
 
 **Solution**:
+
 ```bash
 # Increase Node memory
 export NODE_OPTIONS="--max-old-space-size=8192"
@@ -294,6 +315,7 @@ pnpm build --filter @company/app
 **Problem**: CI rebuilds everything every time
 
 **Solution**:
+
 ```yaml
 # GitHub Actions example
 - name: Setup Turbo Cache
@@ -316,6 +338,7 @@ pnpm build --filter @company/app
 **Problem**: Works locally, fails in CI
 
 **Solution**:
+
 ```bash
 # Match CI environment locally
 pnpm install --frozen-lockfile
@@ -336,15 +359,17 @@ pnpm install --frozen-lockfile
 ### Workspace Protocol in Published Package
 
 **Problem**: Published package contains `workspace:*`
+
 ```json
 {
   "dependencies": {
-    "@company/utils": "workspace:*"  // Bad!
+    "@company/utils": "workspace:*" // Bad!
   }
 }
 ```
 
 **Solution**:
+
 ```bash
 # Use changesets for publishing
 pnpm changeset version  # Replaces workspace: protocol
@@ -360,14 +385,11 @@ pnpm publish --filter @company/ui --dry-run
 **Problem**: Built files not included in npm package
 
 **Solution**:
+
 ```json
 // package.json
 {
-  "files": [
-    "dist",
-    "src",
-    "!src/**/*.test.ts"
-  ],
+  "files": ["dist", "src", "!src/**/*.test.ts"],
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts"

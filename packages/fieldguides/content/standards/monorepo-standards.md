@@ -69,7 +69,8 @@ Place code in `packages/` when it:
 
 ### Mixed-Language Monorepos
 
-For projects combining multiple languages (e.g., Go backend + TypeScript frontend):
+For projects combining multiple languages (e.g., Go backend + TypeScript
+frontend):
 
 ```text
 monorepo/
@@ -92,6 +93,7 @@ monorepo/
 ```
 
 Key considerations:
+
 - Language-specific apps maintain their own dependency management
 - Shared TypeScript code lives in `packages/`
 - Build orchestration handles cross-language dependencies
@@ -292,12 +294,14 @@ The `workspace:*` protocol has specific behaviors:
 ```
 
 **Key points:**
+
 - `workspace:*` always uses the current local version during development
 - Publishing tools (changesets, pnpm publish) replace with actual versions
 - Ensures atomic updates - all packages in a release use consistent versions
 - No need to manually update versions in dependent packages
 
 **Alternative protocols:**
+
 - `workspace:^` - Publishes as `^currentVersion`
 - `workspace:~` - Publishes as `~currentVersion`
 - `workspace:1.2.3` - Errors if workspace version doesn't match exactly

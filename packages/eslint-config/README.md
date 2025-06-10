@@ -1,6 +1,7 @@
 # @outfitter/eslint-config
 
-> Shared ESLint configuration for consistent code quality across Outfitter projects
+> Shared ESLint configuration for consistent code quality across Outfitter
+> projects
 
 ## Installation
 
@@ -23,7 +24,7 @@ export default [
   ...outfitterConfig,
   {
     // Your custom rules here
-  }
+  },
 ];
 ```
 
@@ -73,23 +74,27 @@ export default [
     rules: {
       // Example: Allow console.log in development
       'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
-      
+
       // Example: Customize TypeScript rules
       '@typescript-eslint/no-explicit-any': 'warn',
-    }
-  }
+    },
+  },
 ];
 ```
 
 ## Migration Guide
 
-For detailed instructions on migrating from legacy ESLint configuration to flat config, see the [ESLint Migration Guide](../../docs/migration/legacy-to-flat-config.md).
+For detailed instructions on migrating from legacy ESLint configuration to flat
+config, see the
+[ESLint Migration Guide](../../docs/migration/legacy-to-flat-config.md).
 
 ## Development
 
-This package is part of the [@outfitter/camp](https://github.com/outfitter-dev/camp) monorepo.
+This package is part of the
+[@outfitter/camp](https://github.com/outfitter-dev/camp) monorepo.
 
-See the [Development Guide](../../docs/contributing/development.md) for instructions on building, testing, and contributing to this package.
+See the [Development Guide](../../docs/contributing/development.md) for
+instructions on building, testing, and contributing to this package.
 
 ## License
 

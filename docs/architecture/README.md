@@ -5,7 +5,8 @@ This directory contains architectural documentation for the Camp monorepo.
 ## Contents
 
 - [Monorepo Design](monorepo-design.md) - Core monorepo architecture decisions
-- [Package Boundaries](package-boundaries.md) - How packages are organized and interact
+- [Package Boundaries](package-boundaries.md) - How packages are organized and
+  interact
 
 ## Purpose
 

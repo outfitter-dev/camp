@@ -1,23 +1,26 @@
-# @outfitter/typescript-utils
+# @outfitter/contracts
 
-> Zero-dependency TypeScript utilities for robust error handling and type safety
+> Core contracts for building type-safe applications, including Result,
+> AppError, and domain types.
 
 ## Installation
 
 ```bash
-npm install @outfitter/typescript-utils
+npm install @outfitter/contracts
 # or
-pnpm add @outfitter/typescript-utils
+pnpm add @outfitter/contracts
 ```
 
 ## Overview
 
-This package provides essential TypeScript utilities that form the foundation of type-safe development:
+This package provides essential TypeScript utilities that form the foundation of
+type-safe development:
 
 - **Result Pattern**: Type-safe error handling without exceptions
 - **AppError**: Structured error representation with error codes and context
 - **Type Utilities**: Advanced TypeScript utility types
-- **Environment Validation**: Type-safe environment variable handling
+- **Environment Validation**: Type-safe environment variable handling (via
+  sub-path)
 - **Assertions**: Runtime validation with type narrowing
 
 ## Core Concepts
@@ -27,7 +30,13 @@ This package provides essential TypeScript utilities that form the foundation of
 Handle errors explicitly without throwing exceptions:
 
 ```typescript
-import { Result, success, failure, isSuccess, isFailure } from '@outfitter/typescript-utils';
+import {
+  Result,
+  success,
+  failure,
+  isSuccess,
+  isFailure,
+} from '@outfitter/contracts';
 
 function divide(a: number, b: number): Result<number, AppError> {
   if (b === 0) {
@@ -51,7 +60,7 @@ if (isSuccess(result)) {
 Structured errors with rich context:
 
 ```typescript
-import { makeError, AppError } from '@outfitter/typescript-utils';
+import { makeError, AppError } from '@outfitter/contracts';
 
 const error = makeError(
   'VALIDATION_ERROR',
@@ -72,17 +81,21 @@ interface AppError {
 
 ### Environment Validation
 
-Type-safe environment variable handling with Zod:
+Type-safe environment variable handling with Zod. This is available via a
+sub-path import to keep the core package dependency-free.
 
 ```typescript
-import { validateEnv } from '@outfitter/typescript-utils';
+import { validateEnv } from '@outfitter/contracts/zod';
 import { z } from 'zod';
 
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']),
   PORT: z.string().regex(/^\d+$/).transform(Number),
   API_KEY: z.string().min(1),
-  ENABLE_FEATURE: z.string().transform(val => val === 'true').optional(),
+  ENABLE_FEATURE: z
+    .string()
+    .transform(val => val === 'true')
+    .optional(),
 });
 
 const envResult = validateEnv(process.env, envSchema);
@@ -101,13 +114,13 @@ if (isSuccess(envResult)) {
 Advanced TypeScript utility types:
 
 ```typescript
-import type { 
-  DeepReadonly, 
-  DeepPartial, 
+import type {
+  DeepReadonly,
+  DeepPartial,
   Nullable,
   Brand,
-  UnionToIntersection 
-} from '@outfitter/typescript-utils';
+  UnionToIntersection,
+} from '@outfitter/contracts';
 
 // Brand types for type safety
 type UserId = Brand<string, 'UserId'>;
@@ -130,7 +143,7 @@ type PartialConfig = DeepPartial<Config>;
 Runtime validation with type narrowing:
 
 ```typescript
-import { assert, assertDefined, assertNever } from '@outfitter/typescript-utils';
+import { assert, assertDefined, assertNever } from '@outfitter/contracts';
 
 // assert: Ensures condition is true
 function processPositive(value: number) {
@@ -149,13 +162,33 @@ type Status = 'pending' | 'approved' | 'rejected';
 
 function handleStatus(status: Status) {
   switch (status) {
-    case 'pending': return 'waiting';
-    case 'approved': return 'success';
-    case 'rejected': return 'failed';
+    case 'pending':
+      return 'waiting';
+    case 'approved':
+      return 'success';
+    case 'rejected':
+      return 'failed';
     default:
       assertNever(status); // Compile error if cases missed
   }
 }
+```
+
+### Branded Types
+
+Create nominal types from primitives to prevent accidental misuse of values like
+IDs or tokens.
+
+```typescript
+import type { Branded } from '@outfitter/contracts';
+
+type UserId = Branded<string, 'UserId'>;
+
+const createUserId = (id: string): UserId => id as UserId;
+
+const userId = createUserId('user-123');
+// const otherString: string = 'abc';
+// const otherUserId: UserId = otherString; // Fails to compile
 ```
 
 ## API Reference
@@ -164,23 +197,31 @@ function handleStatus(status: Status) {
 
 - `success<T>(data: T): Success<T>` - Create a success result
 - `failure<E>(error: E): Failure<E>` - Create a failure result
-- `isSuccess<T, E>(result: Result<T, E>): result is Success<T>` - Type guard for success
-- `isFailure<T, E>(result: Result<T, E>): result is Failure<E>` - Type guard for failure
-- `mapResult<T, U, E>(result: Result<T, E>, fn: (data: T) => U): Result<U, E>` - Transform success value
-- `flatMapResult<T, U, E>(result: Result<T, E>, fn: (data: T) => Result<U, E>): Result<U, E>` - Chain results
+- `isSuccess<T, E>(result: Result<T, E>): result is Success<T>` - Type guard for
+  success
+- `isFailure<T, E>(result: Result<T, E>): result is Failure<E>` - Type guard for
+  failure
+- `mapResult<T, U, E>(result: Result<T, E>, fn: (data: T) => U): Result<U, E>` -
+  Transform success value
+- `flatMapResult<T, U, E>(result: Result<T, E>, fn: (data: T) => Result<U, E>): Result<U, E>` -
+  Chain results
 
 ### Error Functions
 
-- `makeError(code: string, message: string, details?: unknown, cause?: Error): AppError` - Create structured error
+- `makeError(code: string, message: string, details?: unknown, cause?: Error): AppError` -
+  Create structured error
 - `isAppError(error: unknown): error is AppError` - Type guard for AppError
 
-### Environment Functions
+### Environment Functions (via `@outfitter/contracts/zod`)
 
-- `validateEnv<T>(env: unknown, schema: ZodSchema<T>): Result<T, AppError>` - Validate environment variables
+- `validateEnv<T>(env: unknown, schema: ZodSchema<T>): Result<T, AppError>` -
+  Validate environment variables
+- `fromZod(error: ZodError): AppError` - Convert a Zod error to an AppError
 
 ### Type Guards
 
-- `isObject(value: unknown): value is Record<string, unknown>` - Check if value is object
+- `isObject(value: unknown): value is Record<string, unknown>` - Check if value
+  is object
 - `isString(value: unknown): value is string` - Check if value is string
 - `isNumber(value: unknown): value is number` - Check if value is number
 - `isBoolean(value: unknown): value is boolean` - Check if value is boolean
@@ -200,7 +241,9 @@ function parseConfig(json: string): Result<Config, AppError> {
   try {
     return success(JSON.parse(json));
   } catch (error) {
-    return failure(makeError('PARSE_ERROR', 'Invalid config format', { json }, error));
+    return failure(
+      makeError('PARSE_ERROR', 'Invalid config format', { json }, error)
+    );
   }
 }
 ```
@@ -209,13 +252,13 @@ function parseConfig(json: string): Result<Config, AppError> {
 
 ```typescript
 // ❌ Primitive types allow mixing up parameters
-function sendEmail(to: string, from: string, subject: string) { }
+function sendEmail(to: string, from: string, subject: string) {}
 
 // ✅ Branded types prevent errors
 type Email = Brand<string, 'Email'>;
 type Subject = Brand<string, 'Subject'>;
 
-function sendEmail(to: Email, from: Email, subject: Subject) { }
+function sendEmail(to: Email, from: Email, subject: Subject) {}
 ```
 
 ### 3. Validate at Boundaries
@@ -231,13 +274,16 @@ if (isFailure(configResult)) {
 const config = configResult.data; // Fully typed and validated
 ```
 
-## Zero Dependencies
+## Dependencies
 
-This package has **zero runtime dependencies** to keep your bundle size minimal and avoid dependency conflicts. It only uses TypeScript types and patterns that work in any JavaScript environment.
+This package has **zero runtime dependencies** in its core entry point.
+
+The `@outfitter/contracts/zod` sub-path has a peer dependency on `zod`.
 
 ## Development
 
-This package is part of the [@outfitter/camp](https://github.com/outfitter-dev/camp) monorepo.
+This package is part of the
+[@outfitter/camp](https://github.com/outfitter-dev/camp) monorepo.
 
 ```bash
 # Install dependencies

@@ -2,25 +2,28 @@
 
 **Status**: Accepted  
 **Date**: 2025-01-06  
-**Deciders**: Camp maintainers  
+**Deciders**: Camp maintainers
 
 ## Context
 
-The `@outfitter/cli` currently resides in `packages/cli/` and provides the `camp`
-command for managing development configurations. As the monorepo evolves, we need
-to decide whether it should remain a package or move to an `apps/` directory.
+The `@outfitter/cli` currently resides in `packages/cli/` and provides the
+`camp` command for managing development configurations. As the monorepo evolves,
+we need to decide whether it should remain a package or move to an `apps/`
+directory.
 
 This decision affects:
+
 - How the CLI is versioned and published
 - Whether it can be consumed as a library
 - The overall monorepo structure pattern
 
 ## Decision
 
-We will keep `@outfitter/cli` in the `packages/` directory for now, structured to
-support both CLI and potential programmatic usage.
+We will keep `@outfitter/cli` in the `packages/` directory for now, structured
+to support both CLI and potential programmatic usage.
 
 The CLI will:
+
 - Export its commands and API from the main entry point
 - Have a separate CLI entry point for the executable
 - Remain publishable to npm as a package
@@ -48,10 +51,12 @@ The CLI will:
 Create `apps/cli/` for pure CLI applications.
 
 **Pros**:
+
 - Clear separation of apps vs libraries
 - Simpler package without library concerns
 
 **Cons**:
+
 - Breaks established pattern
 - Requires migration effort
 - Limits future programmatic usage
@@ -61,10 +66,12 @@ Create `apps/cli/` for pure CLI applications.
 Keep library code in `packages/cli-core/` and CLI in `apps/cli/`.
 
 **Pros**:
+
 - Clear separation of concerns
 - Each part focused on its role
 
 **Cons**:
+
 - Over-engineering for current needs
 - Two packages to maintain
 - Complex for a simple CLI
@@ -75,6 +82,7 @@ No changes required - this ADR documents the decision to maintain the current
 structure.
 
 Future CLIs should evaluate their specific needs:
+
 - Pure end-user tools → Consider `apps/`
 - Potential library usage → Use `packages/`
 - Complex tools → Consider splitting

@@ -23,7 +23,7 @@
       "path": "./packages/eslint-config"
     },
     {
-      "path": "./packages/typescript-utils"
+      "path": "./packages/contracts/typescript"
     },
     {
       "path": "./packages/husky-config"

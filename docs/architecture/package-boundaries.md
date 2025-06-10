@@ -12,12 +12,14 @@ responsibilities, and their interaction patterns.
 **Purpose**: Provide shared configurations for development tools
 
 **Examples**:
+
 - `@outfitter/eslint-config`
-- `@outfitter/typescript-config`  
+- `@outfitter/typescript-config`
 - `@outfitter/changeset-config`
 - `@outfitter/husky-config`
 
 **Characteristics**:
+
 - Minimal runtime code
 - Primarily configuration files
 - May include setup scripts
@@ -28,10 +30,12 @@ responsibilities, and their interaction patterns.
 **Purpose**: Provide shared code and utilities
 
 **Examples**:
+
 - `@outfitter/typescript-utils`
 - `@outfitter/packlist`
 
 **Characteristics**:
+
 - Runtime code with clear APIs
 - Thoroughly tested
 - May be used by other packages
@@ -42,9 +46,11 @@ responsibilities, and their interaction patterns.
 **Purpose**: Provide command-line tools and automation
 
 **Examples**:
+
 - `@outfitter/cli`
 
 **Characteristics**:
+
 - Executable commands
 - May consume utility packages
 - User-facing documentation
@@ -55,9 +61,11 @@ responsibilities, and their interaction patterns.
 **Purpose**: Maintain living documentation
 
 **Examples**:
+
 - `@outfitter/fieldguides`
 
 **Characteristics**:
+
 - Content-focused
 - May include validation scripts
 - Not typically imported by other packages
@@ -104,6 +112,7 @@ export type { PublicType } from './types';
 ### Creation Criteria
 
 Before creating a new package, ensure:
+
 - [ ] Clear, single responsibility identified
 - [ ] At least 3 potential consumers
 - [ ] Stable API design
@@ -113,6 +122,7 @@ Before creating a new package, ensure:
 ### Consolidation Triggers
 
 Consider consolidating packages when:
+
 - Packages always change together
 - Artificial boundaries create friction
 - Single team owns multiple related packages
@@ -129,12 +139,14 @@ Consider consolidating packages when:
 ## Examples of Good Boundaries
 
 ### `@outfitter/typescript-utils`
+
 - **Single Responsibility**: Error handling patterns
 - **Clear API**: Result type and utilities
 - **No Dependencies**: Core primitive
 - **Multiple Consumers**: Used by all packages
 
 ### `@outfitter/cli`
+
 - **Single Responsibility**: Camp command-line interface
 - **Clear API**: Command definitions
 - **Focused Dependencies**: Only what CLI needs
@@ -143,13 +155,16 @@ Consider consolidating packages when:
 ## Anti-Patterns to Avoid
 
 ### The "Common" Package
+
 Avoid creating generic packages like `@outfitter/common` or `@outfitter/shared`
 that become dumping grounds for unrelated utilities.
 
 ### Over-Extraction
-Don't extract packages for single functions or utilities used by only one consumer.
-Keep code where it's used until extraction criteria are met.
+
+Don't extract packages for single functions or utilities used by only one
+consumer. Keep code where it's used until extraction criteria are met.
 
 ### Tech-Stack Packages
-Avoid organizing by technology (`@outfitter/react-stuff`, `@outfitter/node-stuff`).
-Organize by domain and purpose instead.
+
+Avoid organizing by technology (`@outfitter/react-stuff`,
+`@outfitter/node-stuff`). Organize by domain and purpose instead.

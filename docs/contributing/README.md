@@ -4,7 +4,8 @@ Welcome to the Camp monorepo contributing guide!
 
 ## Guides
 
-- [Development Guide](development.md) - Setup, building, testing, and development workflow
+- [Development Guide](development.md) - Setup, building, testing, and
+  development workflow
 
 ## Quick Links
 
@@ -15,17 +16,20 @@ Welcome to the Camp monorepo contributing guide!
 ## Getting Started
 
 1. **Clone the repository**:
+
    ```bash
    git clone https://github.com/outfitter-dev/camp
    cd camp
    ```
 
 2. **Install dependencies**:
+
    ```bash
    pnpm install
    ```
 
 3. **Build all packages**:
+
    ```bash
    pnpm build
    ```

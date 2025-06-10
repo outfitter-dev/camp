@@ -2,7 +2,9 @@
 
 ## Summary
 
-This proposal examines whether `@outfitter/cli` should remain in `packages/` as a shared library or migrate to `apps/` as a standalone application, establishing patterns for similar decisions across Outfitter projects.
+This proposal examines whether `@outfitter/cli` should remain in `packages/` as
+a shared library or migrate to `apps/` as a standalone application, establishing
+patterns for similar decisions across Outfitter projects.
 
 ## Current State
 
@@ -26,7 +28,8 @@ A CLI belongs in `packages/` when it:
 
 Examples:
 
-- `@outfitter/packlist` - Core configuration logic used by CLI and potentially other tools
+- `@outfitter/packlist` - Core configuration logic used by CLI and potentially
+  other tools
 - Build tool CLIs that expose JavaScript APIs (like `esbuild`, `tsup`)
 - Testing frameworks with both CLI and programmatic usage
 
@@ -35,7 +38,8 @@ Examples:
 A CLI belongs in `apps/` when it:
 
 - **Is purely an end-user tool** with no library consumers
-- **Has unique deployment requirements** (different Node version, special builds)
+- **Has unique deployment requirements** (different Node version, special
+  builds)
 - **Contains application-specific logic** not reusable elsewhere
 - **Needs isolated dependencies** that shouldn't affect other packages
 
@@ -49,21 +53,29 @@ Examples:
 
 ### Arguments for keeping in `packages/`
 
-1. **Potential for programmatic usage**: Other Outfitter tools might want to invoke camp operations programmatically
+1. **Potential for programmatic usage**: Other Outfitter tools might want to
+   invoke camp operations programmatically
 2. **Shared deployment model**: Published to npm like other packages
-3. **Lightweight dependencies**: Only depends on other workspace packages and standard Node libraries
-4. **Pattern consistency**: Establishes pattern for other tool CLIs in the monorepo
+3. **Lightweight dependencies**: Only depends on other workspace packages and
+   standard Node libraries
+4. **Pattern consistency**: Establishes pattern for other tool CLIs in the
+   monorepo
 
 ### Arguments for moving to `apps/`
 
-1. **Primary usage is as CLI**: Most users will `npm install -g` and use commands
-2. **No current library consumers**: No other packages import from `@outfitter/cli`
-3. **Application-like lifecycle**: Has versions, releases, and user-facing changes
-4. **Clear separation of concerns**: CLI is the delivery mechanism, `packlist` is the library
+1. **Primary usage is as CLI**: Most users will `npm install -g` and use
+   commands
+2. **No current library consumers**: No other packages import from
+   `@outfitter/cli`
+3. **Application-like lifecycle**: Has versions, releases, and user-facing
+   changes
+4. **Clear separation of concerns**: CLI is the delivery mechanism, `packlist`
+   is the library
 
 ## Recommendation
 
-**Keep `@outfitter/cli` in `packages/` for now**, but structure it to support both CLI and programmatic usage:
+**Keep `@outfitter/cli` in `packages/` for now**, but structure it to support
+both CLI and programmatic usage:
 
 ```typescript
 // packages/cli/src/index.ts
@@ -132,8 +144,8 @@ When deciding package vs app placement:
 - [ ] Does it need isolated dependencies?
 - [ ] Will it have a different release cycle?
 
-If mostly "no" to first two and "yes" to others → `apps/`
-If mostly "yes" to first two → `packages/`
+If mostly "no" to first two and "yes" to others → `apps/` If mostly "yes" to
+first two → `packages/`
 
 ## Next Steps
 

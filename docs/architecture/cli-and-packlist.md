@@ -1,10 +1,13 @@
 # CLI and Packlist Architecture
 
-This document explains the relationship between `@outfitter/cli` and `@outfitter/packlist`, and how they work together to provide a complete configuration management system.
+This document explains the relationship between `@outfitter/cli` and
+`@outfitter/packlist`, and how they work together to provide a complete
+configuration management system.
 
 ## Overview
 
-The Camp monorepo contains two complementary packages for configuration management:
+The Camp monorepo contains two complementary packages for configuration
+management:
 
 - **`@outfitter/cli`**: User-facing command-line interface (the `camp` command)
 - **`@outfitter/packlist`**: Core configuration engine and programmatic API
@@ -37,6 +40,7 @@ The Camp monorepo contains two complementary packages for configuration manageme
 ### @outfitter/cli
 
 **Responsibilities**:
+
 - Command-line interface parsing
 - User interaction and prompts
 - Command organization
@@ -44,6 +48,7 @@ The Camp monorepo contains two complementary packages for configuration manageme
 - Global installation support
 
 **What it does NOT do**:
+
 - Direct configuration manipulation
 - Package dependency resolution
 - Config file generation
@@ -51,6 +56,7 @@ The Camp monorepo contains two complementary packages for configuration manageme
 ### @outfitter/packlist
 
 **Responsibilities**:
+
 - Configuration orchestration
 - Package dependency management
 - Config file generation
@@ -58,6 +64,7 @@ The Camp monorepo contains two complementary packages for configuration manageme
 - Error handling with Result pattern
 
 **What it does NOT do**:
+
 - Command-line parsing
 - User interaction
 - Terminal output formatting
@@ -75,14 +82,14 @@ export async function initCommand(options: InitOptions) {
   // 1. CLI handles user interaction
   const preset = await promptForPreset();
   const features = await promptForFeatures();
-  
+
   // 2. CLI calls Packlist API
   const result = await init({
     preset,
     features,
-    projectRoot: process.cwd()
+    projectRoot: process.cwd(),
   });
-  
+
   // 3. CLI handles output formatting
   if (isSuccess(result)) {
     console.log('✅ Project initialized!');
@@ -96,20 +103,22 @@ export async function initCommand(options: InitOptions) {
 
 ```typescript
 // Packlist Layer (packages/packlist/src/init.ts)
-export async function init(options: InitOptions): Result<InitResult, PacklistError> {
+export async function init(
+  options: InitOptions
+): Result<InitResult, PacklistError> {
   // 1. Validate environment
   const validation = validateProjectRoot(options.projectRoot);
   if (!isSuccess(validation)) return validation;
-  
+
   // 2. Resolve configurations
   const configs = resolveConfigurations(options.preset, options.features);
-  
+
   // 3. Install configurations
   for (const config of configs) {
     const result = await installConfiguration(config);
     if (!isSuccess(result)) return result;
   }
-  
+
   // 4. Generate config files
   return generateProjectConfig(options);
 }
@@ -140,7 +149,8 @@ Preset Selection → Feature Flags → Dependency Graph → Installation Order
 ### CLI Design Principles
 
 1. **Thin command layer**: Commands should be simple orchestrators
-2. **Rich user experience**: Interactive prompts, progress indicators, colored output
+2. **Rich user experience**: Interactive prompts, progress indicators, colored
+   output
 3. **Graceful degradation**: Work in various terminal environments
 4. **Global installation**: Must work when installed globally
 
@@ -162,10 +172,10 @@ import { newFeature } from '@outfitter/packlist';
 export async function newCommand(args: string[]) {
   // 1. Parse CLI arguments
   const options = parseArgs(args);
-  
+
   // 2. Call Packlist API
   const result = await newFeature(options);
-  
+
   // 3. Handle result
   return handleResult(result);
 }
@@ -187,6 +197,7 @@ export async function newFeature(
 ### CLI Testing
 
 Focus on:
+
 - Command parsing
 - User interaction flows
 - Output formatting
@@ -196,12 +207,12 @@ Focus on:
 test('init command with preset', async () => {
   const mockInit = vi.fn().mockResolvedValue(success({ configs: ['eslint'] }));
   vi.mocked(packlist.init).mockImplementation(mockInit);
-  
+
   await runCommand(['init', '--preset', 'react']);
-  
+
   expect(mockInit).toHaveBeenCalledWith({
     preset: 'react',
-    projectRoot: expect.any(String)
+    projectRoot: expect.any(String),
   });
 });
 ```
@@ -209,6 +220,7 @@ test('init command with preset', async () => {
 ### Packlist Testing
 
 Focus on:
+
 - Configuration logic
 - Dependency resolution
 - File generation
@@ -218,9 +230,9 @@ Focus on:
 test('init with react preset', async () => {
   const result = await init({
     preset: 'react',
-    projectRoot: '/test/project'
+    projectRoot: '/test/project',
   });
-  
+
   expect(isSuccess(result)).toBe(true);
   expect(result.data.configs).toContain('@outfitter/eslint-config');
   expect(result.data.configs).toContain('@outfitter/typescript-config');
@@ -253,4 +265,5 @@ The separation between CLI and Packlist provides:
 4. **Flexibility**: CLI can be replaced without changing core logic
 5. **Type safety**: Result pattern ensures error handling
 
-This architecture allows the Camp monorepo to provide both an excellent user experience through the CLI and a robust programmatic API through Packlist.
+This architecture allows the Camp monorepo to provide both an excellent user
+experience through the CLI and a robust programmatic API through Packlist.

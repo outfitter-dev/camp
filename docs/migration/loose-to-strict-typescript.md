@@ -1,10 +1,13 @@
 # TypeScript: Loose to Strict Configuration Migration
 
-This guide helps you migrate from a permissive TypeScript configuration to the strict settings used in @outfitter/typescript-config.
+This guide helps you migrate from a permissive TypeScript configuration to the
+strict settings used in @outfitter/typescript-config.
 
 ## Why Strict TypeScript?
 
-Strict TypeScript catches bugs at compile time that would otherwise surface at runtime:
+Strict TypeScript catches bugs at compile time that would otherwise surface at
+runtime:
+
 - Null pointer exceptions
 - Undefined property access
 - Implicit any types
@@ -43,6 +46,7 @@ Start by extending the Outfitter config with some checks disabled:
 The most common initial errors come from implicit `any` types.
 
 **Before:**
+
 ```typescript
 // ❌ Parameter 'user' implicitly has an 'any' type
 function greetUser(user) {
@@ -50,10 +54,11 @@ function greetUser(user) {
 }
 
 // ❌ 'data' implicitly has an 'any' type
-const processData = (data) => data.map(item => item.value);
+const processData = data => data.map(item => item.value);
 ```
 
 **After:**
+
 ```typescript
 // ✅ Explicit types
 interface User {
@@ -65,15 +70,17 @@ function greetUser(user: User): string {
 }
 
 // ✅ Generic type for flexibility
-const processData = <T extends { value: unknown }>(data: T[]): unknown[] => 
+const processData = <T extends { value: unknown }>(data: T[]): unknown[] =>
   data.map(item => item.value);
 ```
 
 ### Step 3: Handle Null and Undefined
 
-With `strictNullChecks`, TypeScript distinguishes between `null`, `undefined`, and other types.
+With `strictNullChecks`, TypeScript distinguishes between `null`, `undefined`,
+and other types.
 
 **Before:**
+
 ```typescript
 // ❌ Object is possibly 'undefined'
 function getLength(str: string | undefined) {
@@ -86,6 +93,7 @@ console.log(config.apiUrl);
 ```
 
 **After:**
+
 ```typescript
 // ✅ Guard against undefined
 function getLength(str: string | undefined): number {
@@ -105,9 +113,11 @@ console.log(config!.apiUrl); // Use sparingly!
 
 ### Step 4: Fix Optional Property Access
 
-With `exactOptionalPropertyTypes`, optional properties can't be explicitly set to `undefined`.
+With `exactOptionalPropertyTypes`, optional properties can't be explicitly set
+to `undefined`.
 
 **Before:**
+
 ```typescript
 interface Options {
   debug?: boolean;
@@ -115,11 +125,12 @@ interface Options {
 
 // ❌ Type 'undefined' is not assignable to type 'boolean'
 const opts: Options = {
-  debug: undefined
+  debug: undefined,
 };
 ```
 
 **After:**
+
 ```typescript
 // ✅ Omit the property
 const opts: Options = {};
@@ -132,9 +143,11 @@ interface Options {
 
 ### Step 5: Enable noUncheckedIndexedAccess
 
-This is often the most challenging flag. It makes array and object index access return `T | undefined`.
+This is often the most challenging flag. It makes array and object index access
+return `T | undefined`.
 
 **Before:**
+
 ```typescript
 // ❌ Assumes array has elements
 const firstUser = users[0];
@@ -146,6 +159,7 @@ return value.toLowerCase();
 ```
 
 **After:**
+
 ```typescript
 // ✅ Check for existence
 const firstUser = users[0];
@@ -167,6 +181,7 @@ const firstUser = users[0]; // Now TypeScript knows it exists
 With `noImplicitReturns`, all code paths must explicitly return.
 
 **Before:**
+
 ```typescript
 // ❌ Not all code paths return a value
 function processValue(value: number) {
@@ -178,6 +193,7 @@ function processValue(value: number) {
 ```
 
 **After:**
+
 ```typescript
 // ✅ Explicit return
 function processValue(value: number): number | undefined {
@@ -201,6 +217,7 @@ function processValue(value: number): number {
 ### Working with APIs
 
 **Before:**
+
 ```typescript
 // ❌ Trusting API responses
 async function fetchUser(id: string) {
@@ -211,6 +228,7 @@ async function fetchUser(id: string) {
 ```
 
 **After:**
+
 ```typescript
 // ✅ Validate API responses
 import { z } from 'zod';
@@ -218,13 +236,13 @@ import { z } from 'zod';
 const UserSchema = z.object({
   id: z.string(),
   name: z.string(),
-  email: z.string().email()
+  email: z.string().email(),
 });
 
 async function fetchUser(id: string) {
   const response = await fetch(`/api/users/${id}`);
   const data = await response.json();
-  
+
   // Runtime validation
   const user = UserSchema.parse(data.user);
   return user; // Now properly typed!
@@ -234,6 +252,7 @@ async function fetchUser(id: string) {
 ### Working with DOM
 
 **Before:**
+
 ```typescript
 // ❌ Assumes element exists
 const button = document.querySelector('.submit-btn');
@@ -241,6 +260,7 @@ button.addEventListener('click', handleClick);
 ```
 
 **After:**
+
 ```typescript
 // ✅ Check for existence
 const button = document.querySelector('.submit-btn');
@@ -259,6 +279,7 @@ button.addEventListener('click', handleClick);
 ### Array Operations
 
 **Before:**
+
 ```typescript
 // ❌ Assumes array has elements
 const numbers = [1, 2, 3];
@@ -266,6 +287,7 @@ const doubled = numbers.map((n, i) => n * numbers[i + 1]);
 ```
 
 **After:**
+
 ```typescript
 // ✅ Handle bounds safely
 const numbers = [1, 2, 3];
@@ -321,10 +343,10 @@ Track your progress:
   "compilerOptions": {
     // Phase 1: ✅ Complete
     "strict": true,
-    
+
     // Phase 2: 🚧 In Progress
     "noUncheckedIndexedAccess": false,
-    
+
     // Phase 3: 📅 Planned
     "exactOptionalPropertyTypes": false
   }

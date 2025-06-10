@@ -1,14 +1,19 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with
+code in this repository.
 
 ## Overview
 
-This is the `@outfitter/eslint-config` package - a shared ESLint configuration for Outfitter projects. It provides a comprehensive set of linting rules for TypeScript and React projects, including accessibility and import organization rules.
+This is the `@outfitter/eslint-config` package - a shared ESLint configuration
+for Outfitter projects. It provides a comprehensive set of linting rules for
+TypeScript and React projects, including accessibility and import organization
+rules.
 
 ## Key Commands
 
 ### Development
+
 ```bash
 # Build the package
 pnpm build
@@ -23,13 +28,17 @@ pnpm type-check
 ## Architecture
 
 ### Configuration Structure
-The package exports a legacy ESLint configuration (for ESLint 8.x compatibility) that includes:
+
+The package exports a legacy ESLint configuration (for ESLint 8.x compatibility)
+that includes:
+
 - TypeScript parsing and rules via `@typescript-eslint`
 - React and React Hooks linting
 - JSX accessibility rules via `jsx-a11y`
 - Import organization and resolution rules
 
 ### Key Features
+
 - **TypeScript Support**: Full TypeScript parsing with strict rules
 - **React Optimization**: Configured for React 17+ (no need for React imports)
 - **Accessibility**: Enforces WCAG compliance through jsx-a11y rules
@@ -37,16 +46,20 @@ The package exports a legacy ESLint configuration (for ESLint 8.x compatibility)
 - **Test File Overrides**: Relaxed rules for test files
 
 ### Rule Categories
+
 1. **TypeScript Rules**:
+
    - No unused variables (except those prefixed with `_`)
    - No explicit `any` types
    - No non-null assertions
 
 2. **React Rules**:
+
    - React Hooks rules enforced
    - PropTypes disabled (using TypeScript instead)
 
 3. **Import Rules**:
+
    - Ordered imports with newlines between groups
    - Alphabetical ordering within groups
 
@@ -57,6 +70,7 @@ The package exports a legacy ESLint configuration (for ESLint 8.x compatibility)
 ## Usage Pattern
 
 Projects consume this config in their `.eslintrc.js`:
+
 ```javascript
 module.exports = {
   extends: ['@outfitter/eslint-config'],
@@ -65,6 +79,7 @@ module.exports = {
 ```
 
 Or in modern flat config (`eslint.config.mjs`):
+
 ```javascript
 import outfitterConfig from '@outfitter/eslint-config';
 

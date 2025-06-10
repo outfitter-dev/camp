@@ -16,6 +16,7 @@ serving as the foundational error handling layer for all other packages.
 ### 2. Clear Build Order
 
 TypeScript project references enforce a clear dependency graph:
+
 - `typescript-utils` builds first (no dependencies)
 - All other packages may depend on `typescript-utils`
 - Circular dependencies are prohibited
@@ -23,6 +24,7 @@ TypeScript project references enforce a clear dependency graph:
 ### 3. Workspace Protocol
 
 All internal dependencies use `workspace:*` protocol to ensure:
+
 - Local development uses current code
 - Publishing automatically resolves to real versions
 - No version mismatch between packages in a release
@@ -30,6 +32,7 @@ All internal dependencies use `workspace:*` protocol to ensure:
 ## Package Organization
 
 ### Core Libraries
+
 Located in `packages/`, these provide shared functionality:
 
 - **typescript-utils**: Result pattern and error handling
@@ -38,31 +41,40 @@ Located in `packages/`, these provide shared functionality:
 - **typescript-config**: Base TypeScript configurations
 
 ### Tool Packages
+
 Command-line tools and utilities:
 
 - **cli**: The `camp` command for managing configurations
 - **husky-config**: Git hooks setup
 
 ### Documentation Package
+
 - **fieldguides**: Living documentation system with guidebooks
 
 ## Why Monorepo?
 
 For Camp specifically, monorepo architecture provides:
 
-1. **Atomic Configuration Updates**: When standards change, all configs update together
+1. **Atomic Configuration Updates**: When standards change, all configs update
+   together
 2. **Shared Testing**: Test utilities and patterns consistent across packages
-3. **Single Source of Truth**: One location for all Outfitter development standards
-4. **Efficient Development**: Changes to core utilities immediately available everywhere
+3. **Single Source of Truth**: One location for all Outfitter development
+   standards
+4. **Efficient Development**: Changes to core utilities immediately available
+   everywhere
 
 ## Future Considerations
 
 ### Apps Directory
-When Camp grows to include end-user applications (web dashboards, etc.), they will
-live in an `apps/` directory at the root level, separate from library packages.
+
+When Camp grows to include end-user applications (web dashboards, etc.), they
+will live in an `apps/` directory at the root level, separate from library
+packages.
 
 ### Package Extraction
+
 Packages should only be extracted when:
+
 - Three or more consumers exist
 - Clear API boundaries have stabilized
 - Independent versioning provides value

@@ -1,8 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { z } from 'zod';
 
-import { createEnvSchema, parseEnvVar } from '../env';
-import { makeError, toAppError, ErrorCode, fromZod } from '../error';
+import { makeError, toAppError, ErrorCode } from '../error';
 import {
   tryAsync,
   trySync,
@@ -55,26 +53,6 @@ describe('Result Pattern Integration', () => {
   });
 
   describe('Error conversion and type safety', () => {
-    it('should convert Zod errors to AppError', () => {
-      const schema = z.object({
-        email: z.string().email(),
-        age: z.number().min(18),
-      });
-
-      const parseResult = schema.safeParse({
-        email: 'invalid-email',
-        age: 15,
-      });
-
-      if (!parseResult.success) {
-        const appError = fromZod(parseResult.error);
-
-        expect(appError.code).toBe(ErrorCode.VALIDATION_ERROR);
-        expect(appError.message).toBe('Validation failed');
-        expect(appError.details?.issues).toBeInstanceOf(Array);
-      }
-    });
-
     it('should convert unknown errors to AppError', () => {
       const unknownError = { message: 'Some object error' };
       const appError = toAppError(unknownError);
@@ -82,53 +60,6 @@ describe('Result Pattern Integration', () => {
       expect(appError.code).toBe(ErrorCode.INTERNAL_ERROR);
       expect(appError.message).toBe('Unknown error occurred');
       expect(appError.details?.originalError).toBe(unknownError);
-    });
-  });
-
-  describe('Environment validation integration', () => {
-    it('should integrate Result pattern with environment validation', () => {
-      // Clear environment first
-      const originalEnv = process.env;
-      process.env = {};
-
-      const result = createEnvSchema({
-        REQUIRED_VAR: z.string().min(1),
-        OPTIONAL_VAR: z.string().optional(),
-      });
-
-      expect(isFailure(result)).toBe(true);
-      if (!result.success) {
-        expect(result.error.code).toBe(ErrorCode.VALIDATION_ERROR);
-        expect(result.error.details?.missingVariables).toContain(
-          'REQUIRED_VAR'
-        );
-      }
-
-      // Restore environment
-      process.env = originalEnv;
-    });
-
-    it('should parse single environment variables with Result pattern', () => {
-      // Test with invalid value
-      process.env.TEST_NUMBER = 'not-a-number';
-
-      const result = parseEnvVar('TEST_NUMBER', z.coerce.number());
-
-      expect(isFailure(result)).toBe(true);
-      if (!result.success) {
-        expect(result.error.code).toBe(ErrorCode.VALIDATION_ERROR);
-        expect(result.error.details?.variable).toBe('TEST_NUMBER');
-      }
-
-      // Test with valid value
-      process.env.TEST_NUMBER = '42';
-
-      const validResult = parseEnvVar('TEST_NUMBER', z.coerce.number());
-
-      expect(isSuccess(validResult)).toBe(true);
-      if (validResult.success) {
-        expect(validResult.data).toBe(42);
-      }
     });
   });
 
@@ -246,48 +177,6 @@ describe('Result Pattern Integration', () => {
       expect(isFailure(errorResult)).toBe(true);
       if (!errorResult.success) {
         expect(errorResult.error.code).toBe(ErrorCode.EXTERNAL_SERVICE_ERROR);
-      }
-    });
-
-    it('should integrate with validation and error reporting', () => {
-      // Simulate API request validation
-      const validateApiRequest = (data: unknown) => {
-        const schema = z.object({
-          username: z.string().min(3).max(20),
-          email: z.string().email(),
-          age: z.number().min(13).max(120),
-        });
-
-        const parseResult = schema.safeParse(data);
-        if (!parseResult.success) {
-          return failure(fromZod(parseResult.error));
-        }
-
-        return success(parseResult.data);
-      };
-
-      // Test valid data
-      const validData = {
-        username: 'johndoe',
-        email: 'john@example.com',
-        age: 25,
-      };
-
-      const validResult = validateApiRequest(validData);
-      expect(isSuccess(validResult)).toBe(true);
-
-      // Test invalid data
-      const invalidData = {
-        username: 'jo', // too short
-        email: 'invalid-email',
-        age: 5, // too young
-      };
-
-      const invalidResult = validateApiRequest(invalidData);
-      expect(isFailure(invalidResult)).toBe(true);
-      if (!invalidResult.success) {
-        expect(invalidResult.error.code).toBe(ErrorCode.VALIDATION_ERROR);
-        expect(invalidResult.error.details?.issues).toHaveLength(3);
       }
     });
   });

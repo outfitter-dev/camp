@@ -181,9 +181,11 @@ standards and patterns.
 
 ## Development
 
-This package is part of the [@outfitter/camp](https://github.com/outfitter-dev/camp) monorepo.
+This package is part of the
+[@outfitter/camp](https://github.com/outfitter-dev/camp) monorepo.
 
-See the [Development Guide](../../docs/contributing/development.md) for instructions on building, testing, and contributing to this package.
+See the [Development Guide](../../docs/contributing/development.md) for
+instructions on building, testing, and contributing to this package.
 
 ## Roadmap
 
