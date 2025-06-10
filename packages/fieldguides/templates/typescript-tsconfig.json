@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    // Type Checking - Maximum strictness
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "useUnknownInCatchVariables": true,
+    "alwaysStrict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
+    
+    // Modules - Modern configuration
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": false,
+    "resolvePackageJsonExports": true,
+    "resolvePackageJsonImports": true,
+    "allowArbitraryExtensions": false,
+    "customConditions": [],
+    "noResolve": false,
+    "allowUmdGlobalAccess": false,
+    "moduleSuffixes": [],
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "preserveConstEnums": true,
+    "preserveValueImports": false,
+    
+    // Emit - Optimized for bundlers
+    "target": "es2022",
+    "lib": ["es2023", "dom", "dom.iterable"],
+    "noEmit": true,
+    "declaration": false,
+    "declarationMap": false,
+    "sourceMap": true,
+    "inlineSources": false,
+    "removeComments": false,
+    "importHelpers": true,
+    "importsNotUsedAsValues": "remove",
+    "downlevelIteration": false,
+    "emitBOM": false,
+    "emitDeclarationOnly": false,
+    "newLine": "lf",
+    "stripInternal": false,
+    "noEmitHelpers": false,
+    "noEmitOnError": true,
+    "preserveConstEnums": false,
+    "declarationDir": null,
+    
+    // JavaScript Support
+    "allowJs": false,
+    "checkJs": false,
+    "maxNodeModuleJsDepth": 0,
+    
+    // Language and Environment
+    "jsx": "react-jsx",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "jsxFactory": "React.createElement",
+    "jsxFragmentFactory": "React.Fragment",
+    "jsxImportSource": "react",
+    "reactNamespace": "React",
+    "noLib": false,
+    "useDefineForClassFields": true,
+    "moduleDetection": "auto",
+    
+    // Interop Constraints
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedDeclarations": false,
+    
+    // Backwards Compatibility
+    "noImplicitUseStrict": false,
+    "suppressExcessPropertyErrors": false,
+    "suppressImplicitAnyIndexErrors": false,
+    "noStrictGenericChecks": false,
+    "charset": "utf8",
+    "keyofStringsOnly": false,
+    "noEmitOnError": true,
+    
+    // Output Formatting
+    "pretty": true,
+    
+    // Completeness
+    "skipDefaultLibCheck": false,
+    "skipLibCheck": true,
+    
+    // Command Line
+    "preserveWatchOutput": false,
+    "assumeChangesOnlyAffectDirectDependencies": false,
+    
+    // Performance
+    "incremental": true,
+    "tsBuildInfoFile": ".tsbuildinfo",
+    
+    // Security-focused settings (TypeScript 5.7+)
+    "allowImportingTsExtensions": false,
+    "noUncheckedSideEffectImports": true,
+    
+    // Path mapping (adjust to your project)
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@/components/*": ["./src/components/*"],
+      "@/lib/*": ["./src/lib/*"],
+      "@/hooks/*": ["./src/hooks/*"],
+      "@/utils/*": ["./src/utils/*"],
+      "@/types/*": ["./src/types/*"],
+      "@/test-utils": ["./tests/utils/index.ts"]
+    }
+  },
+  "include": [
+    "src/**/*",
+    "tests/**/*",
+    "types/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build",
+    "coverage",
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "**/*.spec.tsx",
+    "**/*.test.tsx"
+  ],
+  "references": [],
+  "ts-node": {
+    "transpileOnly": true,
+    "files": true,
+    "compilerOptions": {
+      "module": "commonjs"
+    }
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "name": "@outfitter/typescript-utils",
+  "version": "0.1.0",
+  "description": "TypeScript utilities: Result pattern, AppError, utility types",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./vitest": "./vitest.config.ts"
+  },
+  "files": [
+    "dist/**",
+    "vitest.config.ts"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@outfitter/typescript-config": "workspace:*",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3",
+    "vitest": "^1.0.4"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/outfitter-dev/camp.git",
+    "directory": "packages/typescript-utils"
+  },
+  "bugs": {
+    "url": "https://github.com/outfitter-dev/camp/issues"
+  },
+  "homepage": "https://github.com/outfitter-dev/camp/tree/main/packages/typescript-utils#readme"
+}

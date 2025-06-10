@@ -1,0 +1,15 @@
+{
+  "test": {
+    "include": ["src/", "test/"],
+    "exclude": ["src/testdata/", "src/fixtures/"],
+    "files": {
+      "include": ["**/*.test.ts", "**/*.spec.ts"]
+    }
+  },
+  "tasks": {
+    "test": "deno test --allow-read --allow-env",
+    "test:watch": "deno test --allow-read --allow-env --watch",
+    "test:coverage": "deno test --allow-read --allow-env --coverage=coverage",
+    "coverage:report": "deno coverage coverage --lcov --output=coverage.lcov"
+  }
+}

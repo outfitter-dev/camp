@@ -1,0 +1,52 @@
+{
+  "name": "@outfitter/fieldguides",
+  "version": "0.1.0",
+  "description": "Comprehensive coding guidelines, standards, and best practices for Outfitter projects",
+  "type": "module",
+  "files": [
+    "*.md",
+    "conventions/",
+    "guides/",
+    "operations/",
+    "patterns/",
+    "references/",
+    "standards/",
+    "templates/",
+    "docs/"
+  ],
+  "scripts": {
+    "test": "echo 'No tests for documentation package'",
+    "lint": "markdownlint-cli2 '**/*.md'",
+    "format": "prettier --check '**/*.md'",
+    "format:fix": "prettier --write '**/*.md'"
+  },
+  "devDependencies": {
+    "markdownlint-cli2": "^0.15.0",
+    "prettier": "^3.5.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "outfitter",
+    "guidelines",
+    "standards",
+    "best-practices",
+    "coding-standards",
+    "documentation",
+    "typescript",
+    "react",
+    "testing"
+  ],
+  "author": "Matt Galligan",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/outfitter-dev/camp.git",
+    "directory": "packages/fieldguides"
+  },
+  "bugs": {
+    "url": "https://github.com/outfitter-dev/camp/issues"
+  },
+  "homepage": "https://github.com/outfitter-dev/camp/tree/main/packages/fieldguides#readme"
+}

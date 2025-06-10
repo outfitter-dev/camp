@@ -1,0 +1,54 @@
+{
+  "name": "@outfitter/camp",
+  "version": "0.0.0",
+  "description": "Core shared configurations and utilities for Outfitter projects",
+  "private": true,
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  },
+  "packageManager": "pnpm@10.11.1",
+  "scripts": {
+    "dev": "pnpm run --parallel --filter='./packages/*' dev",
+    "build": "pnpm run --filter='./packages/typescript-utils' build && pnpm run --filter='./packages/*' build",
+    "test": "vitest",
+    "lint": "eslint . --max-warnings 0",
+    "lint:md": "markdownlint-cli2",
+    "format": "prettier --check .",
+    "format:fix": "prettier --write .",
+    "type-check": "tsc --noEmit",
+    "ci": "pnpm run format && pnpm run lint && pnpm run lint:md && pnpm run type-check && pnpm run test --run",
+    "ci:local": "pnpm run format:fix && pnpm run lint && pnpm run lint:md && pnpm run type-check && pnpm run test --run",
+    "changeset": "changeset",
+    "changeset:version": "changeset version",
+    "changeset:publish": "changeset publish",
+    "check:all": "pnpm run format && pnpm run lint && pnpm run lint:md && pnpm run type-check",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.1",
+    "@commitlint/cli": "^18.4.3",
+    "@commitlint/config-conventional": "^18.4.3",
+    "@eslint/js": "9.28.0",
+    "@outfitter/eslint-config": "workspace:*",
+    "@types/node": "^20.10.4",
+    "eslint": "^8.55.0",
+    "eslint-import-resolver-typescript": "^4.4.1",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.0",
+    "markdownlint-cli2": "^0.15.0",
+    "prettier": "^3.5.3",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "8.33.1",
+    "vitest": "^1.6.1"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/outfitter-dev/camp.git"
+  },
+  "homepage": "https://github.com/outfitter-dev/camp#readme",
+  "bugs": {
+    "url": "https://github.com/outfitter-dev/camp/issues"
+  }
+}

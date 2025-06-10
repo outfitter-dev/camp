@@ -1,0 +1,54 @@
+{
+  "name": "@outfitter/packlist",
+  "version": "0.1.0",
+  "description": "Unified development configuration manager for Outfitter projects",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "packlist": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@outfitter/eslint-config": "workspace:*",
+    "@outfitter/typescript-config": "workspace:*",
+    "@outfitter/typescript-utils": "workspace:*",
+    "@outfitter/husky-config": "workspace:*",
+    "@outfitter/changeset-config": "workspace:*",
+    "commander": "^11.0.0",
+    "execa": "^8.0.0",
+    "picocolors": "^1.0.0"
+  },
+  "devDependencies": {
+    "@outfitter/typescript-config": "workspace:*",
+    "@types/node": "^20.10.4",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3",
+    "vitest": "^1.0.4"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/outfitter-dev/camp.git",
+    "directory": "packages/packlist"
+  },
+  "bugs": {
+    "url": "https://github.com/outfitter-dev/camp/issues"
+  },
+  "homepage": "https://github.com/outfitter-dev/camp/tree/main/packages/packlist#readme"
+}

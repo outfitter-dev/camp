@@ -1,0 +1,52 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "lib": ["ES2022"],
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true,
+    "declarationMap": true,
+    "composite": true,
+    "incremental": true
+  },
+  "references": [
+    {
+      "path": "./packages/typescript-config"
+    },
+    {
+      "path": "./packages/eslint-config"
+    },
+    {
+      "path": "./packages/typescript-utils"
+    },
+    {
+      "path": "./packages/husky-config"
+    },
+    {
+      "path": "./packages/changeset-config"
+    },
+    {
+      "path": "./packages/packlist"
+    },
+    {
+      "path": "./packages/cli"
+    },
+    {
+      "path": "./packages/fieldguides"
+    }
+  ],
+  "exclude": [
+    "**/node_modules",
+    "**/dist",
+    "**/*.config.ts",
+    "**/*.config.mjs",
+    "prettier.config.ts"
+  ],
+  "files": []
+}
