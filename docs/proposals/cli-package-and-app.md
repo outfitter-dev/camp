@@ -7,6 +7,7 @@ This proposal examines whether `@outfitter/cli` should remain in `packages/` as 
 ## Current State
 
 `@outfitter/cli` currently lives in `packages/cli/` and:
+
 - Is published to npm as `@outfitter/cli`
 - Can be installed globally via `npm install -g @outfitter/cli`
 - Depends on `@outfitter/packlist` as a library
@@ -17,12 +18,14 @@ This proposal examines whether `@outfitter/cli` should remain in `packages/` as 
 ### When to use `packages/`
 
 A CLI belongs in `packages/` when it:
+
 - **Is consumed as a library** by other packages/apps
 - **Exports reusable APIs** beyond just CLI commands
 - **Provides programmatic interfaces** that other tools depend on
 - **Shares core business logic** that needs to be accessible elsewhere
 
 Examples:
+
 - `@outfitter/packlist` - Core configuration logic used by CLI and potentially other tools
 - Build tool CLIs that expose JavaScript APIs (like `esbuild`, `tsup`)
 - Testing frameworks with both CLI and programmatic usage
@@ -30,12 +33,14 @@ Examples:
 ### When to use `apps/`
 
 A CLI belongs in `apps/` when it:
+
 - **Is purely an end-user tool** with no library consumers
 - **Has unique deployment requirements** (different Node version, special builds)
 - **Contains application-specific logic** not reusable elsewhere
 - **Needs isolated dependencies** that shouldn't affect other packages
 
 Examples:
+
 - Developer tools that only provide commands (like `create-react-app`)
 - Internal company CLIs for specific workflows
 - CLIs with heavy dependencies or native bindings
@@ -72,6 +77,7 @@ import { program } from 'commander';
 ```
 
 This approach:
+
 - Maintains flexibility for future programmatic usage
 - Follows established patterns in the ecosystem
 - Allows easy migration to `apps/` later if needed
@@ -109,6 +115,7 @@ monorepo/
 ```
 
 Key considerations:
+
 - Language-specific apps in `apps/` with their own build systems
 - Shared TypeScript packages in `packages/`
 - Clear build orchestration via Turbo or similar
