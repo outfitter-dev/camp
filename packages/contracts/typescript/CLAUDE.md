@@ -37,7 +37,8 @@ specialized modules (like Zod-based validation) are isolated in sub-paths.
 
 ### 🔴 Blockers (Must Fix)
 
-- [ ] Any `throw` statements in public API functions.
+- [ ] Any `throw` statements in public API functions (exception: input
+      validation in `makeError` to catch developer mistakes).
 - [ ] Runtime dependencies added to the core entry point's `package.json`.
 - [ ] Side effects (console.log, global mutations, I/O) in core functions.
 - [ ] Missing error handling for all failure modes.

@@ -88,4 +88,4 @@ Uses `tsup` to build:
   projects
 - The config is designed for monorepo workflows but works with single packages
   too
-- It's a development dependency that sets up release management infrastructure
+- It's a development dependency that sets up release management infrastructure.

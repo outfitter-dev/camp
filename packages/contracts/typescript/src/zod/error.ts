@@ -7,11 +7,19 @@ import { ErrorCode, makeError, type AppError } from '../error';
  */
 export function fromZod(error: z.ZodError): AppError {
   return makeError(ErrorCode.VALIDATION_ERROR, 'Validation failed', {
-    issues: error.issues.map(issue => ({
-      path: issue.path.join('.'),
-      message: issue.message,
-      code: issue.code,
-      received: 'received' in issue ? issue.received : undefined,
-    })),
+    issues: error.issues.map(issue => {
+      const baseIssue = {
+        path: issue.path.join('.'),
+        message: issue.message,
+        code: issue.code,
+      };
+
+      // Type guard for issues with 'received' property
+      if ('received' in issue && issue.received !== undefined) {
+        return { ...baseIssue, received: issue.received };
+      }
+
+      return baseIssue;
+    }),
   });
 }

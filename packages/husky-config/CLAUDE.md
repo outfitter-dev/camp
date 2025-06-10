@@ -7,7 +7,7 @@ code in this repository.
 
 This is the `@outfitter/husky-config` package - a configuration and
 initialization utility for Husky Git hooks in Outfitter projects. It provides
-standard Git hooks for code quality enforcement including commit message linting
+standard Git hooks for code quality enforcement, including commit message linting
 and pre-commit checks.
 
 ## Key Commands

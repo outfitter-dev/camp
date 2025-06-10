@@ -79,7 +79,7 @@ Monorepos promote knowledge sharing:
 
 **Example structure**:
 
-```
+```text
 apps/
   web/          # Next.js customer portal
   mobile/       # React Native app

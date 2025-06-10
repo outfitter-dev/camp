@@ -2,7 +2,7 @@
 
 ## Summary
 
-This proposal examines splitting `@outfitter/cli` into a shared core library 
+This proposal examines splitting `@outfitter/cli` into a shared core library
 (`packages/cli`) and a standalone CLI application (`apps/cli`), establishing
 patterns for similar decisions across Outfitter projects.
 
@@ -26,7 +26,8 @@ Based on examining the current CLI implementation:
 2. **Library dependencies are clear**: Uses `@outfitter/packlist` for core logic
 3. **Contains CLI-specific logic**: Error handling, user prompts, spinners
 4. **Hardcoded supplies list**: No actual supply registry implemented yet
-5. **Good separation exists**: Core logic vs CLI presentation already somewhat separated
+5. **Good separation exists**: Core logic vs CLI presentation already somewhat
+   separated
 
 ## Decision Framework
 
@@ -113,7 +114,9 @@ export interface InitOptions {
   force?: boolean;
 }
 
-export async function initProject(options: InitOptions): Promise<Result<void, AppError>> {
+export async function initProject(
+  options: InitOptions
+): Promise<Result<void, AppError>> {
   // Core logic without CLI dependencies
 }
 ```
@@ -137,7 +140,7 @@ program
   .action(async (options) => {
     const spinner = ora('Initializing project...').start();
     const result = await initProject(options);
-    
+
     if (result.success) {
       spinner.succeed(chalk.green('Project initialized!'));
     } else {
@@ -185,6 +188,7 @@ To implement this split:
 ### Phase 1: Extract Core Library
 
 1. **Create clean API exports** in current `packages/cli/src/index.ts`:
+
    ```typescript
    export { initProject } from './commands/init';
    export { addSupplies } from './commands/add';
@@ -195,6 +199,7 @@ To implement this split:
    ```
 
 2. **Remove CLI dependencies** from `packages/cli/package.json`:
+
    - Remove: commander, inquirer, chalk, ora
    - Keep: fs-extra, @outfitter/packlist, @outfitter/fieldguides
 
@@ -221,7 +226,7 @@ To implement this split:
 
 For projects with mixed languages:
 
-```
+```text
 monorepo/
 ├── apps/
 │   ├── api/          # Go backend
@@ -248,6 +253,7 @@ Key considerations:
 When deciding on CLI architecture:
 
 **Core Library (`packages/`):**
+
 - [ ] Contains reusable business logic
 - [ ] Can be imported by other packages/apps
 - [ ] Has minimal UI/presentation dependencies
@@ -255,6 +261,7 @@ When deciding on CLI architecture:
 - [ ] Returns structured data/Results
 
 **CLI Application (`apps/`):**
+
 - [ ] Handles user interaction (prompts, styling, spinners)
 - [ ] Manages process lifecycle (exit codes, signals)
 - [ ] Has CLI framework dependencies (commander, inquirer)
@@ -262,6 +269,7 @@ When deciding on CLI architecture:
 - [ ] Focuses on presentation and UX
 
 **Split Recommended When:**
+
 - Core logic is substantial enough to warrant separate package
 - Multiple interfaces might consume the same logic
 - Testing command logic separately from CLI setup is valuable
@@ -281,12 +289,14 @@ When deciding on CLI architecture:
 ### Future Outfitter Tools
 
 - **`packages/git-hooks`** + **`apps/git-hooks-cli`**: Git hook management
-- **`packages/supply-registry`** + **`apps/supply-server`**: Supply registry API + server
+- **`packages/supply-registry`** + **`apps/supply-server`**: Supply registry
+  API + server
 - **`packages/validation`** + **`apps/doctor`**: Project compliance checking
 
 ### Multi-Interface Support
 
 With core libraries extracted, we could build:
+
 - **VS Code Extension**: Uses `@outfitter/cli` APIs
 - **Web Dashboard**: Import and call supply management functions
 - **GitHub Actions**: Programmatic supply management in CI/CD

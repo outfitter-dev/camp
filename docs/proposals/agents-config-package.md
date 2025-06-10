@@ -2,25 +2,40 @@
 
 ## Summary
 
-This proposal outlines the creation of `@outfitter/agents-config`, a package that provides standardized, reusable configurations for AI development agents (CodeRabbit, GitHub Copilot, Cursor, etc.). This package would serve as the first "supply" in the Outfitter ecosystem, demonstrating the value proposition of standardized development configurations.
+This proposal outlines the creation of `@outfitter/agents-config`, a package
+that provides standardized, reusable configurations for AI development agents
+(CodeRabbit, GitHub Copilot, Cursor, etc.). This package would serve as the
+first "supply" in the Outfitter ecosystem, demonstrating the value proposition
+of standardized development configurations.
 
 ## Problem Statement
 
 ### Current Pain Points
 
-1. **Configuration Fragmentation**: Each project requires manual setup of AI agent configurations, leading to inconsistency across teams and repositories.
+1. **Configuration Fragmentation**: Each project requires manual setup of AI
+   agent configurations, leading to inconsistency across teams and repositories.
 
-2. **Complex Configuration Learning Curve**: Tools like CodeRabbit have extensive configuration options (profiles, tools, path instructions, tone instructions) that require deep understanding to optimize.
+2. **Complex Configuration Learning Curve**: Tools like CodeRabbit have
+   extensive configuration options (profiles, tools, path instructions, tone
+   instructions) that require deep understanding to optimize.
 
-3. **Monorepo Complexity**: Large codebases with multiple project types need sophisticated path-based configurations that are time-consuming to create and maintain.
+3. **Monorepo Complexity**: Large codebases with multiple project types need
+   sophisticated path-based configurations that are time-consuming to create and
+   maintain.
 
-4. **Team Standardization**: No easy way to share and enforce consistent AI agent configurations across an organization.
+4. **Team Standardization**: No easy way to share and enforce consistent AI
+   agent configurations across an organization.
 
-5. **Configuration Drift**: Projects start with good configurations but degrade over time without centralized maintenance.
+5. **Configuration Drift**: Projects start with good configurations but degrade
+   over time without centralized maintenance.
 
 ### Opportunity
 
-The comprehensive [CodeRabbit Configuration Guide](../fieldguides/content/guides/coderabbit-guide.md) demonstrates proven patterns that could benefit every project. Rather than each team recreating these configurations, we can package them as reusable, maintainable supplies.
+The comprehensive
+[CodeRabbit Configuration Guide](../fieldguides/content/guides/coderabbit-guide.md)
+demonstrates proven patterns that could benefit every project. Rather than each
+team recreating these configurations, we can package them as reusable,
+maintainable supplies.
 
 ## Proposed Solution
 
@@ -29,7 +44,8 @@ The comprehensive [CodeRabbit Configuration Guide](../fieldguides/content/guides
 Create `@outfitter/agents-config` as a TypeScript package that:
 
 - **Provides Templates**: Pre-built configurations for common project types
-- **Generates Configurations**: Smart configuration generation based on project detection
+- **Generates Configurations**: Smart configuration generation based on project
+  detection
 - **Supports Monorepos**: Automatic path-based instruction generation
 - **Enables Customization**: Extensible template system for team-specific needs
 - **Maintains Standards**: Centralized updates to configuration best practices
@@ -45,7 +61,7 @@ Create `@outfitter/agents-config` as a TypeScript package that:
 
 ### Package Structure
 
-```
+```text
 packages/agents-config/
 ├── src/
 │   ├── types/
@@ -119,15 +135,27 @@ export interface ProjectDetectionResult {
 }
 
 // Core functions
-export function detectProject(rootPath: string): Promise<ProjectDetectionResult>;
+export function detectProject(
+  rootPath: string
+): Promise<ProjectDetectionResult>;
 export function generateConfig(config: AgentConfig): Promise<string>;
-export function validateConfig(agent: string, content: string): Promise<ValidationResult>;
+export function validateConfig(
+  agent: string,
+  content: string
+): Promise<ValidationResult>;
 
 // CodeRabbit-specific API
 export interface CodeRabbitConfig {
   profile: 'chill' | 'assertive';
   outputFormat: 'human' | 'structured' | 'github-issues';
-  projectType: 'typescript-npm' | 'typescript-app' | 'python-fastapi' | 'python-library' | 'documentation' | 'react-app' | 'nextjs-app';
+  projectType:
+    | 'typescript-npm'
+    | 'typescript-app'
+    | 'python-fastapi'
+    | 'python-library'
+    | 'documentation'
+    | 'react-app'
+    | 'nextjs-app';
   tools?: {
     eslint?: boolean;
     ruff?: boolean;
@@ -144,16 +172,22 @@ export interface CodeRabbitConfig {
 }
 
 export interface MonorepoConfig {
-  apps: Record<string, {
-    type: string;
-    language: string;
-    instructions: string;
-  }>;
-  packages: Record<string, {
-    type: string;
-    language: string;
-    instructions: string;
-  }>;
+  apps: Record<
+    string,
+    {
+      type: string;
+      language: string;
+      instructions: string;
+    }
+  >;
+  packages: Record<
+    string,
+    {
+      type: string;
+      language: string;
+      instructions: string;
+    }
+  >;
   sharedPaths?: Array<{
     pattern: string;
     instructions: string;
@@ -163,8 +197,12 @@ export interface MonorepoConfig {
 // CodeRabbit functions
 export namespace CodeRabbit {
   export function generateConfig(config: CodeRabbitConfig): Promise<string>;
-  export function generateMonorepoConfig(structure: MonorepoStructure): Promise<string>;
-  export function validateConfig(yamlContent: string): Promise<ValidationResult>;
+  export function generateMonorepoConfig(
+    structure: MonorepoStructure
+  ): Promise<string>;
+  export function validateConfig(
+    yamlContent: string
+  ): Promise<ValidationResult>;
   export function mergeTemplates(base: string, overlay: string): string;
 }
 ```
@@ -173,53 +211,67 @@ export namespace CodeRabbit {
 
 ```typescript
 // Project detection algorithm
+// Note: Consider separating I/O operations from pure detection logic
+// for better testability and composability
 export class ProjectScanner {
   async detectProjectType(rootPath: string): Promise<ProjectType> {
     const files = await this.scanFiles(rootPath);
-    
+
     // Check for specific files and patterns
     if (files.includes('package.json')) {
       const packageJson = await this.readPackageJson(rootPath);
-      
-      if (packageJson.devDependencies?.typescript || packageJson.dependencies?.typescript) {
+
+      if (
+        packageJson.devDependencies?.typescript ||
+        packageJson.dependencies?.typescript
+      ) {
         return this.detectTypeScriptProject(packageJson, files);
       }
-      
+
       return this.detectJavaScriptProject(packageJson, files);
     }
-    
-    if (files.includes('pyproject.toml') || files.includes('requirements.txt')) {
+
+    if (
+      files.includes('pyproject.toml') ||
+      files.includes('requirements.txt')
+    ) {
       return this.detectPythonProject(rootPath, files);
     }
-    
+
     if (files.some(f => f.endsWith('.md'))) {
       return 'documentation';
     }
-    
+
     return 'unknown';
   }
-  
-  private detectTypeScriptProject(packageJson: any, files: string[]): ProjectType {
+
+  private detectTypeScriptProject(
+    packageJson: any,
+    files: string[]
+  ): ProjectType {
     // Library detection
     if (packageJson.main || packageJson.exports) {
       if (packageJson.bin) return 'typescript-cli';
       return 'typescript-npm';
     }
-    
+
     // App detection
     if (packageJson.dependencies?.next) return 'nextjs-app';
     if (packageJson.dependencies?.react) return 'react-app';
-    if (packageJson.dependencies?.express || packageJson.dependencies?.fastify) return 'typescript-api';
-    
+    if (packageJson.dependencies?.express || packageJson.dependencies?.fastify)
+      return 'typescript-api';
+
     return 'typescript-app';
   }
-  
-  async detectMonorepoStructure(rootPath: string): Promise<MonorepoStructure | null> {
+
+  async detectMonorepoStructure(
+    rootPath: string
+  ): Promise<MonorepoStructure | null> {
     const workspaceFile = await this.findWorkspaceFile(rootPath);
     if (!workspaceFile) return null;
-    
+
     const packages = await this.scanWorkspacePackages(rootPath, workspaceFile);
-    
+
     return {
       type: 'monorepo',
       workspaceFile,
@@ -227,8 +279,8 @@ export class ProjectScanner {
         name: pkg.name,
         path: pkg.path,
         type: this.detectProjectType(pkg.path),
-        language: this.detectLanguage(pkg.path)
-      }))
+        language: this.detectLanguage(pkg.path),
+      })),
     };
   }
 }
@@ -240,26 +292,31 @@ export class ProjectScanner {
 // Template engine for configuration generation
 export class TemplateEngine {
   private templates = new Map<string, string>();
-  
+
   async loadTemplate(agent: string, templateName: string): Promise<string> {
-    const templatePath = path.join(__dirname, '../templates', agent, `${templateName}.yaml`);
+    const templatePath = path.join(
+      __dirname,
+      '../templates',
+      agent,
+      `${templateName}.yaml`
+    );
     return await fs.readFile(templatePath, 'utf8');
   }
-  
+
   interpolate(template: string, variables: Record<string, any>): string {
     return template.replace(/\{\{(\w+)\}\}/g, (match, key) => {
       return variables[key] ?? match;
     });
   }
-  
+
   mergeTemplates(baseTemplate: string, overlayTemplate: string): string {
     const base = yaml.load(baseTemplate) as any;
     const overlay = yaml.load(overlayTemplate) as any;
-    
+
     return yaml.dump(deepMerge(base, overlay), {
       indent: 2,
       lineWidth: 100,
-      noRefs: true
+      noRefs: true,
     });
   }
 }
@@ -295,35 +352,31 @@ path_filters:
 
 #### AI-Structured Output (`templates/coderabbit/base/ai-structured.yaml`)
 
-```yaml
+````yaml
 # yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
 language: 'en-US'
 
 tone_instructions: |
   Output structured feedback for machine parsing:
   Format: ID|SEVERITY|CATEGORY|FILE:LINES|FIX_AVAILABLE
-  
+
   Severity: CRITICAL > HIGH > MEDIUM > LOW
   Categories: Security|Performance|Types|Breaking|Style|Test
   Fix: YES (with code) | MANUAL (human needed) | NO (info only)
-  
+
   After issue list, include fixes:
   --- FIXES ---
   ID: <issue_id>
   ```{{language}}
   <replacement code>
-  ```
+````
 
-reviews:
-  profile: 'assertive'
-  poem: false
-  high_level_summary: true
-  request_changes_workflow: true
+reviews: profile: 'assertive' poem: false high_level_summary: true
+request_changes_workflow: true
 
-tools:
-  gitleaks: { enabled: true }
-  semgrep: { enabled: true }
-```
+tools: gitleaks: { enabled: true } semgrep: { enabled: true }
+
+````
 
 ### Project-Specific Templates
 
@@ -377,7 +430,7 @@ path_filters:
   - 'src/**'
   - '!**/*.test.ts'
   - '!node_modules/**'
-```
+````
 
 ### Monorepo Templates
 
@@ -420,23 +473,24 @@ reviews:
 
     # Package-specific rules
     - path: 'packages/ui/**'
-      instructions: 'Focus: Accessibility, responsive design, component API stability'
-    
+      instructions:
+        'Focus: Accessibility, responsive design, component API stability'
+
     - path: 'packages/utils/**'
       instructions: 'Focus: Type safety, tree shaking, zero dependencies'
-    
+
     - path: 'packages/contracts/**'
       instructions: 'Focus: API contracts, breaking changes, semver compliance'
 
 tools:
   # TypeScript/JavaScript
   eslint: { enabled: true }
-  
+
   # Python
   ruff: { enabled: true }
   bandit: { enabled: true }
   mypy: { enabled: true }
-  
+
   # Universal
   gitleaks: { enabled: true }
   semgrep: { enabled: true }
@@ -448,6 +502,7 @@ tools:
 ### Phase 1: Core Foundation (Weeks 1-2)
 
 **Deliverables:**
+
 - Package structure and basic TypeScript setup
 - Project detection utilities
 - Template loading and merging system
@@ -455,6 +510,7 @@ tools:
 - Basic validation
 
 **Key Files:**
+
 - `src/detection/project-scanner.ts`
 - `src/utils/template-engine.ts`
 - `src/agents/coderabbit/index.ts`
@@ -462,6 +518,7 @@ tools:
 - `templates/coderabbit/project-types/*.yaml`
 
 **Success Criteria:**
+
 - Can detect project type from filesystem scan
 - Can generate basic CodeRabbit configuration
 - Templates validate against CodeRabbit schema
@@ -469,17 +526,20 @@ tools:
 ### Phase 2: Monorepo Support (Weeks 3-4)
 
 **Deliverables:**
+
 - Monorepo structure detection
 - Path-based instruction generation
 - Complex template merging
 - Monorepo-specific templates
 
 **Key Files:**
+
 - `src/detection/monorepo-analyzer.ts`
 - `src/agents/coderabbit/generators/monorepo.ts`
 - `templates/coderabbit/monorepo/*.yaml`
 
 **Success Criteria:**
+
 - Correctly detects monorepo structure
 - Generates appropriate path instructions
 - Handles mixed-language projects
@@ -487,17 +547,20 @@ tools:
 ### Phase 3: CLI Integration (Weeks 5-6)
 
 **Deliverables:**
+
 - Integration with `@outfitter/cli`
 - Interactive configuration wizard
 - File system operations
 - Configuration validation commands
 
 **Key Files:**
+
 - CLI command implementations
 - Interactive prompts for customization
 - File writing utilities
 
 **Success Criteria:**
+
 - `outfitter agents init coderabbit` works end-to-end
 - Generated configurations are valid and functional
 - Users can customize templates
@@ -505,12 +568,14 @@ tools:
 ### Phase 4: Testing & Polish (Weeks 7-8)
 
 **Deliverables:**
+
 - Comprehensive test suite
 - Documentation and examples
 - Performance optimization
 - Error handling improvements
 
 **Success Criteria:**
+
 - 90%+ test coverage
 - All templates tested with real projects
 - Performance benchmarks established
@@ -542,11 +607,7 @@ The agents-config package should integrate with the packlist system:
 {
   "name": "Frontend Standard",
   "version": "1.0.0",
-  "supplies": [
-    "typescript-standards",
-    "react-patterns", 
-    "agents-config"
-  ],
+  "supplies": ["typescript-standards", "react-patterns", "agents-config"],
   "agentConfigs": {
     "coderabbit": {
       "type": "react-app",
@@ -576,7 +637,7 @@ const project = await detectProject('/path/to/project');
 const config = await CodeRabbit.generateConfig({
   projectType: project.type,
   profile: 'assertive',
-  outputFormat: 'structured'
+  outputFormat: 'structured',
 });
 
 await fs.writeFile('.coderabbit.yaml', config);
@@ -594,15 +655,15 @@ const config = await CodeRabbit.generateConfig({
   tools: {
     eslint: true,
     gitleaks: true,
-    semgrep: false
+    semgrep: false,
   },
   customInstructions: 'Focus on performance and security',
   pathInstructions: [
     {
       pattern: 'src/auth/**',
-      instructions: 'CRITICAL: Authentication code - zero tolerance for issues'
-    }
-  ]
+      instructions: 'CRITICAL: Authentication code - zero tolerance for issues',
+    },
+  ],
 });
 ```
 
@@ -637,13 +698,15 @@ if (project.isMonorepo) {
 
 ### Validation Tests
 
-- **Schema Compliance**: All generated configs validate against CodeRabbit schema
-- **Functional Testing**: Generated configs work with actual CodeRabbit instances
+- **Schema Compliance**: All generated configs validate against CodeRabbit
+  schema
+- **Functional Testing**: Generated configs work with actual CodeRabbit
+  instances
 - **Performance Testing**: Large monorepo configuration generation times
 
 ### Test Fixtures
 
-```
+```text
 __tests__/fixtures/
 ├── typescript-npm/
 │   ├── package.json
@@ -670,34 +733,41 @@ __tests__/fixtures/
 ### Technical Risks
 
 **Risk**: CodeRabbit schema changes breaking generated configurations
+
 - **Mitigation**: Pin to specific schema versions, automated validation in CI
 - **Impact**: Medium - requires template updates
 
 **Risk**: Complex monorepo detection edge cases
+
 - **Mitigation**: Comprehensive test fixtures, fallback to manual configuration
 - **Impact**: Low - graceful degradation possible
 
 **Risk**: Template conflicts in complex scenarios
+
 - **Mitigation**: Clear merge precedence rules, validation warnings
 - **Impact**: Medium - could generate invalid configs
 
 ### Product Risks
 
 **Risk**: Configuration templates become outdated
+
 - **Mitigation**: Regular review cycle, community feedback integration
 - **Impact**: Medium - affects quality of generated configs
 
 **Risk**: Too many options overwhelming users
+
 - **Mitigation**: Good defaults, progressive disclosure, wizard interface
 - **Impact**: Low - CLI can guide users
 
 **Risk**: Limited adoption due to learning curve
+
 - **Mitigation**: Excellent documentation, examples, gradual rollout
 - **Impact**: High - affects package value
 
 ### Operational Risks
 
 **Risk**: Support burden for generated configurations
+
 - **Mitigation**: Clear documentation about customization, community support
 - **Impact**: Medium - requires ongoing maintenance
 
@@ -711,7 +781,8 @@ __tests__/fixtures/
 
 ### Quality Metrics
 
-- **Validation Rate**: Percentage of generated configs that validate successfully
+- **Validation Rate**: Percentage of generated configs that validate
+  successfully
 - **User Satisfaction**: Survey feedback on generated configuration quality
 - **Issue Reports**: Bug reports related to generated configurations
 
@@ -748,15 +819,21 @@ __tests__/fixtures/
 
 ## Conclusion
 
-The `@outfitter/agents-config` package addresses a clear need for standardized AI agent configurations while demonstrating the value of the Outfitter supply system. Starting with CodeRabbit provides a concrete, high-value use case that can be expanded to other agents over time.
+The `@outfitter/agents-config` package addresses a clear need for standardized
+AI agent configurations while demonstrating the value of the Outfitter supply
+system. Starting with CodeRabbit provides a concrete, high-value use case that
+can be expanded to other agents over time.
 
 The package design emphasizes:
+
 - **Practical utility** with immediate value for teams
-- **Extensibility** for future agents and project types  
+- **Extensibility** for future agents and project types
 - **Maintainability** through clear separation of concerns
 - **Community contribution** through template sharing
 
-This package would serve as an excellent proof-of-concept for the broader Outfitter ecosystem while solving real problems that development teams face today.
+This package would serve as an excellent proof-of-concept for the broader
+Outfitter ecosystem while solving real problems that development teams face
+today.
 
 ## Appendix
 
@@ -771,3 +848,4 @@ This package would serve as an excellent proof-of-concept for the broader Outfit
 - [CodeRabbit Documentation](https://docs.coderabbit.ai/)
 - [CodeRabbit YAML Schema](https://coderabbit.ai/integrations/schema.v2.json)
 - [Minimatch Glob Patterns](https://github.com/isaacs/minimatch)
+

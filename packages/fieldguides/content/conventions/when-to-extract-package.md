@@ -178,7 +178,7 @@ export interface ApiResponse<T> {
 
 ❌ **Don't create catch-all utility packages**
 
-```
+```text
 packages/
   utils/          # Bad: becomes a junk drawer
     strings.ts    # Random string functions
@@ -188,7 +188,7 @@ packages/
 
 ✅ **Do create focused packages**
 
-```
+```text
 packages/
   date-fns/       # Good: clear purpose
   validation/     # Good: cohesive domain

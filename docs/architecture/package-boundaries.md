@@ -138,11 +138,11 @@ Consider consolidating packages when:
 
 ## Examples of Good Boundaries
 
-### `@outfitter/typescript-utils`
+### `@outfitter/contracts`
 
-- **Single Responsibility**: Error handling patterns
-- **Clear API**: Result type and utilities
-- **No Dependencies**: Core primitive
+- **Single Responsibility**: Core contracts for type-safe development
+- **Clear API**: Result type, error handling, branded types, and assertions
+- **No Dependencies**: Zero runtime dependencies (core primitive)
 - **Multiple Consumers**: Used by all packages
 
 ### `@outfitter/cli`

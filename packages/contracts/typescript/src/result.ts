@@ -260,6 +260,11 @@ export function unwrapError<E>(result: Result<unknown, E>): DeepReadonly<E> {
 
 /**
  * Wraps a sync function that might throw an error into a `Result`.
+ *
+ * Note: All errors are converted to AppError using toAppError(), which may
+ * flatten custom error types. If you need to preserve specific error subtypes,
+ * handle them explicitly before calling trySync.
+ *
  * @param fn The function to wrap
  * @returns The result of the function, or a failure if an error was thrown
  */
@@ -273,6 +278,11 @@ export function trySync<T>(fn: () => T): Result<T, AppError> {
 
 /**
  * Wraps an async function that might throw an error into a `Result`.
+ *
+ * Note: All errors are converted to AppError using toAppError(), which may
+ * flatten custom error types. If you need to preserve specific error subtypes,
+ * handle them explicitly before calling tryAsync.
+ *
  * @param fn The async function to wrap
  * @returns A promise that resolves to the result of the function, or a failure
  */

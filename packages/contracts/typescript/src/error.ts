@@ -185,7 +185,7 @@ export function toAppError(error: unknown): AppError {
   return makeError(
     ErrorCode.INTERNAL_ERROR,
     'Unknown error occurred',
-    { originalError: error },
+    { raw: error },
     undefined
   );
 }
