@@ -45,10 +45,10 @@ pids/
 
 # IDE and editors
 .vscode/
+!.vscode/settings.json
 .idea/
 *.swp
 *.swo
-*~
 
 # OS generated files
 .DS_Store
