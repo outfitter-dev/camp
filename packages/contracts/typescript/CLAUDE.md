@@ -95,7 +95,7 @@ function parseJson<T>(json: string): Result<T, AppError> {
 
 ```typescript
 // ✅ Correct - Isolate dependency via sub-path
-import { validateEnv } from '@outfitter/contracts/zod';
+import { validateEnv } from '@outfitter/contracts-zod';
 import { z } from 'zod';
 
 const envSchema = z.object({
@@ -161,7 +161,7 @@ function divide(a: number, b: number): Result<number, AppError> {
 import { makeError, success, failure } from '@outfitter/contracts';
 
 // ✅ Correct - Import specialized functions from sub-paths
-import { fromZod } from '@outfitter/contracts/zod';
+import { fromZod } from '@outfitter/contracts-zod';
 
 // ❌ Wrong - Barrel imports can hurt tree-shaking
 import * as utils from '@outfitter/contracts';
@@ -175,6 +175,6 @@ import * as utils from '@outfitter/contracts';
   `assertNever`).
 - `brand.ts`: Utilities for creating `Branded` types for nominal typing.
 
-### `@outfitter/contracts/zod` (Sub-path)
+### `@outfitter/contracts-zod` (Standalone Package)
 
 - **`env.ts`**: Zod-based schemas and parsers for environment variables.

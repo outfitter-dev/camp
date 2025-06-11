@@ -16,11 +16,6 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
-    },
-    "./zod": {
-      "types": "./dist/zod/index.d.ts",
-      "import": "./dist/zod/index.mjs",
-      "require": "./dist/zod/index.js"
     }
   },
   "files": [
@@ -34,9 +29,7 @@
     "test:ui": "vitest --ui",
     "type-check": "tsc --noEmit"
   },
-  "dependencies": {
-    "zod": "^3.22.4"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@outfitter/typescript-config": "workspace:*",
     "tsup": "^8.0.1",

@@ -2,8 +2,8 @@
 
 ## Overview
 
-This document defines how packages in the Outfitter monorepo are organized, their
-responsibilities, and their interaction patterns.
+This document defines how packages in the Outfitter monorepo are organized,
+their responsibilities, and their interaction patterns.
 
 ## Package Categories
 

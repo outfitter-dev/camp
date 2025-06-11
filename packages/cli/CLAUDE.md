@@ -85,8 +85,8 @@ Projects using the CLI have a `.outfitter/` directory:
 - The CLI consumes `@outfitter/packlist` as a library for core supply management
   logic
 - It references `@outfitter/fieldguides` for supply content and documentation
-- All packages use `@outfitter/typescript-utils` for error handling with the
-  Result pattern
+- All packages use `@outfitter/contracts` for error handling with the Result
+  pattern
 
 ## Development Patterns
 

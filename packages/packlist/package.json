@@ -27,7 +27,7 @@
   "dependencies": {
     "@outfitter/eslint-config": "workspace:*",
     "@outfitter/typescript-config": "workspace:*",
-    "@outfitter/typescript-utils": "workspace:*",
+    "@outfitter/contracts": "workspace:*",
     "@outfitter/husky-config": "workspace:*",
     "@outfitter/changeset-config": "workspace:*",
     "commander": "^11.0.0",

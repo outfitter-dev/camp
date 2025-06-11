@@ -9,6 +9,18 @@ export default tseslint.config(
 
   {
     languageOptions: {
+      globals: {
+        // Node.js globals
+        console: 'readonly',
+        process: 'readonly',
+        Buffer: 'readonly',
+        __dirname: 'readonly',
+        __filename: 'readonly',
+        global: 'readonly',
+        require: 'readonly',
+        module: 'readonly',
+        exports: 'readonly',
+      },
       parserOptions: {
         projectService: true,
         tsconfigRootDir: import.meta.dirname,
@@ -40,6 +52,12 @@ export default tseslint.config(
       ],
       '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
       '@typescript-eslint/array-type': ['error', { default: 'generic' }],
+
+      // Temporarily allow require() for compatibility
+      '@typescript-eslint/no-require-imports': 'warn',
+
+      // Allow empty catch blocks with comments (common for file existence checks)
+      'no-empty': ['error', { allowEmptyCatch: true }],
 
       // Modern Naming Conventions (no I prefix)
       '@typescript-eslint/naming-convention': [

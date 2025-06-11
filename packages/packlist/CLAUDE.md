@@ -62,7 +62,7 @@ This package orchestrates the installation of:
 
 - `@outfitter/eslint-config` - ESLint configuration
 - `@outfitter/typescript-config` - TypeScript configurations
-- `@outfitter/typescript-utils` - Utility functions with Result pattern
+- `@outfitter/contracts` - Utility functions with Result pattern
 - `@outfitter/husky-config` - Git hooks setup
 - `@outfitter/changeset-config` - Changesets configuration
 
@@ -114,5 +114,5 @@ Uses `tsup` to build:
 
 - This is the core library used by `@outfitter/cli` for supply management
 - It provides the low-level APIs for configuration setup
-- All error handling uses the Result pattern from `@outfitter/typescript-utils`
+- All error handling uses the Result pattern from `@outfitter/contracts`
 - The package is designed to be idempotent - running init multiple times is safe

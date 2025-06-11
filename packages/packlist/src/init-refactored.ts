@@ -2,7 +2,7 @@ import { execa } from 'execa';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import pc from 'picocolors';
-import { type Result, success, failure } from '@outfitter/typescript-utils';
+import { type Result, success, failure } from '@outfitter/contracts';
 import { initHusky, addPrepareScript } from '@outfitter/husky-config';
 import {
   initChangesets,
@@ -81,7 +81,7 @@ export async function init(
   }
 
   if (options.utils !== false) {
-    dependencies.push('@outfitter/typescript-utils');
+    dependencies.push('@outfitter/contracts');
   }
 
   // Add husky configuration

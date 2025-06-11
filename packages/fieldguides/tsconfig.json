@@ -38,6 +38,6 @@
     "skipLibCheck": true,
     "resolveJsonModule": true
   },
-  "include": ["scripts/**/*.ts"],
-  "exclude": ["node_modules", "scripts/**/*.js"]
+  "include": ["scripts/**/*.ts", "src/**/*.ts"],
+  "exclude": ["node_modules", "scripts/**/*.js", "content/templates/**/*"]
 }

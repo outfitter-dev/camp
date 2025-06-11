@@ -25,8 +25,7 @@ managing your development environment.
   dependencies
 - **CLI Interface**: Command-line tool for easy project initialization
 - **Programmatic API**: Use as a library in your build scripts
-- **Result Pattern**: Built on `@outfitter/typescript-utils` for robust error
-  handling
+- **Result Pattern**: Built on `@outfitter/contracts` for robust error handling
 
 ## Usage
 
@@ -50,7 +49,7 @@ npx packlist status
 
 ```typescript
 import { init, getConfig } from '@outfitter/packlist';
-import { isSuccess } from '@outfitter/typescript-utils';
+import { isSuccess } from '@outfitter/contracts';
 
 // Initialize project configuration
 const result = await init({
@@ -72,7 +71,7 @@ const config = getConfig('eslint');
 - **`typescript`**: TypeScript configuration (`@outfitter/typescript-config`)
 - **`husky`**: Git hooks configuration (`@outfitter/husky-config`)
 - **`changeset`**: Release management (`@outfitter/changeset-config`)
-- **`utils`**: TypeScript utilities (`@outfitter/typescript-utils`)
+- **`utils`**: TypeScript utilities (`@outfitter/contracts`)
 
 ## Presets
 

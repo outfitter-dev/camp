@@ -1,18 +1,23 @@
 import { z } from 'zod';
 
-import { type AppError, ErrorCode, makeError } from './error';
-import { type Result, success, failure } from './result';
+import type { Result, AppError } from '@outfitter/contracts';
+import { success, failure, makeError, ErrorCode } from '@outfitter/contracts';
 
 /**
- * Create a validated environment configuration from a Zod schema
+ * Validates and parses environment variables against a provided Zod schema.
+ *
+ * Returns a success result containing the parsed environment object if validation passes, or a failure result with detailed validation errors if validation fails.
+ *
+ * @returns A {@link Result} containing the parsed environment object or an {@link AppError} with validation details.
  */
 export function createEnvSchema<T extends z.ZodRawShape>(
-  schema: T
+  schema: T,
+  env: NodeJS.ProcessEnv = process.env
 ): Result<z.infer<z.ZodObject<T>>, AppError> {
   const envSchema = z.object(schema);
 
   try {
-    const parsed = envSchema.parse(process.env);
+    const parsed = envSchema.parse(env);
     return success(parsed);
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -49,7 +54,7 @@ export function createEnvSchema<T extends z.ZodRawShape>(
 /**
  * Common environment variable schemas for reuse
  */
-export const CommonEnvSchemas = {
+export const CommonEnvSchemas = Object.freeze({
   NODE_ENV: z
     .enum(['development', 'production', 'test'])
     .default('development'),
@@ -61,10 +66,13 @@ export const CommonEnvSchemas = {
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
   CORS_ORIGIN: z.string().url().optional(),
   SESSION_SECRET: z.string().min(32).optional(),
-} as const;
+}) as const;
 
 /**
- * Type-safe environment configuration for Next.js applications
+ * Creates a type-safe environment schema for Next.js applications by combining common variables and Next.js-specific variables with any additional schema provided.
+ *
+ * @param additionalSchema - Additional Zod schema shape to extend the default environment schema.
+ * @returns A {@link Result} containing the parsed environment object on success, or an {@link AppError} with validation details on failure.
  */
 export function createNextEnvSchema<T extends z.ZodRawShape>(
   additionalSchema: T = {} as T
@@ -79,7 +87,10 @@ export function createNextEnvSchema<T extends z.ZodRawShape>(
 }
 
 /**
- * Type-safe environment configuration for Node.js applications
+ * Creates a type-safe environment schema for Node.js applications by combining common environment variable schemas with any additional schema provided.
+ *
+ * @param additionalSchema - Additional Zod schema shape to extend the default Node.js environment schema.
+ * @returns A {@link Result} containing the parsed environment object on success, or an {@link AppError} with validation details on failure.
  */
 export function createNodeEnvSchema<T extends z.ZodRawShape>(
   additionalSchema: T = {} as T
@@ -93,7 +104,14 @@ export function createNodeEnvSchema<T extends z.ZodRawShape>(
 }
 
 /**
- * Validate and parse a single environment variable
+ * Validates and parses a single environment variable using a Zod schema.
+ *
+ * If the variable is undefined and a {@link defaultValue} is provided, returns the default value as success. Otherwise, attempts to parse the variable using the provided schema.
+ *
+ * @param name - The name of the environment variable to retrieve and validate.
+ * @param schema - The Zod schema to validate the variable against.
+ * @param defaultValue - An optional default value to use if the variable is undefined.
+ * @returns A {@link Result} containing the parsed value on success, or an {@link AppError} with validation or internal error details on failure.
  */
 export function parseEnvVar<T>(
   name: string,
@@ -139,7 +157,10 @@ export function parseEnvVar<T>(
 }
 
 /**
- * Check if all required environment variables are set
+ * Validates that all specified environment variables are set and non-empty.
+ *
+ * @param variables - Names of environment variables to check.
+ * @returns A success result containing a record of variable names to their values if all are present, or a failure result with a validation error listing missing variables.
  */
 export function validateRequiredEnvVars(
   ...variables: Array<string>

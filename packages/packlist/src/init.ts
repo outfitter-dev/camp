@@ -10,7 +10,17 @@ interface InitOptions {
   utils?: boolean;
 }
 
-export async function init(options: InitOptions = {}) {
+/**
+ * Initializes Outfitter Packlist in the current Node.js project.
+ *
+ * Sets up recommended ESLint and TypeScript configurations, installs required dependencies, and adds useful scripts to `package.json` based on the provided options. Exits the process if `package.json` is not found in the project root.
+ *
+ * @param options - Configuration options to control which features and dependencies are set up.
+ *
+ * @remark
+ * This function modifies `package.json` and may create or overwrite `.eslintrc.js` and `tsconfig.json` files in the project root.
+ */
+export async function init(options: InitOptions = {}): Promise<void> {
   console.log(pc.cyan('🎒 Initializing Outfitter Packlist...'));
 
   const cwd = process.cwd();
@@ -29,7 +39,9 @@ export async function init(options: InitOptions = {}) {
   }
 
   // Read package.json
-  const packageJson = JSON.parse(await fs.readFile(packageJsonPath, 'utf8'));
+  const packageJson: any = JSON.parse(
+    await fs.readFile(packageJsonPath, 'utf8')
+  );
 
   // Detect package manager
   const packageManager = await detectPackageManager();
@@ -51,7 +63,7 @@ export async function init(options: InitOptions = {}) {
   }
 
   if (options.utils !== false) {
-    dependencies.push('@outfitter/typescript-utils');
+    dependencies.push('@outfitter/contracts');
   }
 
   // Install dependencies
@@ -98,21 +110,32 @@ export async function init(options: InitOptions = {}) {
   console.log(pc.white('  npm run type-check  # Check TypeScript'));
 }
 
+/**
+ * Detects the package manager used in the current project by checking for lock files.
+ *
+ * @returns The name of the detected package manager: 'pnpm', 'yarn', 'bun', or 'npm' if none are found.
+ */
 async function detectPackageManager(): Promise<string> {
   try {
     await fs.access('pnpm-lock.yaml');
     return 'pnpm';
-  } catch {}
+  } catch {
+    // File doesn't exist, continue to next package manager check
+  }
 
   try {
     await fs.access('yarn.lock');
     return 'yarn';
-  } catch {}
+  } catch {
+    // File doesn't exist, continue to next package manager check
+  }
 
   try {
     await fs.access('bun.lockb');
     return 'bun';
-  } catch {}
+  } catch {
+    // File doesn't exist, fallback to npm
+  }
 
   return 'npm';
 }
@@ -135,6 +158,14 @@ async function installDependencies(
   });
 }
 
+/**
+ * Creates a default ESLint configuration file in the specified project directory.
+ *
+ * If `.eslintrc.js` already exists and `force` is not set, the function logs a warning and does not overwrite the file.
+ *
+ * @param projectRoot - The root directory where the ESLint config should be created.
+ * @param force - If true, overwrites any existing `.eslintrc.js` file.
+ */
 async function createEslintConfig(projectRoot: string, force?: boolean) {
   const eslintConfigPath = path.join(projectRoot, '.eslintrc.js');
 
@@ -145,7 +176,9 @@ async function createEslintConfig(projectRoot: string, force?: boolean) {
         pc.yellow('⚠️  .eslintrc.js already exists. Use --force to overwrite.')
       );
       return;
-    } catch {}
+    } catch {
+      // File doesn't exist, continue with creation
+    }
   }
 
   const content = `module.exports = {
@@ -160,6 +193,14 @@ async function createEslintConfig(projectRoot: string, force?: boolean) {
   console.log(pc.green('✓ Created .eslintrc.js'));
 }
 
+/**
+ * Creates a default `tsconfig.json` in the specified project directory if it does not already exist.
+ *
+ * If the file exists and `force` is not set, the function logs a warning and does not overwrite the file.
+ *
+ * @param projectRoot - The root directory where `tsconfig.json` should be created.
+ * @param force - If true, overwrites any existing `tsconfig.json`.
+ */
 async function createTsConfig(projectRoot: string, force?: boolean) {
   const tsconfigPath = path.join(projectRoot, 'tsconfig.json');
 
@@ -170,7 +211,9 @@ async function createTsConfig(projectRoot: string, force?: boolean) {
         pc.yellow('⚠️  tsconfig.json already exists. Use --force to overwrite.')
       );
       return;
-    } catch {}
+    } catch {
+      // File doesn't exist, continue with creation
+    }
   }
 
   const content = `{
