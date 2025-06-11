@@ -3,7 +3,12 @@ import type { z } from 'zod';
 import { ErrorCode, makeError, type AppError } from '@outfitter/contracts';
 
 /**
- * Convert Zod error to AppError
+ * Converts a Zod validation error into a standardized application error.
+ *
+ * Transforms each issue from the Zod error into a simplified object containing the error path, message, code, and optionally the received value, and attaches them as metadata to the returned {@link AppError}.
+ *
+ * @param error - The Zod validation error to convert.
+ * @returns An {@link AppError} representing the validation failure, with details about each issue.
  */
 export function fromZod(error: z.ZodError): AppError {
   return makeError(ErrorCode.VALIDATION_ERROR, 'Validation failed', {

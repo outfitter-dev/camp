@@ -3,6 +3,15 @@ import ora from 'ora';
 import { readJSON, writeJSON, pathExists } from 'fs-extra';
 import { join } from 'path';
 
+/**
+ * Adds the specified fieldguides to the local configuration file, avoiding duplicates.
+ *
+ * Updates `.outfitter/config.json` in the current working directory by appending new fieldguides to the `fieldguides` array, removing the legacy `supplies` key if present. Only fieldguides not already listed are added.
+ *
+ * @param fieldguides - Names of fieldguides to add to the configuration.
+ *
+ * @remark Exits the process with code 1 if the configuration file does not exist.
+ */
 export async function addFieldguides(fieldguides: Array<string>): Promise<void> {
   const cwd = process.cwd();
   const configPath = join(cwd, '.outfitter', 'config.json');

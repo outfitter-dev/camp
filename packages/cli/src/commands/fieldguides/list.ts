@@ -16,6 +16,13 @@ const availableFieldguides = {
   'playwright-guide': 'E2E testing with Playwright',
 };
 
+/**
+ * Lists fieldguides that are either installed locally or available for installation.
+ *
+ * Depending on the {@link options.installed} flag, displays either the installed fieldguides or all available fieldguides with their descriptions, highlighting which are installed.
+ *
+ * @param options - If `installed` is true, only lists installed fieldguides; otherwise, lists all available fieldguides and their installation status.
+ */
 export async function listFieldguides(options: { installed?: boolean }): Promise<void> {
   const cwd = process.cwd();
   const configPath = join(cwd, '.outfitter', 'config.json');
