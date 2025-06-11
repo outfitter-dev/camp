@@ -17,8 +17,8 @@ export interface FieldguideRecommendation {
  */
 export function getRecommendedFieldguides(
   terrain: TerrainFeatures
-): FieldguideRecommendation[] {
-  const recommendations: FieldguideRecommendation[] = [];
+): Array<FieldguideRecommendation> {
+  const recommendations: Array<FieldguideRecommendation> = [];
 
   // Core language guides
   if (terrain.typescript) {
@@ -183,6 +183,8 @@ function getPriorityWeight(
       return 2;
     case 'optional':
       return 1;
+    default:
+      return 0;
   }
 }
 
@@ -194,7 +196,7 @@ function getPriorityWeight(
  */
 export function getRecommendedFieldguideIds(
   terrain: TerrainFeatures
-): string[] {
+): Array<string> {
   return getRecommendedFieldguides(terrain)
     .filter(fg => fg.priority === 'essential' || fg.priority === 'recommended')
     .map(fg => fg.id);

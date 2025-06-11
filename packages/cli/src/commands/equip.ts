@@ -1,5 +1,5 @@
 import { Command } from 'commander';
-import { select, checkbox, confirm } from '@inquirer/prompts';
+import { checkbox, confirm } from '@inquirer/prompts';
 import chalk from 'chalk';
 import ora from 'ora';
 import { execa } from 'execa';
@@ -12,9 +12,9 @@ interface EquipOptions {
 }
 
 interface PackageSelection {
-  configs: string[];
-  utils: string[];
-  fieldguides: string[];
+  configs: Array<string>;
+  utils: Array<string>;
+  fieldguides: Array<string>;
 }
 
 const configPackages = [
@@ -48,31 +48,14 @@ async function detectPackageManager(): Promise<'npm' | 'pnpm' | 'yarn' | 'bun'> 
   return 'npm';
 }
 
-/**
- * Installs the specified packages as development dependencies using the given package manager.
- *
- * @param packages - The list of package names to install.
- * @param packageManager - The package manager to use (e.g., 'npm', 'pnpm', 'yarn', 'bun').
- *
- * @remark
- * Uses the appropriate install command and flags for the specified package manager.
- */
-async function installPackages(packages: string[], packageManager: string): Promise<void> {
+async function installPackages(packages: Array<string>, packageManager: string): Promise<void> {
   const installCmd = packageManager === 'npm' ? 'install' : 'add';
   const devFlag = packageManager === 'npm' ? '--save-dev' : '-D';
   
   await execa(packageManager, [installCmd, devFlag, ...packages], { stdio: 'inherit' });
 }
 
-/**
- * Applies configuration files for the specified configuration packages.
- *
- * @param configs - The list of configuration package names to apply.
- *
- * @remark
- * This function is currently a placeholder and does not perform any actual configuration application.
- */
-async function applyConfigurations(configs: string[]): Promise<void> {
+async function applyConfigurations(_configs: Array<string>): Promise<void> {
   // TODO: Apply configuration files based on selected packages
   // For now, this is a placeholder
   console.log(chalk.gray('Applying configurations...'));
@@ -194,7 +177,7 @@ export const equipCommand = new Command('equip')
         try {
           // TODO: Initialize husky
           hooksSpinner.succeed('Git hooks initialized');
-        } catch (error) {
+        } catch {
           hooksSpinner.fail('Failed to initialize git hooks');
         }
       }

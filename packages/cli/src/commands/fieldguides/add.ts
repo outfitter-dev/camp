@@ -41,7 +41,7 @@ export async function addFieldguides(fieldguides: Array<string>): Promise<void> 
 
     // Remove old supplies key if it exists
     if (config.supplies) {
-      delete config.supplies;
+      config.supplies = undefined;
     }
 
     // TODO: In real implementation, fetch actual files from fieldguides package

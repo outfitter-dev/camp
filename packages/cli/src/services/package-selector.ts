@@ -1,4 +1,4 @@
-import type { PackageSelection, PresetType, Package } from '../types/index.js';
+import type { PackageSelection, PresetType } from '../types/index.js';
 import type { TerrainFeatures } from '../utils/detect-terrain.js';
 import type { FieldguideRecommendation } from '../config/fieldguide-mappings.js';
 import { PRESET_CONFIGURATIONS, CONFIG_PACKAGES, UTILITY_PACKAGES } from '../constants/packages.js';
@@ -40,7 +40,7 @@ export function getDefaultSelection(terrain: TerrainFeatures): PackageSelection 
  */
 export async function getInteractiveSelection(
   terrain: TerrainFeatures,
-  recommendedFieldguides: FieldguideRecommendation[]
+  recommendedFieldguides: Array<FieldguideRecommendation>
 ): Promise<PackageSelection> {
   console.log(''); // Add spacing
   

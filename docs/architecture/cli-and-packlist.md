@@ -9,7 +9,8 @@ configuration management system.
 The Outfitter monorepo contains two complementary packages for configuration
 management:
 
-- **`@outfitter/cli`**: User-facing command-line interface (the `outfitter` command)
+- **`@outfitter/cli`**: User-facing command-line interface (the `outfitter`
+  command)
 - **`@outfitter/packlist`**: Core configuration engine and programmatic API
 
 ## Architecture Design
@@ -265,5 +266,5 @@ The separation between CLI and Packlist provides:
 4. **Flexibility**: CLI can be replaced without changing core logic
 5. **Type safety**: Result pattern ensures error handling
 
-This architecture allows the Outfitter monorepo to provide both an excellent user
-experience through the CLI and a robust programmatic API through Packlist.
+This architecture allows the Outfitter monorepo to provide both an excellent
+user experience through the CLI and a robust programmatic API through Packlist.

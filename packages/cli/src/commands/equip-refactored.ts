@@ -24,8 +24,9 @@ export const equipCommand = new Command('equip')
     
     ui.showTerrainSummary(terrain);
     
-    // Get recommended fieldguides
+    // Get & show recommended fieldguides
     const recommendedFieldguides = getRecommendedFieldguides(terrain);
+    prompts.showRecommendedFieldguides(recommendedFieldguides);
     
     // Determine package selection
     let selection;
@@ -78,7 +79,7 @@ export const equipCommand = new Command('equip')
         try {
           await configApplier.initializeHusky();
           hooksSpinner.succeed('Git hooks initialized');
-        } catch (error) {
+        } catch {
           hooksSpinner.fail('Failed to initialize git hooks');
         }
       }

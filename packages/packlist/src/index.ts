@@ -4,5 +4,5 @@ export * from './config';
 export const configs = {
   eslint: '@outfitter/eslint-config',
   typescript: '@outfitter/typescript-config',
-  utils: '@outfitter/typescript-utils',
+  utils: '@outfitter/contracts',
 } as const;

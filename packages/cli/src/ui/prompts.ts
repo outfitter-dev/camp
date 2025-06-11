@@ -3,13 +3,7 @@ import chalk from 'chalk';
 import type { Package } from '../types/index.js';
 import type { FieldguideRecommendation } from '../config/fieldguide-mappings.js';
 
-/**
- * Prompts the user to select configuration packages to install from a list.
- *
- * @param packages - The available configuration packages to choose from.
- * @returns A promise that resolves to an array of selected package values.
- */
-export async function selectConfigurations(packages: Package[]): Promise<string[]> {
+export async function selectConfigurations(packages: Array<Package>): Promise<Array<string>> {
   return checkbox({
     message: 'Select configurations to install:',
     choices: packages.map(pkg => ({
@@ -20,13 +14,7 @@ export async function selectConfigurations(packages: Package[]): Promise<string[
   });
 }
 
-/**
- * Prompts the user to select utility packages from a list.
- *
- * @param packages - The available utility packages to choose from.
- * @returns A promise that resolves to an array of selected package values.
- */
-export async function selectUtilities(packages: Package[]): Promise<string[]> {
+export async function selectUtilities(packages: Array<Package>): Promise<Array<string>> {
   return checkbox({
     message: 'Select utility packages:',
     choices: packages.map(pkg => ({
@@ -49,12 +37,7 @@ export async function confirmGitHooks(): Promise<boolean> {
   });
 }
 
-/**
- * Displays a formatted list of recommended fieldguides in the console, including icons based on their priority.
- *
- * @param fieldguides - An array of fieldguide recommendations to display.
- */
-export function showRecommendedFieldguides(fieldguides: FieldguideRecommendation[]): void {
+export function showRecommendedFieldguides(fieldguides: Array<FieldguideRecommendation>): void {
   console.log(chalk.cyan('\n📚 Recommended fieldguides for your terrain:'));
   fieldguides.forEach(fg => {
     const icon = fg.priority === 'essential' ? '⭐' : 

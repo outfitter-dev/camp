@@ -10,7 +10,7 @@
   "packageManager": "pnpm@10.11.1",
   "scripts": {
     "dev": "pnpm run --parallel --filter='./packages/*' dev",
-    "build": "pnpm run --filter='./packages/typescript-utils' build && pnpm run --filter='./packages/*' build",
+    "build": "pnpm run --filter='./packages/contracts/typescript' build && pnpm run --filter='./packages/*' build",
     "test": "vitest",
     "lint": "eslint . --max-warnings 0",
     "lint:md": "markdownlint-cli2",

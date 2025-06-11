@@ -2,16 +2,16 @@
 
 ## Overview
 
-The Outfitter monorepo is structured as a monorepo containing shared development configurations,
-utilities, and tools for Outfitter projects. This document outlines the
-architectural decisions behind this structure.
+The Outfitter monorepo is structured as a monorepo containing shared development
+configurations, utilities, and tools for Outfitter projects. This document
+outlines the architectural decisions behind this structure.
 
 ## Design Principles
 
 ### 1. Zero-Dependency Core
 
-The `@outfitter/contracts` package maintains zero runtime dependencies,
-serving as the foundational error handling layer for all other packages.
+The `@outfitter/contracts` package maintains zero runtime dependencies, serving
+as the foundational error handling layer for all other packages.
 
 ### 2. Clear Build Order
 

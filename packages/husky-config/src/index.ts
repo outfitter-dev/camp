@@ -1,5 +1,12 @@
 import { execSync } from 'child_process';
-import { existsSync, mkdirSync, copyFileSync, chmodSync } from 'fs';
+import {
+  existsSync,
+  mkdirSync,
+  copyFileSync,
+  chmodSync,
+  readFileSync,
+  writeFileSync,
+} from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -48,7 +55,7 @@ export function addPrepareScript(packageJsonPath?: string): void {
   const pkgPath = packageJsonPath || join(process.cwd(), 'package.json');
 
   try {
-    const pkg = JSON.parse(require('fs').readFileSync(pkgPath, 'utf8'));
+    const pkg: any = JSON.parse(readFileSync(pkgPath, 'utf8'));
 
     if (!pkg.scripts) {
       pkg.scripts = {};
@@ -56,7 +63,7 @@ export function addPrepareScript(packageJsonPath?: string): void {
 
     if (!pkg.scripts.prepare) {
       pkg.scripts.prepare = 'husky';
-      require('fs').writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n');
+      writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n');
       console.log('✓ Added prepare script to package.json');
     } else {
       console.log('ℹ Prepare script already exists');

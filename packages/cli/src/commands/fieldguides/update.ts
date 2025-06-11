@@ -24,7 +24,7 @@ export async function updateFieldguides(options: { check?: boolean }): Promise<v
     process.exit(1);
   }
 
-  const config = await readJSON(configPath);
+  const _config = await readJSON(configPath);
 
   if (options.check) {
     console.log(chalk.cyan('Checking for updates...\n'));

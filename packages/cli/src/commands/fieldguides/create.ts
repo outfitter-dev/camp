@@ -73,7 +73,7 @@ export async function createFieldguideConfig(options: CreateOptions): Promise<vo
 
     // Create config
     const config = {
-      version: '1.0.0',
+      version: '0.1.0', // CLI package version
       preset: selectedPreset,
       fieldguides: presets[selectedPreset as keyof typeof presets],
       installed: new Date().toISOString(),

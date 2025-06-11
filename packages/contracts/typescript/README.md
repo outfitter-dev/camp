@@ -85,7 +85,7 @@ Type-safe environment variable handling with Zod. This is available via a
 sub-path import to keep the core package dependency-free.
 
 ```typescript
-import { validateEnv } from '@outfitter/contracts/zod';
+import { validateEnv } from '@outfitter/contracts-zod';
 import { z } from 'zod';
 
 const envSchema = z.object({
@@ -212,7 +212,7 @@ const userId = createUserId('user-123');
   Create structured error
 - `isAppError(error: unknown): error is AppError` - Type guard for AppError
 
-### Environment Functions (via `@outfitter/contracts/zod`)
+### Environment Functions (via `@outfitter/contracts-zod`)
 
 - `validateEnv<T>(env: unknown, schema: ZodSchema<T>): Result<T, AppError>` -
   Validate environment variables
@@ -278,7 +278,7 @@ const config = configResult.data; // Fully typed and validated
 
 This package has **zero runtime dependencies** in its core entry point.
 
-The `@outfitter/contracts/zod` sub-path has a peer dependency on `zod`.
+The standalone `@outfitter/contracts-zod` package has a dependency on `zod`.
 
 ## Development
 

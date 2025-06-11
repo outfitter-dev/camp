@@ -1,15 +1,7 @@
 import chalk from 'chalk';
 import { execa } from 'execa';
 
-/**
- * Applies a set of configuration packages to the project.
- *
- * @param configs - An array of configuration package names to apply.
- *
- * @remark
- * This function currently serves as a scaffold and does not perform actual configuration changes. Future implementations will handle creating or updating configuration files and running initialization commands as needed.
- */
-export async function applyConfigurations(configs: string[]): Promise<void> {
+export async function applyConfigurations(configs: Array<string>): Promise<void> {
   // TODO: Implement actual configuration application
   // For each config package, we need to:
   // 1. Check if it has an init function or CLI

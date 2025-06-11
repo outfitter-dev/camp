@@ -11,12 +11,13 @@ import { success, failure, makeError, ErrorCode } from '@outfitter/contracts';
  * @returns A {@link Result} containing the parsed environment object or an {@link AppError} with validation details.
  */
 export function createEnvSchema<T extends z.ZodRawShape>(
-  schema: T
+  schema: T,
+  env: NodeJS.ProcessEnv = process.env
 ): Result<z.infer<z.ZodObject<T>>, AppError> {
   const envSchema = z.object(schema);
 
   try {
-    const parsed = envSchema.parse(process.env);
+    const parsed = envSchema.parse(env);
     return success(parsed);
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -53,7 +54,7 @@ export function createEnvSchema<T extends z.ZodRawShape>(
 /**
  * Common environment variable schemas for reuse
  */
-export const CommonEnvSchemas = {
+export const CommonEnvSchemas = Object.freeze({
   NODE_ENV: z
     .enum(['development', 'production', 'test'])
     .default('development'),
@@ -65,7 +66,7 @@ export const CommonEnvSchemas = {
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
   CORS_ORIGIN: z.string().url().optional(),
   SESSION_SECRET: z.string().min(32).optional(),
-} as const;
+}) as const;
 
 /**
  * Creates a type-safe environment schema for Next.js applications by combining common variables and Next.js-specific variables with any additional schema provided.

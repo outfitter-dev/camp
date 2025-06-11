@@ -1,5 +1,4 @@
-import { execSync } from 'child_process';
-import { existsSync, mkdirSync, copyFileSync, writeFileSync } from 'fs';
+import { existsSync, mkdirSync, writeFileSync, readFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -31,9 +30,7 @@ export function initChangesets(options: ChangesetInitOptions = {}): void {
 
     if (!existsSync(configTarget)) {
       // Read and modify config based on options
-      const config = JSON.parse(
-        require('fs').readFileSync(configSource, 'utf8')
-      );
+      const config: any = JSON.parse(readFileSync(configSource, 'utf8'));
       config.access = access;
       config.baseBranch = baseBranch;
 
@@ -68,7 +65,7 @@ export function addChangesetScripts(packageJsonPath?: string): void {
   const pkgPath = packageJsonPath || join(process.cwd(), 'package.json');
 
   try {
-    const pkg = JSON.parse(require('fs').readFileSync(pkgPath, 'utf8'));
+    const pkg: any = JSON.parse(readFileSync(pkgPath, 'utf8'));
 
     if (!pkg.scripts) {
       pkg.scripts = {};

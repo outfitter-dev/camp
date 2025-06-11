@@ -848,4 +848,3 @@ today.
 - [CodeRabbit Documentation](https://docs.coderabbit.ai/)
 - [CodeRabbit YAML Schema](https://coderabbit.ai/integrations/schema.v2.json)
 - [Minimatch Glob Patterns](https://github.com/isaacs/minimatch)
-

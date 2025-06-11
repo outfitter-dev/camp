@@ -4,9 +4,9 @@ export interface EquipOptions {
 }
 
 export interface PackageSelection {
-  configs: string[];
-  utils: string[];
-  fieldguides: string[];
+  configs: Array<string>;
+  utils: Array<string>;
+  fieldguides: Array<string>;
 }
 
 export interface Package {

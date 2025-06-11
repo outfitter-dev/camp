@@ -1,9 +1,4 @@
 import { Command } from 'commander';
-import chalk from 'chalk';
-import ora from 'ora';
-import inquirer from 'inquirer';
-import { readJSON, writeJSON, pathExists, ensureDir } from 'fs-extra';
-import { join } from 'path';
 
 // Re-export functionality from other commands
 import { addFieldguides } from './fieldguides/add.js';

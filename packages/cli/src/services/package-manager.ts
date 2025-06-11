@@ -33,19 +33,11 @@ export function getInstallCommand(manager: PackageManager): InstallCommand {
     case 'yarn':
       return { command: 'yarn', installVerb: 'add', devFlag: '-D' };
     case 'bun':
-      return { command: 'bun', installVerb: 'add', devFlag: '-D' };
+      return { command: 'bun', installVerb: 'add', devFlag: '-d' };
   }
 }
 
-/**
- * Installs the specified packages as development dependencies using the given package manager.
- *
- * If the package list is empty, the function returns immediately without performing any installation.
- *
- * @param packages - The names of the packages to install.
- * @param manager - The package manager to use for installation.
- */
-export async function installPackages(packages: string[], manager: PackageManager): Promise<void> {
+export async function installPackages(packages: Array<string>, manager: PackageManager): Promise<void> {
   if (packages.length === 0) return;
   
   const { command, installVerb, devFlag } = getInstallCommand(manager);

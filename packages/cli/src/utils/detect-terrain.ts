@@ -99,88 +99,117 @@ async function fileExists(
 export async function detectTerrain(
   cwd: string = process.cwd()
 ): Promise<TerrainFeatures> {
+  // Run all checks in parallel for better performance
+  const [
+    // Framework files
+    nextConfigJs, nextConfigMjs, nextConfigTs,
+    // Project files  
+    tsconfigExists, packageJsonExists,
+    requirementsTxt, pyprojectToml, pipfile,
+    vitestConfigTs, jestConfigJs, playwrightConfigTs, cypressConfigJs,
+    viteConfigTs, webpackConfigJs,
+    pnpmWorkspace, lernaJson, nxJson, rushJson,
+    dockerfile, dockerCompose, githubWorkflows, gitlabCi,
+    pnpmLock, yarnLock, packageLock, bunLock,
+    // Packages
+    hasNext, hasReact, hasVue, hasSvelte, hasAngular,
+    hasVitest, hasJest, hasPlaywright, hasCypress,
+    hasZustand, hasRedux, hasReduxToolkit, hasMobx,
+    hasVite, hasWebpack
+  ] = await Promise.all([
+    // Framework files
+    fileExists('next.config.js', cwd),
+    fileExists('next.config.mjs', cwd), 
+    fileExists('next.config.ts', cwd),
+    // Project files
+    fileExists('tsconfig.json', cwd),
+    fileExists('package.json', cwd),
+    fileExists('requirements.txt', cwd),
+    fileExists('pyproject.toml', cwd),
+    fileExists('Pipfile', cwd),
+    fileExists('vitest.config.ts', cwd),
+    fileExists('jest.config.js', cwd),
+    fileExists('playwright.config.ts', cwd),
+    fileExists('cypress.config.js', cwd),
+    fileExists('vite.config.ts', cwd),
+    fileExists('webpack.config.js', cwd),
+    fileExists('pnpm-workspace.yaml', cwd),
+    fileExists('lerna.json', cwd),
+    fileExists('nx.json', cwd),
+    fileExists('rush.json', cwd),
+    fileExists('Dockerfile', cwd),
+    fileExists('docker-compose.yml', cwd),
+    fileExists('.github/workflows', cwd),
+    fileExists('.gitlab-ci.yml', cwd),
+    fileExists('pnpm-lock.yaml', cwd),
+    fileExists('yarn.lock', cwd),
+    fileExists('package-lock.json', cwd),
+    fileExists('bun.lockb', cwd),
+    // Packages
+    hasPackage('next', cwd),
+    hasPackage('react', cwd),
+    hasPackage('vue', cwd),
+    hasPackage('svelte', cwd),
+    hasPackage('@angular/core', cwd),
+    hasPackage('vitest', cwd),
+    hasPackage('jest', cwd),
+    hasPackage('@playwright/test', cwd),
+    hasPackage('cypress', cwd),
+    hasPackage('zustand', cwd),
+    hasPackage('redux', cwd),
+    hasPackage('@reduxjs/toolkit', cwd),
+    hasPackage('mobx', cwd),
+    hasPackage('vite', cwd),
+    hasPackage('webpack', cwd)
+  ]);
+
   const terrain: TerrainFeatures = {
     // Frameworks
-    nextjs:
-      (await fileExists('next.config.js', cwd)) ||
-      (await fileExists('next.config.mjs', cwd)) ||
-      (await fileExists('next.config.ts', cwd)) ||
-      (await hasPackage('next', cwd)),
-    react: await hasPackage('react', cwd),
-    vue: await hasPackage('vue', cwd),
-    svelte: await hasPackage('svelte', cwd),
-    angular: await hasPackage('@angular/core', cwd),
+    nextjs: nextConfigJs || nextConfigMjs || nextConfigTs || hasNext,
+    react: hasReact,
+    vue: hasVue,
+    svelte: hasSvelte,
+    angular: hasAngular,
 
     // Languages/Runtime
-    typescript: await fileExists('tsconfig.json', cwd),
-    javascript: await fileExists('package.json', cwd),
-    node: await fileExists('package.json', cwd),
-    python:
-      (await fileExists('requirements.txt', cwd)) ||
-      (await fileExists('pyproject.toml', cwd)) ||
-      (await fileExists('Pipfile', cwd)),
+    typescript: tsconfigExists,
+    javascript: packageJsonExists,
+    node: packageJsonExists,
+    python: requirementsTxt || pyprojectToml || pipfile,
 
     // Testing
-    vitest:
-      (await hasPackage('vitest', cwd)) ||
-      (await fileExists('vitest.config.ts', cwd)),
-    jest:
-      (await hasPackage('jest', cwd)) ||
-      (await fileExists('jest.config.js', cwd)),
-    playwright:
-      (await hasPackage('@playwright/test', cwd)) ||
-      (await fileExists('playwright.config.ts', cwd)),
-    cypress:
-      (await hasPackage('cypress', cwd)) ||
-      (await fileExists('cypress.config.js', cwd)),
+    vitest: hasVitest || vitestConfigTs,
+    jest: hasJest || jestConfigJs,
+    playwright: hasPlaywright || playwrightConfigTs,
+    cypress: hasCypress || cypressConfigJs,
 
     // State Management
-    zustand: await hasPackage('zustand', cwd),
-    redux:
-      (await hasPackage('redux', cwd)) ||
-      (await hasPackage('@reduxjs/toolkit', cwd)),
-    mobx: await hasPackage('mobx', cwd),
+    zustand: hasZustand,
+    redux: hasRedux || hasReduxToolkit,
+    mobx: hasMobx,
 
     // Build Tools
-    vite:
-      (await hasPackage('vite', cwd)) ||
-      (await fileExists('vite.config.ts', cwd)),
-    webpack:
-      (await hasPackage('webpack', cwd)) ||
-      (await fileExists('webpack.config.js', cwd)),
+    vite: hasVite || viteConfigTs,
+    webpack: hasWebpack || webpackConfigJs,
 
     // Features
-    monorepo:
-      (await fileExists('pnpm-workspace.yaml', cwd)) ||
-      (await fileExists('lerna.json', cwd)) ||
-      (await fileExists('nx.json', cwd)) ||
-      (await fileExists('rush.json', cwd)),
-    docker:
-      (await fileExists('Dockerfile', cwd)) ||
-      (await fileExists('docker-compose.yml', cwd)),
-    githubActions: await fileExists('.github/workflows', cwd),
-    gitlabCi: await fileExists('.gitlab-ci.yml', cwd),
+    monorepo: pnpmWorkspace || lernaJson || nxJson || rushJson,
+    docker: dockerfile || dockerCompose,
+    githubActions: githubWorkflows,
+    gitlabCi: gitlabCi,
 
     // Package Manager
-    pnpm: await fileExists('pnpm-lock.yaml', cwd),
-    yarn: await fileExists('yarn.lock', cwd),
-    npm: await fileExists('package-lock.json', cwd),
-    bun: await fileExists('bun.lockb', cwd),
+    pnpm: pnpmLock,
+    yarn: yarnLock,
+    npm: packageLock,
+    bun: bunLock,
   };
 
   return terrain;
 }
 
-/**
- * Generates a prioritized summary of detected development environment features.
- *
- * Converts a {@link TerrainFeatures} object into an array of descriptive strings, listing the primary framework, languages, testing tools, state management libraries, build tools, and special features present in the project. Only the first detected framework, testing tool, and state management library are included, in order of priority.
- *
- * @param terrain - The detected terrain features to summarize.
- * @returns An array of human-readable strings describing the project's environment.
- */
-export function getTerrainSummary(terrain: TerrainFeatures): string[] {
-  const features: string[] = [];
+export function getTerrainSummary(terrain: TerrainFeatures): Array<string> {
+  const features: Array<string> = [];
 
   // Primary framework
   if (terrain.nextjs) features.push('Next.js application');

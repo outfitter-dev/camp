@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "Zod helpers that integrate with @outfitter/contracts Result and AppError types.",
   "type": "module",
+  "main": "./dist/index.js",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -21,7 +22,9 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@outfitter/contracts": "workspace:*",
+    "@outfitter/contracts": "workspace:*"
+  },
+  "peerDependencies": {
     "zod": "^3.22.4"
   },
   "devDependencies": {

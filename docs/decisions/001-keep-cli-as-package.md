@@ -7,9 +7,9 @@
 ## Context
 
 The `@outfitter/cli` currently resides in `packages/cli/` and provides the
-`outfitter` command for managing development configurations. As the monorepo evolves,
-we need to decide whether it should remain a package or move to an `apps/`
-directory.
+`outfitter` command for managing development configurations. As the monorepo
+evolves, we need to decide whether it should remain a package or move to an
+`apps/` directory.
 
 This decision affects:
 

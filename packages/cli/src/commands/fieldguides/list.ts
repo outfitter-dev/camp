@@ -29,9 +29,14 @@ export async function listFieldguides(options: { installed?: boolean }): Promise
 
   let installedFieldguides: Array<string> = [];
 
-  if (await pathExists(configPath)) {
-    const config = await readJSON(configPath);
-    installedFieldguides = config.fieldguides || config.supplies || []; // Support old 'supplies' key for backwards compatibility
+  try {
+    if (await pathExists(configPath)) {
+      const config = await readJSON(configPath);
+      installedFieldguides = config.fieldguides || config.supplies || []; // Support old 'supplies' key for backwards compatibility
+    }
+  } catch (e) {
+    console.error(chalk.red('Failed to read .outfitter/config.json:'), (e as Error).message);
+    return;
   }
 
   if (options.installed) {
