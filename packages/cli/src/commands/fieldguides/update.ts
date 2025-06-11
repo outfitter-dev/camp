@@ -3,6 +3,16 @@ import ora from 'ora';
 import { readJSON, pathExists } from 'fs-extra';
 import { join } from 'path';
 
+/**
+ * Checks for available updates or applies updates to fieldguide configurations.
+ *
+ * If the `check` option is true, displays the update status of fieldguides. Otherwise, simulates updating fieldguides and reports the result.
+ *
+ * @param options - Options to control update behavior. If `check` is true, only checks for updates without applying them.
+ *
+ * @remark
+ * Exits the process with code 1 if the fieldguide configuration file is missing.
+ */
 export async function updateFieldguides(options: { check?: boolean }): Promise<void> {
   const cwd = process.cwd();
   const configPath = join(cwd, '.outfitter', 'config.json');
