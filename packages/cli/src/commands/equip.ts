@@ -23,12 +23,14 @@ interface PackageSelection {
   fieldguides: Array<string>;
 }
 
+type PackageManager = 'npm' | 'pnpm' | 'yarn' | 'bun';
+
 /**
  * Detects the package manager used in the current project by checking for known lock files.
  *
  * @returns The detected package manager: 'pnpm', 'yarn', 'bun', or 'npm'. Defaults to 'npm' if no lock file is found.
  */
-function detectPackageManager(): 'npm' | 'pnpm' | 'yarn' | 'bun' {
+function detectPackageManager(): PackageManager {
   // Check for lock files synchronously - negligible cost, avoids dynamic import
   if (pathExistsSync('pnpm-lock.yaml')) return 'pnpm';
   if (pathExistsSync('yarn.lock')) return 'yarn';
@@ -40,15 +42,21 @@ function detectPackageManager(): 'npm' | 'pnpm' | 'yarn' | 'bun' {
 
 async function installPackages(
   packages: Array<string>,
-  packageManager: string,
+  packageManager: PackageManager,
   isDev: boolean = true
 ): Promise<void> {
   const installCmd = packageManager === 'npm' ? 'install' : 'add';
-  const devFlag = packageManager === 'npm' ? '--save-dev' 
-    : packageManager === 'bun' ? '--dev' : '-D';
 
   const args = isDev 
-    ? [installCmd, devFlag, ...packages]
+    ? [
+        installCmd,
+        packageManager === 'npm'
+          ? '--save-dev'
+          : packageManager === 'bun'
+            ? '--dev'
+            : '-D',
+        ...packages,
+      ]
     : [installCmd, ...packages];
 
   await execa(packageManager, args, {
@@ -58,8 +66,8 @@ async function installPackages(
 
 async function applyConfigurations(): Promise<void> {
   // TODO: Apply configuration files based on selected packages
-  // For now, this is a placeholder
-  console.log(chalk.gray('Applying configurations...'));
+  console.log(chalk.yellow('⚠️  Configuration file generation coming soon'));
+  console.log(chalk.gray('   For now, please configure packages manually according to their documentation.'));
 }
 
 export const equipCommand = new Command('equip')
@@ -126,6 +134,7 @@ export const equipCommand = new Command('equip')
       });
 
       // Show recommended fieldguides
+      let selectedFieldguides: Array<string> = [];
       if (recommendedFieldguides.length > 0) {
         console.log(
           chalk.cyan('\n📚 Recommended fieldguides for your terrain:')
@@ -139,12 +148,21 @@ export const equipCommand = new Command('equip')
                 : '📖';
           console.log(`  ${icon} ${fg.name} - ${fg.description}`);
         });
+        
+        const includeFieldguides = await confirm({
+          message: 'Would you like to include these recommended fieldguides?',
+          default: true,
+        });
+        
+        if (includeFieldguides) {
+          selectedFieldguides = getRecommendedFieldguideIds(terrain);
+        }
       }
 
       selection = {
         configs: selectedConfigs,
         utils: selectedUtils,
-        fieldguides: getRecommendedFieldguideIds(terrain),
+        fieldguides: selectedFieldguides,
       };
     }
 
@@ -159,14 +177,19 @@ export const equipCommand = new Command('equip')
     if (configPackages.length > 0 || utilityPackages.length > 0) {
       const installSpinner = ora('Installing packages...').start();
       try {
-        // Install config packages as dev dependencies
+        // Combine installations to reduce lockfile churn
+        const installations: Array<[Array<string>, boolean]> = [];
+        
         if (configPackages.length > 0) {
-          await installPackages(configPackages, packageManager, true);
+          installations.push([configPackages, true]);
         }
         
-        // Install utility packages as runtime dependencies
         if (utilityPackages.length > 0) {
-          await installPackages(utilityPackages, packageManager, false);
+          installations.push([utilityPackages, false]);
+        }
+        
+        for (const [packages, isDev] of installations) {
+          await installPackages(packages, packageManager, isDev);
         }
         
         installSpinner.succeed('Packages installed');
