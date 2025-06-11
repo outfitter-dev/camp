@@ -1,83 +1,83 @@
-import { EquipCommand } from '../equip'
-import * as fs from 'fs-extra'
-import { jest } from '@jest/globals'
+// NOTE: Tests use the Jest testing framework, consistent with existing project test setup.
 
-jest.mock('fs-extra', () => ({
-  readJson: jest.fn(),
-  writeJson: jest.fn()
-}))
+import fs from 'fs';
+import path from 'path';
+import * as child_process from 'child_process';
+import { equip } from '../equip';
 
-describe('EquipCommand', () => {
-  let exitSpy: jest.SpyInstance
+jest.mock('fs');
+jest.mock('path');
+jest.spyOn(process, 'exit').mockImplementation(((code?: number) => {
+  throw new Error(`process.exit: ${code}`);
+}) as never);
 
-  beforeAll(() => {
-    jest.useFakeTimers()
-    exitSpy = jest
-      .spyOn(process, 'exit')
-      .mockImplementation((code?: number) => { throw new Error(`process.exit: ${code}`) } as never)
-  })
+const execMock = jest.spyOn(child_process, 'exec');
 
-  afterAll(() => {
-    jest.useRealTimers()
-    exitSpy.mockRestore()
-  })
+beforeEach(() => {
+  jest.clearAllMocks();
+});
 
-  afterEach(() => {
-    jest.clearAllMocks()
-  })
+afterAll(() => {
+  jest.restoreAllMocks();
+});
 
-  it('should show help or error when no flags provided', async () => {
-    const cmd = new EquipCommand([], {})
-    await expect(cmd.run()).rejects.toThrow()
-  })
+describe('equip command', () => {
+  describe('happy path – when dependencies install and templates copy successfully', () => {
+    it('should install dependencies and copy templates without errors', async () => {
+      // Arrange
+      (fs.existsSync as jest.Mock).mockReturnValue(true);
+      const writeFileMock = (fs.writeFileSync as jest.Mock).mockImplementation(() => {});
+      const copyFileMock = (fs.copyFileSync as jest.Mock).mockImplementation(() => {});
+      execMock.mockImplementation((cmd: string, opts: any, cb: Function) => cb(null, 'install success'));
 
-  it('should equip specific item successfully when valid name is provided', async () => {
-    (fs.readJson as jest.Mock).mockResolvedValue({
-      items: [{ name: 'sword', equipped: false }]
-    })
-    const cmd = new EquipCommand([], { name: 'sword' })
-    await expect(cmd.run()).resolves.not.toThrow()
-    expect(fs.writeJson).toHaveBeenCalledWith(
-      expect.any(String),
-      expect.objectContaining({
-        items: expect.arrayContaining([
-          expect.objectContaining({ name: 'sword', equipped: true })
-        ])
-      })
-    )
-  })
+      // Act & Assert
+      await expect(equip({ targetDir: 'app', dryRun: false })).resolves.not.toThrow();
 
-  it('should equip all items successfully when --all flag is used', async () => {
-    (fs.readJson as jest.Mock).mockResolvedValue({
-      items: [
-        { name: 'sword', equipped: false },
-        { name: 'shield', equipped: false }
-      ]
-    })
-    const cmd = new EquipCommand([], { all: true })
-    await expect(cmd.run()).resolves.not.toThrow()
-    expect(fs.writeJson).toHaveBeenCalledWith(
-      expect.any(String),
-      expect.objectContaining({
-        items: [
-          expect.objectContaining({ name: 'sword', equipped: true }),
-          expect.objectContaining({ name: 'shield', equipped: true })
-        ]
-      })
-    )
-  })
+      // Assert side effects
+      expect(fs.existsSync).toHaveBeenCalledWith('app');
+      expect(execMock).toHaveBeenCalledWith('npm install', { cwd: 'app' }, expect.any(Function));
+      expect(writeFileMock).toHaveBeenCalled();
+      expect(copyFileMock).toHaveBeenCalled();
+    });
+  });
 
-  it('should throw an error when an invalid equipment name is provided', async () => {
-    (fs.readJson as jest.Mock).mockResolvedValue({
-      items: [{ name: 'shield', equipped: false }]
-    })
-    const cmd = new EquipCommand([], { name: 'dagger' })
-    await expect(cmd.run()).rejects.toThrow('Invalid equipment name')
-  })
+  describe('edge cases', () => {
+    it('should throw when target directory is missing', async () => {
+      // Arrange
+      (fs.existsSync as jest.Mock).mockReturnValue(false);
 
-  it('should propagate errors from dependencies gracefully', async () => {
-    (fs.readJson as jest.Mock).mockRejectedValue(new Error('Read error'))
-    const cmd = new EquipCommand([], { name: 'sword' })
-    await expect(cmd.run()).rejects.toThrow('Read error')
-  })
-})
+      // Act & Assert
+      await expect(equip({ targetDir: 'missing-dir', dryRun: false }))
+        .rejects.toThrow(/not found/);
+    });
+  });
+
+  describe('failure cases', () => {
+    it('should exit the process when npm install fails', async () => {
+      // Arrange
+      (fs.existsSync as jest.Mock).mockReturnValue(true);
+      execMock.mockImplementation((cmd: string, opts: any, cb: Function) => cb(new Error('install error'), ''));
+
+      // Act & Assert
+      await expect(equip({ targetDir: 'app', dryRun: false }))
+        .rejects.toThrow(/process.exit: 1/);
+    });
+  });
+
+  describe('argument parsing – dry run', () => {
+    it('should not perform write operations in dry-run mode', async () => {
+      // Arrange
+      (fs.existsSync as jest.Mock).mockReturnValue(true);
+      execMock.mockImplementation((cmd: string, opts: any, cb: Function) => cb(null, 'install success'));
+      (fs.writeFileSync as jest.Mock).mockImplementation(() => {});
+      (fs.copyFileSync as jest.Mock).mockImplementation(() => {});
+
+      // Act & Assert
+      await expect(equip({ targetDir: 'app', dryRun: true })).resolves.not.toThrow();
+
+      // Verify no file operations occurred
+      expect(fs.writeFileSync).not.toHaveBeenCalled();
+      expect(fs.copyFileSync).not.toHaveBeenCalled();
+    });
+  });
+});
