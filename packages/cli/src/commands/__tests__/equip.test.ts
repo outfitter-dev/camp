@@ -1,83 +1,113 @@
-import { EquipCommand } from '../equip'
-import * as fs from 'fs-extra'
-import { jest } from '@jest/globals'
+// Jest with ts-jest is used for testing TypeScript commands
 
-jest.mock('fs-extra', () => ({
-  readJson: jest.fn(),
-  writeJson: jest.fn()
-}))
+import * as fs from 'fs-extra';
+import * as path from 'path';
+import * as os from 'os';
+import { prompt } from 'enquirer';
+import equip from '../equip';
 
-describe('EquipCommand', () => {
-  let exitSpy: jest.SpyInstance
+jest.mock('fs-extra');
+jest.mock('enquirer', () => ({ prompt: jest.fn() }));
 
-  beforeAll(() => {
-    jest.useFakeTimers()
-    exitSpy = jest
-      .spyOn(process, 'exit')
-      .mockImplementation((code?: number) => { throw new Error(`process.exit: ${code}`) } as never)
-  })
+const mockedFs = fs as jest.Mocked<typeof fs>;
+const mockedPrompt = prompt as jest.MockedFunction<typeof prompt>;
+const actualFs = jest.requireActual('fs-extra');
 
-  afterAll(() => {
-    jest.useRealTimers()
-    exitSpy.mockRestore()
-  })
+const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+const exitSpy = jest.spyOn(process, 'exit').mockImplementation(
+  ((code?: number) => { throw new Error(`process.exit: ${code}`); }) as never
+);
 
-  afterEach(() => {
-    jest.clearAllMocks()
-  })
+beforeAll(() => {
+  jest.useFakeTimers();
+});
 
-  it('should show help or error when no flags provided', async () => {
-    const cmd = new EquipCommand([], {})
-    await expect(cmd.run()).rejects.toThrow()
-  })
+afterAll(() => {
+  jest.useRealTimers();
+});
 
-  it('should equip specific item successfully when valid name is provided', async () => {
-    (fs.readJson as jest.Mock).mockResolvedValue({
-      items: [{ name: 'sword', equipped: false }]
-    })
-    const cmd = new EquipCommand([], { name: 'sword' })
-    await expect(cmd.run()).resolves.not.toThrow()
-    expect(fs.writeJson).toHaveBeenCalledWith(
+let tmpDir: string;
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  // Restore real FS methods for tmp directory management
+  (mockedFs.mkdtempSync as jest.Mock).mockImplementation((prefix: string) =>
+    actualFs.mkdtempSync(prefix)
+  );
+  (mockedFs.rmSync as jest.Mock).mockImplementation((target: string, opts?: any) =>
+    actualFs.rmSync(target, opts)
+  );
+  tmpDir = mockedFs.mkdtempSync(path.join(os.tmpdir(), 'equip-'));
+});
+
+afterEach(() => {
+  mockedFs.rmSync(tmpDir, { recursive: true, force: true });
+});
+
+describe('equip command', () => {
+  it('equips successfully when project path arg provided', async () => {
+    mockedFs.pathExists.mockResolvedValue(false);
+    mockedFs.copy.mockResolvedValue(undefined);
+
+    await expect(equip({ projectPath: tmpDir })).resolves.toBeUndefined();
+
+    expect(mockedFs.copy).toHaveBeenCalledWith(
       expect.any(String),
-      expect.objectContaining({
-        items: expect.arrayContaining([
-          expect.objectContaining({ name: 'sword', equipped: true })
-        ])
-      })
-    )
-  })
-
-  it('should equip all items successfully when --all flag is used', async () => {
-    (fs.readJson as jest.Mock).mockResolvedValue({
-      items: [
-        { name: 'sword', equipped: false },
-        { name: 'shield', equipped: false }
-      ]
-    })
-    const cmd = new EquipCommand([], { all: true })
-    await expect(cmd.run()).resolves.not.toThrow()
-    expect(fs.writeJson).toHaveBeenCalledWith(
       expect.any(String),
-      expect.objectContaining({
-        items: [
-          expect.objectContaining({ name: 'sword', equipped: true }),
-          expect.objectContaining({ name: 'shield', equipped: true })
-        ]
-      })
-    )
-  })
+      expect.any(Object)
+    );
+    expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('Equipped'));
+    expect(exitSpy).not.toHaveBeenCalled();
+  });
 
-  it('should throw an error when an invalid equipment name is provided', async () => {
-    (fs.readJson as jest.Mock).mockResolvedValue({
-      items: [{ name: 'shield', equipped: false }]
-    })
-    const cmd = new EquipCommand([], { name: 'dagger' })
-    await expect(cmd.run()).rejects.toThrow('Invalid equipment name')
-  })
+  it('prompts interactively when no project path provided', async () => {
+    mockedPrompt.mockResolvedValue({ projectPath: tmpDir });
+    mockedFs.pathExists.mockResolvedValue(false);
+    mockedFs.copy.mockResolvedValue(undefined);
 
-  it('should propagate errors from dependencies gracefully', async () => {
-    (fs.readJson as jest.Mock).mockRejectedValue(new Error('Read error'))
-    const cmd = new EquipCommand([], { name: 'sword' })
-    await expect(cmd.run()).rejects.toThrow('Read error')
-  })
-})
+    await expect(equip({})).resolves.toBeUndefined();
+
+    expect(mockedPrompt).toHaveBeenCalled();
+    expect(mockedFs.copy).toHaveBeenCalled();
+    expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('Equipped'));
+  });
+
+  it('does a dry-run without making changes', async () => {
+    mockedFs.pathExists.mockResolvedValue(false);
+
+    await expect(equip({ projectPath: tmpDir, dryRun: true })).resolves.toBeUndefined();
+
+    expect(mockedFs.copy).not.toHaveBeenCalled();
+    expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('Dry-run'));
+  });
+
+  it('exits with error if path already equipped', async () => {
+    mockedFs.pathExists.mockResolvedValue(true);
+
+    await expect(equip({ projectPath: tmpDir })).rejects.toThrow('process.exit: 1');
+
+    expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining('already equipped'));
+    expect(exitSpy).toHaveBeenCalledWith(1);
+  });
+
+  it('handles invalid path errors', async () => {
+    const err = new Error('boom');
+    mockedFs.pathExists.mockRejectedValue(err);
+
+    await expect(equip({ projectPath: tmpDir })).rejects.toThrow('boom');
+
+    expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining('boom'));
+    expect(exitSpy).toHaveBeenCalledWith(1);
+  });
+
+  it('bubbles errors from fs.copy', async () => {
+    mockedFs.pathExists.mockResolvedValue(false);
+    const copyErr = new Error('copy-fail');
+    mockedFs.copy.mockRejectedValue(copyErr);
+
+    await expect(equip({ projectPath: tmpDir })).rejects.toThrow('copy-fail');
+
+    expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining('copy-fail'));
+  });
+});
