@@ -3,8 +3,8 @@ import chalk from 'chalk';
 import { readJSON, pathExists } from 'fs-extra';
 import { join } from 'path';
 
-// TODO: This would come from a registry or the supplies repo
-const availableSupplies = {
+// TODO: This would come from a registry or the fieldguides package
+const availableFieldguides = {
   'typescript-standards': 'Core TypeScript patterns and conventions',
   'react-patterns': 'React component and hook patterns',
   'nextjs-patterns': 'Next.js specific patterns and best practices',
@@ -18,34 +18,34 @@ const availableSupplies = {
 };
 
 export const listCommand = new Command('list')
-  .description('List available supplies')
-  .option('-i, --installed', 'Show only installed supplies')
+  .description('List available fieldguides')
+  .option('-i, --installed', 'Show only installed fieldguides')
   .action(async options => {
     const cwd = process.cwd();
     const configPath = join(cwd, '.outfitter', 'config.json');
 
-    let installedSupplies: Array<string> = [];
+    let installedFieldguides: Array<string> = [];
 
     if (await pathExists(configPath)) {
       const config = await readJSON(configPath);
-      installedSupplies = config.supplies || [];
+      installedFieldguides = config.fieldguides || config.supplies || []; // Support old 'supplies' key for backwards compatibility
     }
 
     if (options.installed) {
-      if (installedSupplies.length === 0) {
-        console.log(chalk.yellow('No supplies installed yet.'));
+      if (installedFieldguides.length === 0) {
+        console.log(chalk.yellow('No fieldguides installed yet.'));
         return;
       }
 
-      console.log(chalk.cyan('Installed supplies:\n'));
-      installedSupplies.forEach(supply => {
-        console.log('  ' + chalk.green('✓') + ' ' + supply);
+      console.log(chalk.cyan('Installed fieldguides:\n'));
+      installedFieldguides.forEach(fieldguide => {
+        console.log('  ' + chalk.green('✓') + ' ' + fieldguide);
       });
     } else {
-      console.log(chalk.cyan('Available supplies:\n'));
+      console.log(chalk.cyan('Available fieldguides:\n'));
 
-      Object.entries(availableSupplies).forEach(([name, description]) => {
-        const isInstalled = installedSupplies.includes(name);
+      Object.entries(availableFieldguides).forEach(([name, description]) => {
+        const isInstalled = installedFieldguides.includes(name);
         const status = isInstalled ? chalk.green('✓') : chalk.gray('○');
         const nameColor = isInstalled ? chalk.green : chalk.white;
 
@@ -54,7 +54,7 @@ export const listCommand = new Command('list')
       });
 
       console.log(
-        chalk.gray('\nUse "outfitter add <supply>" to install supplies')
+        chalk.gray('\nUse "outfitter add <fieldguide>" to install fieldguides')
       );
     }
   });

@@ -12,7 +12,9 @@ const program = new Command();
 
 program
   .name('outfitter')
-  .description('CLI tool for managing Outfitter supplies and project setup')
+  .description(
+    'CLI tool for equipping your development journey with configurations and fieldguides'
+  )
   .version('0.1.0');
 
 // Add commands

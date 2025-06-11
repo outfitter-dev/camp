@@ -10,7 +10,7 @@ interface InitOptions {
   utils?: boolean;
 }
 
-export async function init(options: InitOptions = {}) {
+export async function init(options: InitOptions = {}): Promise<void> {
   console.log(pc.cyan('🎒 Initializing Outfitter Packlist...'));
 
   const cwd = process.cwd();
@@ -29,7 +29,9 @@ export async function init(options: InitOptions = {}) {
   }
 
   // Read package.json
-  const packageJson = JSON.parse(await fs.readFile(packageJsonPath, 'utf8'));
+  const packageJson: any = JSON.parse(
+    await fs.readFile(packageJsonPath, 'utf8')
+  );
 
   // Detect package manager
   const packageManager = await detectPackageManager();
@@ -51,7 +53,7 @@ export async function init(options: InitOptions = {}) {
   }
 
   if (options.utils !== false) {
-    dependencies.push('@outfitter/typescript-utils');
+    dependencies.push('@outfitter/contracts');
   }
 
   // Install dependencies
@@ -102,17 +104,23 @@ async function detectPackageManager(): Promise<string> {
   try {
     await fs.access('pnpm-lock.yaml');
     return 'pnpm';
-  } catch {}
+  } catch {
+    // File doesn't exist, continue to next package manager check
+  }
 
   try {
     await fs.access('yarn.lock');
     return 'yarn';
-  } catch {}
+  } catch {
+    // File doesn't exist, continue to next package manager check
+  }
 
   try {
     await fs.access('bun.lockb');
     return 'bun';
-  } catch {}
+  } catch {
+    // File doesn't exist, fallback to npm
+  }
 
   return 'npm';
 }
@@ -145,7 +153,9 @@ async function createEslintConfig(projectRoot: string, force?: boolean) {
         pc.yellow('⚠️  .eslintrc.js already exists. Use --force to overwrite.')
       );
       return;
-    } catch {}
+    } catch {
+      // File doesn't exist, continue with creation
+    }
   }
 
   const content = `module.exports = {
@@ -170,7 +180,9 @@ async function createTsConfig(projectRoot: string, force?: boolean) {
         pc.yellow('⚠️  tsconfig.json already exists. Use --force to overwrite.')
       );
       return;
-    } catch {}
+    } catch {
+      // File doesn't exist, continue with creation
+    }
   }
 
   const content = `{

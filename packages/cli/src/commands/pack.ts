@@ -4,7 +4,7 @@ import { readJSON, writeJSON, pathExists } from 'fs-extra';
 import { join } from 'path';
 
 export const packCommand = new Command('pack')
-  .description('Manage supply configurations (packlists)')
+  .description('Manage fieldguide configurations (packlists)')
   .addCommand(
     new Command('export')
       .description('Export current configuration as a packlist')
@@ -25,7 +25,7 @@ export const packCommand = new Command('pack')
         const packlist = {
           name: 'Custom Packlist',
           version: '1.0.0',
-          supplies: config.supplies,
+          fieldguides: config.fieldguides || config.supplies || [], // Support old 'supplies' key
           created: new Date().toISOString(),
         };
 
@@ -54,7 +54,10 @@ export const packCommand = new Command('pack')
 
         const packlist = await readJSON(packlistPath);
 
-        if (!packlist.supplies || !Array.isArray(packlist.supplies)) {
+        if (
+          !(packlist.fieldguides || packlist.supplies) ||
+          !Array.isArray(packlist.fieldguides || packlist.supplies)
+        ) {
           console.error(chalk.red('Invalid packlist format'));
           process.exit(1);
         }
@@ -67,7 +70,7 @@ export const packCommand = new Command('pack')
 
         console.log(
           chalk.green('✓') +
-            ` Imported ${packlist.supplies.length} supplies from ${chalk.cyan(packlist.name)}`
+            ` Imported ${(packlist.fieldguides || packlist.supplies).length} fieldguides from ${chalk.cyan(packlist.name)}`
         );
       })
   );

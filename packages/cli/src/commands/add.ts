@@ -5,12 +5,12 @@ import { readJSON, writeJSON, pathExists } from 'fs-extra';
 import { join } from 'path';
 
 export const addCommand = new Command('add')
-  .description('Add specific supplies to your project')
+  .description('Add specific fieldguides to your project')
   .argument(
-    '<supplies...>',
-    'Supplies to add (e.g., react-patterns typescript-standards)'
+    '<fieldguides...>',
+    'Fieldguides to add (e.g., react-patterns typescript-standards)'
   )
-  .action(async (supplies: Array<string>) => {
+  .action(async (fieldguides: Array<string>) => {
     const cwd = process.cwd();
     const configPath = join(cwd, '.outfitter', 'config.json');
 
@@ -22,36 +22,47 @@ export const addCommand = new Command('add')
       process.exit(1);
     }
 
-    const spinner = ora('Adding supplies...').start();
+    const spinner = ora('Adding fieldguides...').start();
 
     try {
       // Read current config
       const config = await readJSON(configPath);
 
-      // Add new supplies (avoiding duplicates)
-      const newSupplies = supplies.filter(s => !config.supplies.includes(s));
-      config.supplies = [...config.supplies, ...newSupplies];
+      // Get existing fieldguides (support old 'supplies' key)
+      const existingFieldguides = config.fieldguides || config.supplies || [];
 
-      // TODO: In real implementation, fetch actual files from supplies repo
+      // Add new fieldguides (avoiding duplicates)
+      const newFieldguides = fieldguides.filter(
+        f => !existingFieldguides.includes(f)
+      );
+      config.fieldguides = [...existingFieldguides, ...newFieldguides];
+
+      // Remove old supplies key if it exists
+      if (config.supplies) {
+        delete config.supplies;
+      }
+
+      // TODO: In real implementation, fetch actual files from fieldguides package
       // For now, just update config
 
       await writeJSON(configPath, config, { spaces: 2 });
 
-      spinner.succeed(`Added ${newSupplies.length} new supplies`);
+      spinner.succeed(`Added ${newFieldguides.length} new fieldguides`);
 
-      if (newSupplies.length > 0) {
+      if (newFieldguides.length > 0) {
         console.log('\n' + chalk.green('Added:'));
-        newSupplies.forEach(s => console.log('  • ' + s));
+        newFieldguides.forEach(f => console.log('  • ' + f));
       }
 
-      const skipped = supplies.length - newSupplies.length;
+      const skipped = fieldguides.length - newFieldguides.length;
       if (skipped > 0) {
         console.log(
-          '\n' + chalk.yellow(`Skipped ${skipped} already installed supplies`)
+          '\n' +
+            chalk.yellow(`Skipped ${skipped} already installed fieldguides`)
         );
       }
     } catch (error) {
-      spinner.fail('Failed to add supplies');
+      spinner.fail('Failed to add fieldguides');
       throw error;
     }
   });

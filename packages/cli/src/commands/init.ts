@@ -24,7 +24,7 @@ const presets = {
 };
 
 export const initCommand = new Command('init')
-  .description('Initialize a project with Outfitter supplies')
+  .description('Initialize a project with Outfitter fieldguides')
   .option('-p, --preset <preset>', 'Use a preset configuration', 'minimal')
   .option('--with-claude', 'Include CLAUDE.md for AI assistance')
   .option('-f, --force', 'Force initialization even if .outfitter exists')
@@ -69,7 +69,7 @@ export const initCommand = new Command('init')
       const config = {
         version: '1.0.0',
         preset: selectedPreset,
-        supplies: presets[selectedPreset as keyof typeof presets],
+        fieldguides: presets[selectedPreset as keyof typeof presets],
         installed: new Date().toISOString(),
       };
 
@@ -81,13 +81,13 @@ export const initCommand = new Command('init')
       console.log('\n' + chalk.cyan('Next steps:'));
       console.log(
         '  1. Run ' +
-          chalk.yellow('outfitter add <supply>') +
-          ' to add specific supplies'
+          chalk.yellow('outfitter add <fieldguide>') +
+          ' to add specific fieldguides'
       );
       console.log(
         '  2. Run ' +
           chalk.yellow('outfitter list') +
-          ' to see available supplies'
+          ' to see available fieldguides'
       );
     } catch (error) {
       spinner.fail('Failed to initialize Outfitter');

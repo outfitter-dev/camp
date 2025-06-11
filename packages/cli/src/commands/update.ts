@@ -5,7 +5,7 @@ import { readJSON, pathExists } from 'fs-extra';
 import { join } from 'path';
 
 export const updateCommand = new Command('update')
-  .description('Update supplies to latest versions')
+  .description('Update fieldguides to latest versions')
   .option('-c, --check', 'Check for updates without installing')
   .action(async options => {
     const cwd = process.cwd();
@@ -38,18 +38,18 @@ export const updateCommand = new Command('update')
         '\n' + chalk.gray('Run "outfitter update" to install updates')
       );
     } else {
-      const spinner = ora('Updating supplies...').start();
+      const spinner = ora('Updating fieldguides...').start();
 
       try {
         // TODO: Actually fetch and update files
         await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate work
 
-        spinner.succeed('Supplies updated successfully!');
+        spinner.succeed('Fieldguides updated successfully!');
 
         console.log('\n' + chalk.green('Updated:'));
         console.log('  • typescript-standards: v1.2.0 → v1.3.0');
       } catch (error) {
-        spinner.fail('Failed to update supplies');
+        spinner.fail('Failed to update fieldguides');
         throw error;
       }
     }
