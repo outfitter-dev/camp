@@ -2,7 +2,7 @@
 
 import { Command } from 'commander';
 import chalk from 'chalk';
-import { equipCommand } from './commands/equip.js';
+import { equipCommand } from './commands/equip-refactored.js';
 import { fieldguidesCommand } from './commands/fieldguides.js';
 
 const program = new Command();
