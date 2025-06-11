@@ -3,6 +3,7 @@ import { checkbox, confirm } from '@inquirer/prompts';
 import chalk from 'chalk';
 import ora from 'ora';
 import { execa } from 'execa';
+import { pathExistsSync } from 'fs-extra';
 import { detectTerrain, getTerrainSummary } from '../utils/detect-terrain.js';
 import {
   getRecommendedFieldguides,
@@ -27,29 +28,30 @@ interface PackageSelection {
  *
  * @returns The detected package manager: 'pnpm', 'yarn', 'bun', or 'npm'. Defaults to 'npm' if no lock file is found.
  */
-async function detectPackageManager(): Promise<
-  'npm' | 'pnpm' | 'yarn' | 'bun'
-> {
-  // Check for lock files using fs-extra
-  const { pathExists } = await import('fs-extra');
-
-  if (await pathExists('pnpm-lock.yaml')) return 'pnpm';
-  if (await pathExists('yarn.lock')) return 'yarn';
-  if (await pathExists('bun.lockb')) return 'bun';
-  if (await pathExists('package-lock.json')) return 'npm';
+function detectPackageManager(): 'npm' | 'pnpm' | 'yarn' | 'bun' {
+  // Check for lock files synchronously - negligible cost, avoids dynamic import
+  if (pathExistsSync('pnpm-lock.yaml')) return 'pnpm';
+  if (pathExistsSync('yarn.lock')) return 'yarn';
+  if (pathExistsSync('bun.lockb')) return 'bun';
+  if (pathExistsSync('package-lock.json')) return 'npm';
 
   return 'npm';
 }
 
 async function installPackages(
   packages: Array<string>,
-  packageManager: string
+  packageManager: string,
+  isDev: boolean = true
 ): Promise<void> {
   const installCmd = packageManager === 'npm' ? 'install' : 'add';
   const devFlag = packageManager === 'npm' ? '--save-dev' 
     : packageManager === 'bun' ? '--dev' : '-D';
 
-  await execa(packageManager, [installCmd, devFlag, ...packages], {
+  const args = isDev 
+    ? [installCmd, devFlag, ...packages]
+    : [installCmd, ...packages];
+
+  await execa(packageManager, args, {
     stdio: 'inherit',
   });
 }
@@ -147,16 +149,26 @@ export const equipCommand = new Command('equip')
     }
 
     // Detect package manager
-    const packageManager = await detectPackageManager();
+    const packageManager = detectPackageManager();
     console.log(chalk.gray(`\n📦 Using ${packageManager}`));
 
     // Install packages
-    const allPackages = [...selection.configs, ...selection.utils];
+    const configPackages = selection.configs;
+    const utilityPackages = selection.utils;
 
-    if (allPackages.length > 0) {
+    if (configPackages.length > 0 || utilityPackages.length > 0) {
       const installSpinner = ora('Installing packages...').start();
       try {
-        await installPackages(allPackages, packageManager);
+        // Install config packages as dev dependencies
+        if (configPackages.length > 0) {
+          await installPackages(configPackages, packageManager, true);
+        }
+        
+        // Install utility packages as runtime dependencies
+        if (utilityPackages.length > 0) {
+          await installPackages(utilityPackages, packageManager, false);
+        }
+        
         installSpinner.succeed('Packages installed');
       } catch (error) {
         installSpinner.fail('Failed to install packages');

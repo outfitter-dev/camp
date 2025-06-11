@@ -40,16 +40,15 @@ describe('update command', () => {
   });
 
   it('updates field guides manifest and writes files successfully', async () => {
-    const mockManifest = JSON.stringify(['guide1.md', 'guide2.md'])(
-      fs.readFile as unknown as vi.Mock
-    )
-      .mockResolvedValue(mockManifest)(fs.access as unknown as vi.Mock)
-      .mockRejectedValue({ code: 'ENOENT' })(fetch as unknown as vi.Mock)
-      .mockResolvedValue({
-        ok: true,
-        text: () => Promise.resolve('guide content'),
-      })(fs.writeFile as unknown as vi.Mock)
-      .mockResolvedValue(undefined);
+    const mockManifest = JSON.stringify(['guide1.md', 'guide2.md']);
+
+    (fs.readFile as unknown as vi.Mock).mockResolvedValue(mockManifest);
+    (fs.access as unknown as vi.Mock).mockRejectedValue({ code: 'ENOENT' });
+    (fetch as unknown as vi.Mock).mockResolvedValue({
+      ok: true,
+      text: () => Promise.resolve('guide content'),
+    });
+    (fs.writeFile as unknown as vi.Mock).mockResolvedValue(undefined);
 
     await update({ manifest: 'manifest.json', output: 'outDir', force: true });
 
