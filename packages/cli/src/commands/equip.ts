@@ -4,6 +4,7 @@ import chalk from 'chalk';
 import ora from 'ora';
 import { execa } from 'execa';
 import { pathExistsSync } from 'fs-extra';
+import { join, dirname } from 'path';
 import { detectTerrain, getTerrainSummary } from '../utils/detect-terrain.js';
 import {
   getRecommendedFieldguides,
@@ -26,19 +27,50 @@ interface PackageSelection {
 type PackageManager = 'npm' | 'pnpm' | 'yarn' | 'bun';
 
 /**
+ * Finds the project root by walking up from the given directory until a package.json is found.
+ *
+ * @param startDir - The directory to start searching from. Defaults to process.cwd().
+ * @returns The directory containing package.json, or null if not found.
+ */
+function findProjectRoot(startDir: string = process.cwd()): string | null {
+  let currentDir = startDir;
+  
+  while (currentDir !== dirname(currentDir)) {
+    if (pathExistsSync(join(currentDir, 'package.json'))) {
+      return currentDir;
+    }
+    currentDir = dirname(currentDir);
+  }
+  
+  return null;
+}
+
+/**
  * Detects the package manager used in the current project by checking for known lock files.
  *
  * @returns The detected package manager: 'pnpm', 'yarn', 'bun', or 'npm'. Defaults to 'npm' if no lock file is found.
  */
 function detectPackageManager(): PackageManager {
-  // Check for lock files synchronously - negligible cost, avoids dynamic import
-  if (pathExistsSync('pnpm-lock.yaml')) return 'pnpm';
-  if (pathExistsSync('yarn.lock')) return 'yarn';
-  if (pathExistsSync('bun.lockb')) return 'bun';
-  if (pathExistsSync('package-lock.json')) return 'npm';
+  const projectRoot = findProjectRoot();
+  if (!projectRoot) {
+    return 'npm';
+  }
+  
+  // Check for lock files in the project root
+  if (pathExistsSync(join(projectRoot, 'pnpm-lock.yaml'))) return 'pnpm';
+  if (pathExistsSync(join(projectRoot, 'yarn.lock'))) return 'yarn';
+  if (pathExistsSync(join(projectRoot, 'bun.lockb'))) return 'bun';
+  if (pathExistsSync(join(projectRoot, 'package-lock.json'))) return 'npm';
 
   return 'npm';
 }
+
+const DEV_FLAGS: Record<PackageManager, string> = {
+  npm: '--save-dev',
+  pnpm: '-D',
+  yarn: '-D',
+  bun: '--dev',
+};
 
 async function installPackages(
   packages: Array<string>,
@@ -47,16 +79,8 @@ async function installPackages(
 ): Promise<void> {
   const installCmd = packageManager === 'npm' ? 'install' : 'add';
 
-  const args = isDev 
-    ? [
-        installCmd,
-        packageManager === 'npm'
-          ? '--save-dev'
-          : packageManager === 'bun'
-            ? '--dev'
-            : '-D',
-        ...packages,
-      ]
+  const args = isDev
+    ? [installCmd, DEV_FLAGS[packageManager], ...packages]
     : [installCmd, ...packages];
 
   await execa(packageManager, args, {
@@ -64,10 +88,20 @@ async function installPackages(
   });
 }
 
-async function applyConfigurations(): Promise<void> {
+async function applyConfigurations(selectedConfigs: Array<string>): Promise<void> {
   // TODO: Apply configuration files based on selected packages
-  console.log(chalk.yellow('⚠️  Configuration file generation coming soon'));
-  console.log(chalk.gray('   For now, please configure packages manually according to their documentation.'));
+  console.log(chalk.yellow('\n⚠️  Configuration file generation coming soon'));
+  console.log(chalk.gray('   For now, please configure packages manually:'));
+  
+  if (selectedConfigs.includes('@outfitter/eslint-config')) {
+    console.log(chalk.gray('   • ESLint: Create .eslintrc.js extending @outfitter/eslint-config'));
+  }
+  if (selectedConfigs.includes('@outfitter/typescript-config')) {
+    console.log(chalk.gray('   • TypeScript: Update tsconfig.json to extend from @outfitter/typescript-config'));
+  }
+  if (selectedConfigs.includes('@outfitter/prettier-config')) {
+    console.log(chalk.gray('   • Prettier: Add "prettier": "@outfitter/prettier-config" to package.json'));
+  }
 }
 
 export const equipCommand = new Command('equip')
@@ -210,7 +244,7 @@ export const equipCommand = new Command('equip')
     if (selection.configs.length > 0) {
       const configSpinner = ora('Applying configurations...').start();
       try {
-        await applyConfigurations();
+        await applyConfigurations(selection.configs);
         configSpinner.succeed('Configurations applied');
       } catch (error) {
         configSpinner.fail('Failed to apply configurations');
