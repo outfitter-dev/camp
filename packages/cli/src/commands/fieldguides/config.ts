@@ -13,7 +13,7 @@ interface ImportOptions {
 /**
  * Imports or exports a fieldguide configuration file based on the specified action.
  *
- * For 'export', writes the current local fieldguide configuration to a specified output file, including metadata and supporting legacy keys.  
+ * For 'export', writes the current local fieldguide configuration to a specified output file, including metadata and supporting legacy keys.
  * For 'import', reads a configuration file, validates its structure, and prepares to initialize or update the local configuration.
  *
  * @param action - The operation to perform: 'export' or 'import'.
@@ -31,10 +31,12 @@ export async function manageFieldguideConfig(
 
   if (action === 'export') {
     const { output } = options as ExportOptions;
-    
+
     if (!(await pathExists(configPath))) {
       console.error(
-        chalk.red('No fieldguide configuration found. Run "outfitter fg create" first.')
+        chalk.red(
+          'No fieldguide configuration found. Run "outfitter fg create" first.'
+        )
       );
       process.exit(1);
     }

@@ -23,7 +23,9 @@ const availableFieldguides = {
  *
  * @param options - If `installed` is true, only lists installed fieldguides; otherwise, lists all available fieldguides and their installation status.
  */
-export async function listFieldguides(options: { installed?: boolean }): Promise<void> {
+export async function listFieldguides(options: {
+  installed?: boolean;
+}): Promise<void> {
   const cwd = process.cwd();
   const configPath = join(cwd, '.outfitter', 'config.json');
 
@@ -35,7 +37,10 @@ export async function listFieldguides(options: { installed?: boolean }): Promise
       installedFieldguides = config.fieldguides || config.supplies || []; // Support old 'supplies' key for backwards compatibility
     }
   } catch (e) {
-    console.error(chalk.red('Failed to read .outfitter/config.json:'), (e as Error).message);
+    console.error(
+      chalk.red('Failed to read .outfitter/config.json:'),
+      (e as Error).message
+    );
     return;
   }
 
@@ -51,17 +56,21 @@ export async function listFieldguides(options: { installed?: boolean }): Promise
     });
   } else {
     console.log(chalk.cyan('Available fieldguides:\n'));
-    Object.entries(availableFieldguides).forEach(([fieldguide, description]) => {
-      const isInstalled = installedFieldguides.includes(fieldguide);
-      const status = isInstalled ? chalk.green('✓') : chalk.gray('○');
-      const name = isInstalled ? chalk.green(fieldguide) : fieldguide;
-      console.log(`  ${status} ${name}`);
-      console.log(`    ${chalk.gray(description)}\n`);
-    });
+    Object.entries(availableFieldguides).forEach(
+      ([fieldguide, description]) => {
+        const isInstalled = installedFieldguides.includes(fieldguide);
+        const status = isInstalled ? chalk.green('✓') : chalk.gray('○');
+        const name = isInstalled ? chalk.green(fieldguide) : fieldguide;
+        console.log(`  ${status} ${name}`);
+        console.log(`    ${chalk.gray(description)}\n`);
+      }
+    );
 
     if (installedFieldguides.length === 0) {
       console.log(
-        chalk.yellow('\nNo fieldguides installed yet. Run "outfitter fg add <fieldguide>" to get started.')
+        chalk.yellow(
+          '\nNo fieldguides installed yet. Run "outfitter fg add <fieldguide>" to get started.'
+        )
       );
     }
   }

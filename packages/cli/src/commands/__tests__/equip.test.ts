@@ -15,9 +15,11 @@ const actualFs = jest.requireActual('fs-extra');
 
 const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
 const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-const exitSpy = jest.spyOn(process, 'exit').mockImplementation(
-  ((code?: number) => { throw new Error(`process.exit: ${code}`); }) as never
-);
+const exitSpy = jest.spyOn(process, 'exit').mockImplementation(((
+  code?: number
+) => {
+  throw new Error(`process.exit: ${code}`);
+}) as never);
 
 beforeAll(() => {
   jest.useFakeTimers();
@@ -35,8 +37,8 @@ beforeEach(() => {
   (mockedFs.mkdtempSync as jest.Mock).mockImplementation((prefix: string) =>
     actualFs.mkdtempSync(prefix)
   );
-  (mockedFs.rmSync as jest.Mock).mockImplementation((target: string, opts?: any) =>
-    actualFs.rmSync(target, opts)
+  (mockedFs.rmSync as jest.Mock).mockImplementation(
+    (target: string, opts?: any) => actualFs.rmSync(target, opts)
   );
   tmpDir = mockedFs.mkdtempSync(path.join(os.tmpdir(), 'equip-'));
 });
@@ -76,7 +78,9 @@ describe('equip command', () => {
   it('does a dry-run without making changes', async () => {
     mockedFs.pathExists.mockResolvedValue(false);
 
-    await expect(equip({ projectPath: tmpDir, dryRun: true })).resolves.toBeUndefined();
+    await expect(
+      equip({ projectPath: tmpDir, dryRun: true })
+    ).resolves.toBeUndefined();
 
     expect(mockedFs.copy).not.toHaveBeenCalled();
     expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('Dry-run'));
@@ -85,9 +89,13 @@ describe('equip command', () => {
   it('exits with error if path already equipped', async () => {
     mockedFs.pathExists.mockResolvedValue(true);
 
-    await expect(equip({ projectPath: tmpDir })).rejects.toThrow('process.exit: 1');
+    await expect(equip({ projectPath: tmpDir })).rejects.toThrow(
+      'process.exit: 1'
+    );
 
-    expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining('already equipped'));
+    expect(errorSpy).toHaveBeenCalledWith(
+      expect.stringContaining('already equipped')
+    );
     expect(exitSpy).toHaveBeenCalledWith(1);
   });
 

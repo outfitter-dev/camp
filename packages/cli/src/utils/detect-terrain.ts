@@ -62,9 +62,9 @@ async function hasPackage(
     if (await pathExists(packageJsonPath)) {
       const packageJson = JSON.parse(await readFile(packageJsonPath, 'utf-8'));
       const deps = {
-        ...packageJson.dependencies,
-        ...packageJson.devDependencies,
-        ...packageJson.peerDependencies,
+        ...(packageJson.dependencies ?? {}),
+        ...(packageJson.devDependencies ?? {}),
+        ...(packageJson.peerDependencies ?? {}),
       };
       return packageName in deps;
     }
@@ -102,24 +102,53 @@ export async function detectTerrain(
   // Run all checks in parallel for better performance
   const [
     // Framework files
-    nextConfigJs, nextConfigMjs, nextConfigTs,
-    // Project files  
-    tsconfigExists, packageJsonExists,
-    requirementsTxt, pyprojectToml, pipfile,
-    vitestConfigTs, jestConfigJs, playwrightConfigTs, cypressConfigJs,
-    viteConfigTs, webpackConfigJs,
-    pnpmWorkspace, lernaJson, nxJson, rushJson,
-    dockerfile, dockerCompose, githubWorkflows, gitlabCi,
-    pnpmLock, yarnLock, packageLock, bunLock,
+    nextConfigJs,
+    nextConfigMjs,
+    nextConfigTs,
+    // Project files
+    tsconfigExists,
+    packageJsonExists,
+    requirementsTxt,
+    pyprojectToml,
+    pipfile,
+    vitestConfigTs,
+    jestConfigJs,
+    playwrightConfigTs,
+    cypressConfigJs,
+    viteConfigTs,
+    webpackConfigJs,
+    pnpmWorkspace,
+    lernaJson,
+    nxJson,
+    rushJson,
+    dockerfile,
+    dockerCompose,
+    githubWorkflows,
+    gitlabCi,
+    pnpmLock,
+    yarnLock,
+    packageLock,
+    bunLock,
     // Packages
-    hasNext, hasReact, hasVue, hasSvelte, hasAngular,
-    hasVitest, hasJest, hasPlaywright, hasCypress,
-    hasZustand, hasRedux, hasReduxToolkit, hasMobx,
-    hasVite, hasWebpack
+    hasNext,
+    hasReact,
+    hasVue,
+    hasSvelte,
+    hasAngular,
+    hasVitest,
+    hasJest,
+    hasPlaywright,
+    hasCypress,
+    hasZustand,
+    hasRedux,
+    hasReduxToolkit,
+    hasMobx,
+    hasVite,
+    hasWebpack,
   ] = await Promise.all([
     // Framework files
     fileExists('next.config.js', cwd),
-    fileExists('next.config.mjs', cwd), 
+    fileExists('next.config.mjs', cwd),
     fileExists('next.config.ts', cwd),
     // Project files
     fileExists('tsconfig.json', cwd),
@@ -160,7 +189,7 @@ export async function detectTerrain(
     hasPackage('@reduxjs/toolkit', cwd),
     hasPackage('mobx', cwd),
     hasPackage('vite', cwd),
-    hasPackage('webpack', cwd)
+    hasPackage('webpack', cwd),
   ]);
 
   const terrain: TerrainFeatures = {
@@ -243,4 +272,3 @@ export function getTerrainSummary(terrain: TerrainFeatures): Array<string> {
 
   return features;
 }
-

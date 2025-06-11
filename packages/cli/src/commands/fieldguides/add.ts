@@ -12,16 +12,18 @@ import { join } from 'path';
  *
  * @remark Exits the process with code 1 if the configuration file does not exist.
  */
-export async function addFieldguides(fieldguides: Array<string>): Promise<void> {
+export async function addFieldguides(
+  fieldguides: Array<string>
+): Promise<void> {
   const cwd = process.cwd();
   const configPath = join(cwd, '.outfitter', 'config.json');
 
   // Check if initialized
   if (!(await pathExists(configPath))) {
-    console.error(
-      chalk.red('No fieldguide configuration found. Run "outfitter fg create" first.')
-    );
-    process.exit(1);
+    const message =
+      'No fieldguide configuration found. Run "outfitter fg create" first.';
+    // Let the top-level CLI handler decide what to do
+    throw new Error(message);
   }
 
   const spinner = ora('Adding fieldguides...').start();
@@ -31,7 +33,11 @@ export async function addFieldguides(fieldguides: Array<string>): Promise<void> 
     const config = await readJSON(configPath);
 
     // Get existing fieldguides (support old 'supplies' key)
-    const existingFieldguides = config.fieldguides || config.supplies || [];
+    const existingFieldguides = Array.isArray(config.fieldguides)
+      ? config.fieldguides
+      : Array.isArray(config.supplies)
+        ? config.supplies
+        : [];
 
     // Add new fieldguides (avoiding duplicates)
     const newFieldguides = fieldguides.filter(
@@ -39,8 +45,8 @@ export async function addFieldguides(fieldguides: Array<string>): Promise<void> 
     );
     config.fieldguides = [...existingFieldguides, ...newFieldguides];
 
-    // Remove old supplies key if it exists
-    if (config.supplies) {
+    // drop legacy key without `delete`
+    if ('supplies' in config) {
       config.supplies = undefined;
     }
 
@@ -59,8 +65,7 @@ export async function addFieldguides(fieldguides: Array<string>): Promise<void> 
     const skipped = fieldguides.length - newFieldguides.length;
     if (skipped > 0) {
       console.log(
-        '\n' +
-          chalk.yellow(`Skipped ${skipped} already installed fieldguides`)
+        '\n' + chalk.yellow(`Skipped ${skipped} already installed fieldguides`)
       );
     }
   } catch (error) {

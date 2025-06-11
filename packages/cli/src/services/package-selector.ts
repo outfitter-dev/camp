@@ -1,7 +1,11 @@
 import type { PackageSelection, PresetType } from '../types/index.js';
 import type { TerrainFeatures } from '../utils/detect-terrain.js';
 import type { FieldguideRecommendation } from '../config/fieldguide-mappings.js';
-import { PRESET_CONFIGURATIONS, CONFIG_PACKAGES, UTILITY_PACKAGES } from '../constants/packages.js';
+import {
+  PRESET_CONFIGURATIONS,
+  CONFIG_PACKAGES,
+  UTILITY_PACKAGES,
+} from '../constants/packages.js';
 import { getRecommendedFieldguideIds } from '../config/fieldguide-mappings.js';
 import * as prompts from '../ui/prompts.js';
 
@@ -23,7 +27,9 @@ export function getPresetSelection(preset: PresetType): PackageSelection {
  * @param terrain - The terrain features used to determine recommended fieldguides.
  * @returns The default package selection for the specified terrain.
  */
-export function getDefaultSelection(terrain: TerrainFeatures): PackageSelection {
+export function getDefaultSelection(
+  terrain: TerrainFeatures
+): PackageSelection {
   return {
     configs: CONFIG_PACKAGES.filter(p => p.selected).map(p => p.value),
     utils: UTILITY_PACKAGES.filter(p => p.selected).map(p => p.value),
@@ -43,18 +49,18 @@ export async function getInteractiveSelection(
   recommendedFieldguides: Array<FieldguideRecommendation>
 ): Promise<PackageSelection> {
   console.log(''); // Add spacing
-  
+
   const selectedConfigs = await prompts.selectConfigurations(CONFIG_PACKAGES);
   const selectedUtils = await prompts.selectUtilities(UTILITY_PACKAGES);
-  
+
   // Show recommended fieldguides
   if (recommendedFieldguides.length > 0) {
     prompts.showRecommendedFieldguides(recommendedFieldguides);
   }
-  
+
   return {
     configs: selectedConfigs,
     utils: selectedUtils,
-    fieldguides: getRecommendedFieldguideIds(terrain),
+    fieldguides: recommendedFieldguides.map(fg => fg.id),
   };
 }

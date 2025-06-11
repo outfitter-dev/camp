@@ -1,6 +1,5 @@
 import { runFieldGuides } from '../fieldguides';
 import * as fs from 'fs';
-import * as path from 'path';
 
 jest.mock('fs');
 
@@ -26,28 +25,33 @@ describe('FieldGuides CLI', () => {
     const outputPath = 'out.md';
 
     process.argv.push(
-      '--template', templatePath,
-      '--input', inputPath,
-      '--output', outputPath
+      '--template',
+      templatePath,
+      '--input',
+      inputPath,
+      '--output',
+      outputPath
     );
 
     // Both template and data files exist
     (fs.existsSync as jest.Mock).mockReturnValue(true);
     // Mock reading template and JSON data
-    (fs.readFileSync as jest.Mock).mockImplementation((filePath: string, encoding: string) => {
-      if (filePath === templatePath) {
-        return 'Hello {{name}}';
+    (fs.readFileSync as jest.Mock).mockImplementation(
+      (filePath: string, encoding: string) => {
+        if (filePath === templatePath) {
+          return 'Hello {{name}}';
+        }
+        if (filePath === inputPath) {
+          return JSON.stringify({ name: 'World' });
+        }
+        throw new Error('Unexpected file path');
       }
-      if (filePath === inputPath) {
-        return JSON.stringify({ name: 'World' });
-      }
-      throw new Error('Unexpected file path');
-    });
+    );
 
     await runFieldGuides();
 
     // Expect the output file to be written with the interpolated content
-    expect((fs.writeFileSync as jest.Mock)).toHaveBeenCalledWith(
+    expect(fs.writeFileSync as jest.Mock).toHaveBeenCalledWith(
       outputPath,
       expect.stringContaining('Hello World')
     );
@@ -59,7 +63,9 @@ describe('FieldGuides CLI', () => {
     await runFieldGuides();
 
     // yargs help typically prints "Options" or usage info
-    expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('Options'));
+    expect(consoleLogSpy).toHaveBeenCalledWith(
+      expect.stringContaining('Options')
+    );
   });
 
   it('should handle missing required argument gracefully', async () => {
@@ -72,24 +78,34 @@ describe('FieldGuides CLI', () => {
   it('should fail when template file is missing', async () => {
     const templatePath = 'template.hbs';
     process.argv.push(
-      '--template', templatePath,
-      '--input', 'fields.json',
-      '--output', 'out.md'
+      '--template',
+      templatePath,
+      '--input',
+      'fields.json',
+      '--output',
+      'out.md'
     );
 
     // Simulate template file not existing
-    (fs.existsSync as jest.Mock).mockImplementation((filePath: string) => filePath !== templatePath);
+    (fs.existsSync as jest.Mock).mockImplementation(
+      (filePath: string) => filePath !== templatePath
+    );
 
-    await expect(runFieldGuides()).rejects.toThrow(`Template file not found: ${templatePath}`);
+    await expect(runFieldGuides()).rejects.toThrow(
+      `Template file not found: ${templatePath}`
+    );
   });
 
   it('should propagate underlying fs errors', async () => {
     const templatePath = 'template.hbs';
     const inputPath = 'fields.json';
     process.argv.push(
-      '--template', templatePath,
-      '--input', inputPath,
-      '--output', 'out.md'
+      '--template',
+      templatePath,
+      '--input',
+      inputPath,
+      '--output',
+      'out.md'
     );
 
     // File existence check passes

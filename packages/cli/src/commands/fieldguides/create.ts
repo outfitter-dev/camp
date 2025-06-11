@@ -34,14 +34,18 @@ const presets = {
  *
  * @throws {Error} If an error occurs during directory creation or file writing.
  */
-export async function createFieldguideConfig(options: CreateOptions): Promise<void> {
+export async function createFieldguideConfig(
+  options: CreateOptions
+): Promise<void> {
   const cwd = process.cwd();
   const outfitterDir = join(cwd, '.outfitter');
 
   // Check if already initialized
   if ((await pathExists(outfitterDir)) && !options.force) {
     console.error(
-      chalk.red('Fieldguide configuration already exists. Use --force to reinitialize.')
+      chalk.red(
+        'Fieldguide configuration already exists. Use --force to reinitialize.'
+      )
     );
     process.exit(1);
   }

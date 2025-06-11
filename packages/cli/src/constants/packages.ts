@@ -1,17 +1,49 @@
 import type { Package, PackageSelection, PresetType } from '../types/index.js';
 
 export const CONFIG_PACKAGES: Array<Package> = [
-  { name: 'ESLint configuration', value: '@outfitter/eslint-config', selected: true },
-  { name: 'TypeScript configuration', value: '@outfitter/typescript-config', selected: true },
-  { name: 'Prettier configuration', value: '@outfitter/prettier-config', selected: true },
-  { name: 'Husky (Git hooks)', value: '@outfitter/husky-config', selected: true },
-  { name: 'Changesets (versioning)', value: '@outfitter/changeset-config', selected: false },
+  {
+    name: 'ESLint configuration',
+    value: '@outfitter/eslint-config',
+    selected: true,
+  },
+  {
+    name: 'TypeScript configuration',
+    value: '@outfitter/typescript-config',
+    selected: true,
+  },
+  {
+    name: 'Prettier configuration',
+    value: '@outfitter/prettier-config',
+    selected: true,
+  },
+  {
+    name: 'Husky (Git hooks)',
+    value: '@outfitter/husky-config',
+    selected: true,
+  },
+  {
+    name: 'Changesets (versioning)',
+    value: '@outfitter/changeset-config',
+    selected: false,
+  },
 ];
 
 export const UTILITY_PACKAGES: Array<Package> = [
-  { name: 'Contracts (Result pattern)', value: '@outfitter/contracts', selected: true },
-  { name: 'Contracts + Zod validation', value: '@outfitter/contracts-zod', selected: true },
-  { name: 'Packlist (Config manager)', value: '@outfitter/packlist', selected: false },
+  {
+    name: 'Contracts (Result pattern)',
+    value: '@outfitter/contracts',
+    selected: true,
+  },
+  {
+    name: 'Contracts + Zod validation',
+    value: '@outfitter/contracts-zod',
+    selected: true,
+  },
+  {
+    name: 'Packlist (Config manager)',
+    value: '@outfitter/packlist',
+    selected: false,
+  },
 ];
 
 export const PRESET_CONFIGURATIONS: Record<PresetType, PackageSelection> = {

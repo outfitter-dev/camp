@@ -3,7 +3,9 @@ import chalk from 'chalk';
 import type { Package } from '../types/index.js';
 import type { FieldguideRecommendation } from '../config/fieldguide-mappings.js';
 
-export async function selectConfigurations(packages: Array<Package>): Promise<Array<string>> {
+export async function selectConfigurations(
+  packages: Array<Package>
+): Promise<Array<string>> {
   return checkbox({
     message: 'Select configurations to install:',
     choices: packages.map(pkg => ({
@@ -14,7 +16,9 @@ export async function selectConfigurations(packages: Array<Package>): Promise<Ar
   });
 }
 
-export async function selectUtilities(packages: Array<Package>): Promise<Array<string>> {
+export async function selectUtilities(
+  packages: Array<Package>
+): Promise<Array<string>> {
   return checkbox({
     message: 'Select utility packages:',
     choices: packages.map(pkg => ({
@@ -37,11 +41,20 @@ export async function confirmGitHooks(): Promise<boolean> {
   });
 }
 
-export function showRecommendedFieldguides(fieldguides: Array<FieldguideRecommendation>): void {
+export function showRecommendedFieldguides(
+  fieldguides: Array<FieldguideRecommendation>
+): void {
   console.log(chalk.cyan('\n📚 Recommended fieldguides for your terrain:'));
-  fieldguides.forEach(fg => {
-    const icon = fg.priority === 'essential' ? '⭐' : 
-                 fg.priority === 'recommended' ? '👍' : '📖';
-    console.log(`  ${icon} ${fg.name} - ${fg.description}`);
-  });
+  fieldguides
+    .slice() // copy
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .forEach(fg => {
+      const icon =
+        fg.priority === 'essential'
+          ? '⭐'
+          : fg.priority === 'recommended'
+            ? '👍'
+            : '📖';
+      console.log(`  ${icon} ${fg.name} - ${fg.description}`);
+    });
 }

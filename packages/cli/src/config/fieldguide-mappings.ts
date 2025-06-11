@@ -162,9 +162,10 @@ export function getRecommendedFieldguides(
   }
 
   // Sort by priority
-  return Array.from(seen.values()).sort(
-    (a, b) => getPriorityWeight(b.priority) - getPriorityWeight(a.priority)
-  );
+  return Array.from(seen.values()).sort((a, b) => {
+    const diff = getPriorityWeight(b.priority) - getPriorityWeight(a.priority);
+    return diff !== 0 ? diff : a.name.localeCompare(b.name);
+  });
 }
 
 /**
@@ -201,4 +202,3 @@ export function getRecommendedFieldguideIds(
     .filter(fg => fg.priority === 'essential' || fg.priority === 'recommended')
     .map(fg => fg.id);
 }
-

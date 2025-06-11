@@ -27,4 +27,3 @@ export function fromZod(error: z.ZodError): AppError {
     }),
   });
 }
-

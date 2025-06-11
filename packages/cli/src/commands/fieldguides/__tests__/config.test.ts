@@ -32,8 +32,12 @@ describe('config utilities', () => {
         [path.join(cwd, 'fieldguide.config.json')]: false,
         [path.join('/project', 'fieldguide.config.json')]: true,
       };
-      jest.spyOn(fs, 'existsSync').mockImplementation(p => !!existsMap[p as string]);
-      expect(findConfigPath()).toBe(path.join('/project', 'fieldguide.config.json'));
+      jest
+        .spyOn(fs, 'existsSync')
+        .mockImplementation(p => !!existsMap[p as string]);
+      expect(findConfigPath()).toBe(
+        path.join('/project', 'fieldguide.config.json')
+      );
     });
 
     it('throws error when config is not found', () => {
@@ -51,7 +55,9 @@ describe('config utilities', () => {
     it('throws error for invalid config schema', () => {
       // @ts-expect-error invalid property types
       const invalidConfig = { title: 123, steps: 'not-an-array' };
-      expect(() => validateConfig(invalidConfig)).toThrow(/Invalid configuration/);
+      expect(() => validateConfig(invalidConfig)).toThrow(
+        /Invalid configuration/
+      );
     });
   });
 
@@ -60,7 +66,9 @@ describe('config utilities', () => {
 
     it('returns parsed JSON for valid file', () => {
       jest.spyOn(configModule, 'findConfigPath').mockReturnValue(filePath);
-      jest.spyOn(fs, 'readFileSync').mockReturnValue(JSON.stringify(mockConfig));
+      jest
+        .spyOn(fs, 'readFileSync')
+        .mockReturnValue(JSON.stringify(mockConfig));
       expect(loadConfig()).toEqual(mockConfig);
     });
 
@@ -71,13 +79,17 @@ describe('config utilities', () => {
     });
 
     it('throws when config file is missing', () => {
-      jest.spyOn(configModule, 'findConfigPath').mockImplementation(() => { throw new Error('Configuration file not found'); });
+      jest.spyOn(configModule, 'findConfigPath').mockImplementation(() => {
+        throw new Error('Configuration file not found');
+      });
       expect(() => loadConfig()).toThrow(/Configuration file not found/);
     });
 
     it('handles file system errors gracefully', () => {
       jest.spyOn(configModule, 'findConfigPath').mockReturnValue(filePath);
-      jest.spyOn(fs, 'readFileSync').mockImplementation(() => { throw new Error('EACCES: permission denied'); });
+      jest.spyOn(fs, 'readFileSync').mockImplementation(() => {
+        throw new Error('EACCES: permission denied');
+      });
       expect(() => loadConfig()).toThrow(/permission denied/);
     });
   });

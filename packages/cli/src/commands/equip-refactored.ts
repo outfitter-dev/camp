@@ -11,23 +11,26 @@ import { getRecommendedFieldguides } from '../config/fieldguide-mappings.js';
 export const equipCommand = new Command('equip')
   .alias('init')
   .description('Interactively install Outfitter configurations and utilities')
-  .option('--preset <type>', 'Use a preset configuration (minimal, standard, full)')
+  .option(
+    '--preset <type>',
+    'Use a preset configuration (minimal, standard, full)'
+  )
   .option('-y, --yes', 'Skip prompts and use defaults')
   .action(async (options: EquipOptions) => {
     ui.showWelcome();
-    
+
     // Detect project terrain
     const terrainSpinner = ui.createSpinner('Analyzing project terrain...');
     terrainSpinner.start();
     const terrain = await detectTerrain();
     terrainSpinner.succeed('Project terrain analyzed');
-    
+
     ui.showTerrainSummary(terrain);
-    
+
     // Get & show recommended fieldguides
     const recommendedFieldguides = getRecommendedFieldguides(terrain);
     prompts.showRecommendedFieldguides(recommendedFieldguides);
-    
+
     // Determine package selection
     let selection;
     if (options.preset) {
@@ -35,13 +38,16 @@ export const equipCommand = new Command('equip')
     } else if (options.yes) {
       selection = packageSelector.getDefaultSelection(terrain);
     } else {
-      selection = await packageSelector.getInteractiveSelection(terrain, recommendedFieldguides);
+      selection = await packageSelector.getInteractiveSelection(
+        terrain,
+        recommendedFieldguides
+      );
     }
-    
+
     // Detect and show package manager
     const pm = await packageManager.detectPackageManager();
     ui.showPackageManager(pm);
-    
+
     // Install packages
     const allPackages = [...selection.configs, ...selection.utils];
     if (allPackages.length > 0) {
@@ -55,7 +61,7 @@ export const equipCommand = new Command('equip')
         throw error;
       }
     }
-    
+
     // Apply configurations
     if (selection.configs.length > 0) {
       const configSpinner = ui.createSpinner('Applying configurations...');
@@ -68,11 +74,11 @@ export const equipCommand = new Command('equip')
         throw error;
       }
     }
-    
+
     // Initialize git hooks if husky was selected
     if (selection.configs.includes('@outfitter/husky-config')) {
-      const gitHooks = options.yes || await prompts.confirmGitHooks();
-      
+      const gitHooks = options.yes || (await prompts.confirmGitHooks());
+
       if (gitHooks) {
         const hooksSpinner = ui.createSpinner('Setting up git hooks...');
         hooksSpinner.start();
@@ -84,6 +90,6 @@ export const equipCommand = new Command('equip')
         }
       }
     }
-    
+
     ui.showNextSteps(pm, selection);
   });

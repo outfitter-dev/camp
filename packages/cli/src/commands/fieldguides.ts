@@ -21,7 +21,10 @@ export const fieldguidesCommand = new Command('fieldguides')
   .addCommand(
     new Command('add')
       .description('Add fieldguides to your project')
-      .argument('<fieldguides...>', 'Fieldguides to add (e.g., react-patterns typescript-standards)')
+      .argument(
+        '<fieldguides...>',
+        'Fieldguides to add (e.g., react-patterns typescript-standards)'
+      )
       .action(addFieldguides)
   )
   .addCommand(
@@ -42,8 +45,12 @@ export const fieldguidesCommand = new Command('fieldguides')
       .addCommand(
         new Command('export')
           .description('Export current configuration')
-          .option('-o, --output <file>', 'Output file', 'fieldguide-config.json')
-          .action(async (options) => {
+          .option(
+            '-o, --output <file>',
+            'Output file',
+            'fieldguide-config.json'
+          )
+          .action(async options => {
             await manageFieldguideConfig('export', options);
           })
       )
