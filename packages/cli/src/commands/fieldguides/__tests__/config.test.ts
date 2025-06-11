@@ -1,45 +1,84 @@
-// Jest unit tests for config module
-import fs from 'fs';
-import { loadConfig, ConfigError } from '../config';
+/**
+ * Test suite uses Jest (ts-jest) which is the standard framework in the repo.
+ * fs, path and process.cwd are mocked with jest.spyOn to isolate behaviour.
+ */
 
-jest.mock('fs');
+import path from 'node:path';
+import * as fs from 'node:fs';
+import * as configModule from '../config';
+const { loadConfig, validateConfig, findConfigPath } = configModule;
 
-describe('loadConfig', () => {
-  const TEST_PATH = '/fake/path/config.json';
+describe('config utilities', () => {
+  const mockConfig = { title: 'My FG', steps: [] };
 
   afterEach(() => {
-    jest.resetAllMocks();
-    delete process.env.CONFIG_PATH;
+    jest.restoreAllMocks();
+    jest.resetModules();
   });
 
-  it('should return parsed config for a valid JSON file', () => {
-    const fakeConfig = { foo: 'bar', baz: 123 };
-    (fs.existsSync as jest.Mock).mockReturnValue(true);
-    (fs.readFileSync as jest.Mock).mockReturnValue(JSON.stringify(fakeConfig));
+  describe('findConfigPath', () => {
+    it('returns path when config exists in cwd', () => {
+      const cwd = '/project';
+      jest.spyOn(process, 'cwd').mockReturnValue(cwd);
+      const expected = path.join(cwd, 'fieldguide.config.json');
+      jest.spyOn(fs, 'existsSync').mockImplementation(p => p === expected);
+      expect(findConfigPath()).toBe(expected);
+    });
 
-    const result = loadConfig(TEST_PATH);
-    expect(result).toEqual(fakeConfig);
+    it('searches ancestor directories and returns first found', () => {
+      const cwd = '/project/sub';
+      jest.spyOn(process, 'cwd').mockReturnValue(cwd);
+      const existsMap: Record<string, boolean> = {
+        [path.join(cwd, 'fieldguide.config.json')]: false,
+        [path.join('/project', 'fieldguide.config.json')]: true,
+      };
+      jest.spyOn(fs, 'existsSync').mockImplementation(p => !!existsMap[p as string]);
+      expect(findConfigPath()).toBe(path.join('/project', 'fieldguide.config.json'));
+    });
+
+    it('throws error when config is not found', () => {
+      jest.spyOn(process, 'cwd').mockReturnValue('/nowhere');
+      jest.spyOn(fs, 'existsSync').mockReturnValue(false);
+      expect(() => findConfigPath()).toThrow(/Configuration file not found/);
+    });
   });
 
-  it('should throw ConfigError when the file does not exist', () => {
-    (fs.existsSync as jest.Mock).mockReturnValue(false);
+  describe('validateConfig', () => {
+    it('does not throw for valid config', () => {
+      expect(() => validateConfig(mockConfig)).not.toThrow();
+    });
 
-    expect(() => loadConfig(TEST_PATH)).toThrow(ConfigError);
+    it('throws error for invalid config schema', () => {
+      // @ts-expect-error invalid property types
+      const invalidConfig = { title: 123, steps: 'not-an-array' };
+      expect(() => validateConfig(invalidConfig)).toThrow(/Invalid configuration/);
+    });
   });
 
-  it('should throw ConfigError for malformed JSON content', () => {
-    (fs.existsSync as jest.Mock).mockReturnValue(true);
-    (fs.readFileSync as jest.Mock).mockReturnValue('{ invalid json }');
+  describe('loadConfig', () => {
+    const filePath = '/project/fieldguide.config.json';
 
-    expect(() => loadConfig(TEST_PATH)).toThrow(ConfigError);
-  });
+    it('returns parsed JSON for valid file', () => {
+      jest.spyOn(configModule, 'findConfigPath').mockReturnValue(filePath);
+      jest.spyOn(fs, 'readFileSync').mockReturnValue(JSON.stringify(mockConfig));
+      expect(loadConfig()).toEqual(mockConfig);
+    });
 
-  it('should throw ConfigError when readFileSync throws an error', () => {
-    (fs.existsSync as jest.Mock).mockReturnValue(true);
-    const err: NodeJS.ErrnoException = new Error('permission denied');
-    err.code = 'EACCES';
-    (fs.readFileSync as jest.Mock).mockImplementation(() => { throw err; });
+    it('throws on invalid JSON', () => {
+      jest.spyOn(configModule, 'findConfigPath').mockReturnValue(filePath);
+      jest.spyOn(fs, 'readFileSync').mockReturnValue('not valid json');
+      expect(() => loadConfig()).toThrow(/Unexpected token/);
+    });
 
-    expect(() => loadConfig(TEST_PATH)).toThrow(ConfigError);
+    it('throws when config file is missing', () => {
+      jest.spyOn(configModule, 'findConfigPath').mockImplementation(() => { throw new Error('Configuration file not found'); });
+      expect(() => loadConfig()).toThrow(/Configuration file not found/);
+    });
+
+    it('handles file system errors gracefully', () => {
+      jest.spyOn(configModule, 'findConfigPath').mockReturnValue(filePath);
+      jest.spyOn(fs, 'readFileSync').mockImplementation(() => { throw new Error('EACCES: permission denied'); });
+      expect(() => loadConfig()).toThrow(/permission denied/);
+    });
   });
 });

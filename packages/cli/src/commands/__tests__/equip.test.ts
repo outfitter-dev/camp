@@ -1,83 +1,113 @@
-// NOTE: Tests use the Jest testing framework, consistent with existing project test setup.
+// Jest with ts-jest is used for testing TypeScript commands
 
-import fs from 'fs';
-import path from 'path';
-import * as child_process from 'child_process';
-import { equip } from '../equip';
+import * as fs from 'fs-extra';
+import * as path from 'path';
+import * as os from 'os';
+import { prompt } from 'enquirer';
+import equip from '../equip';
 
-jest.mock('fs');
-jest.mock('path');
-jest.spyOn(process, 'exit').mockImplementation(((code?: number) => {
-  throw new Error(`process.exit: ${code}`);
-}) as never);
+jest.mock('fs-extra');
+jest.mock('enquirer', () => ({ prompt: jest.fn() }));
 
-const execMock = jest.spyOn(child_process, 'exec');
+const mockedFs = fs as jest.Mocked<typeof fs>;
+const mockedPrompt = prompt as jest.MockedFunction<typeof prompt>;
+const actualFs = jest.requireActual('fs-extra');
 
-beforeEach(() => {
-  jest.clearAllMocks();
+const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+const exitSpy = jest.spyOn(process, 'exit').mockImplementation(
+  ((code?: number) => { throw new Error(`process.exit: ${code}`); }) as never
+);
+
+beforeAll(() => {
+  jest.useFakeTimers();
 });
 
 afterAll(() => {
-  jest.restoreAllMocks();
+  jest.useRealTimers();
+});
+
+let tmpDir: string;
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  // Restore real FS methods for tmp directory management
+  (mockedFs.mkdtempSync as jest.Mock).mockImplementation((prefix: string) =>
+    actualFs.mkdtempSync(prefix)
+  );
+  (mockedFs.rmSync as jest.Mock).mockImplementation((target: string, opts?: any) =>
+    actualFs.rmSync(target, opts)
+  );
+  tmpDir = mockedFs.mkdtempSync(path.join(os.tmpdir(), 'equip-'));
+});
+
+afterEach(() => {
+  mockedFs.rmSync(tmpDir, { recursive: true, force: true });
 });
 
 describe('equip command', () => {
-  describe('happy path – when dependencies install and templates copy successfully', () => {
-    it('should install dependencies and copy templates without errors', async () => {
-      // Arrange
-      (fs.existsSync as jest.Mock).mockReturnValue(true);
-      const writeFileMock = (fs.writeFileSync as jest.Mock).mockImplementation(() => {});
-      const copyFileMock = (fs.copyFileSync as jest.Mock).mockImplementation(() => {});
-      execMock.mockImplementation((cmd: string, opts: any, cb: Function) => cb(null, 'install success'));
+  it('equips successfully when project path arg provided', async () => {
+    mockedFs.pathExists.mockResolvedValue(false);
+    mockedFs.copy.mockResolvedValue(undefined);
 
-      // Act & Assert
-      await expect(equip({ targetDir: 'app', dryRun: false })).resolves.not.toThrow();
+    await expect(equip({ projectPath: tmpDir })).resolves.toBeUndefined();
 
-      // Assert side effects
-      expect(fs.existsSync).toHaveBeenCalledWith('app');
-      expect(execMock).toHaveBeenCalledWith('npm install', { cwd: 'app' }, expect.any(Function));
-      expect(writeFileMock).toHaveBeenCalled();
-      expect(copyFileMock).toHaveBeenCalled();
-    });
+    expect(mockedFs.copy).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.any(String),
+      expect.any(Object)
+    );
+    expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('Equipped'));
+    expect(exitSpy).not.toHaveBeenCalled();
   });
 
-  describe('edge cases', () => {
-    it('should throw when target directory is missing', async () => {
-      // Arrange
-      (fs.existsSync as jest.Mock).mockReturnValue(false);
+  it('prompts interactively when no project path provided', async () => {
+    mockedPrompt.mockResolvedValue({ projectPath: tmpDir });
+    mockedFs.pathExists.mockResolvedValue(false);
+    mockedFs.copy.mockResolvedValue(undefined);
 
-      // Act & Assert
-      await expect(equip({ targetDir: 'missing-dir', dryRun: false }))
-        .rejects.toThrow(/not found/);
-    });
+    await expect(equip({})).resolves.toBeUndefined();
+
+    expect(mockedPrompt).toHaveBeenCalled();
+    expect(mockedFs.copy).toHaveBeenCalled();
+    expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('Equipped'));
   });
 
-  describe('failure cases', () => {
-    it('should exit the process when npm install fails', async () => {
-      // Arrange
-      (fs.existsSync as jest.Mock).mockReturnValue(true);
-      execMock.mockImplementation((cmd: string, opts: any, cb: Function) => cb(new Error('install error'), ''));
+  it('does a dry-run without making changes', async () => {
+    mockedFs.pathExists.mockResolvedValue(false);
 
-      // Act & Assert
-      await expect(equip({ targetDir: 'app', dryRun: false }))
-        .rejects.toThrow(/process.exit: 1/);
-    });
+    await expect(equip({ projectPath: tmpDir, dryRun: true })).resolves.toBeUndefined();
+
+    expect(mockedFs.copy).not.toHaveBeenCalled();
+    expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('Dry-run'));
   });
 
-  describe('argument parsing – dry run', () => {
-    it('should not perform write operations in dry-run mode', async () => {
-      // Arrange
-      (fs.existsSync as jest.Mock).mockReturnValue(true);
-      execMock.mockImplementation((cmd: string, opts: any, cb: Function) => cb(null, 'install success'));
-      (fs.writeFileSync as jest.Mock).mockImplementation(() => {});
-      (fs.copyFileSync as jest.Mock).mockImplementation(() => {});
+  it('exits with error if path already equipped', async () => {
+    mockedFs.pathExists.mockResolvedValue(true);
 
-      // Act & Assert
-      await expect(equip({ targetDir: 'app', dryRun: true })).resolves.not.toThrow();
+    await expect(equip({ projectPath: tmpDir })).rejects.toThrow('process.exit: 1');
 
-      // Verify no file operations occurred
-      expect(fs.writeFileSync).not.toHaveBeenCalled();
-      expect(fs.copyFileSync).not.toHaveBeenCalled();
-    });
+    expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining('already equipped'));
+    expect(exitSpy).toHaveBeenCalledWith(1);
+  });
+
+  it('handles invalid path errors', async () => {
+    const err = new Error('boom');
+    mockedFs.pathExists.mockRejectedValue(err);
+
+    await expect(equip({ projectPath: tmpDir })).rejects.toThrow('boom');
+
+    expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining('boom'));
+    expect(exitSpy).toHaveBeenCalledWith(1);
+  });
+
+  it('bubbles errors from fs.copy', async () => {
+    mockedFs.pathExists.mockResolvedValue(false);
+    const copyErr = new Error('copy-fail');
+    mockedFs.copy.mockRejectedValue(copyErr);
+
+    await expect(equip({ projectPath: tmpDir })).rejects.toThrow('copy-fail');
+
+    expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining('copy-fail'));
   });
 });
