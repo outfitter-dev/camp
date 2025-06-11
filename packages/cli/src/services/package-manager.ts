@@ -2,6 +2,13 @@ import { pathExists } from 'fs-extra';
 import { execa } from 'execa';
 import type { PackageManager, InstallCommand } from '../types/index.js';
 
+/**
+ * Detects the package manager used in the current project directory.
+ *
+ * Checks for the presence of lock files to determine if the project uses pnpm, yarn, bun, or npm, returning the corresponding package manager name. Defaults to 'npm' if no recognized lock file is found.
+ *
+ * @returns The detected package manager: 'pnpm', 'yarn', 'bun', or 'npm'.
+ */
 export async function detectPackageManager(): Promise<PackageManager> {
   if (await pathExists('pnpm-lock.yaml')) return 'pnpm';
   if (await pathExists('yarn.lock')) return 'yarn';
@@ -11,6 +18,12 @@ export async function detectPackageManager(): Promise<PackageManager> {
   return 'npm';
 }
 
+/**
+ * Returns the install command details for a given package manager.
+ *
+ * @param manager - The package manager to retrieve command details for.
+ * @returns An object containing the command name, install verb, and development flag for the specified package manager.
+ */
 export function getInstallCommand(manager: PackageManager): InstallCommand {
   switch (manager) {
     case 'npm':
@@ -24,6 +37,14 @@ export function getInstallCommand(manager: PackageManager): InstallCommand {
   }
 }
 
+/**
+ * Installs the specified packages as development dependencies using the given package manager.
+ *
+ * If the package list is empty, the function returns immediately without performing any installation.
+ *
+ * @param packages - The names of the packages to install.
+ * @param manager - The package manager to use for installation.
+ */
 export async function installPackages(packages: string[], manager: PackageManager): Promise<void> {
   if (packages.length === 0) return;
   

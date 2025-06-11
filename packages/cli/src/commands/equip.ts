@@ -31,6 +31,11 @@ const utilityPackages = [
   { name: 'Packlist (Config manager)', value: '@outfitter/packlist', selected: false },
 ];
 
+/**
+ * Detects the package manager used in the current project by checking for known lock files.
+ *
+ * @returns The detected package manager: 'pnpm', 'yarn', 'bun', or 'npm'. Defaults to 'npm' if no lock file is found.
+ */
 async function detectPackageManager(): Promise<'npm' | 'pnpm' | 'yarn' | 'bun'> {
   // Check for lock files using fs-extra
   const { pathExists } = await import('fs-extra');
@@ -43,6 +48,15 @@ async function detectPackageManager(): Promise<'npm' | 'pnpm' | 'yarn' | 'bun'> 
   return 'npm';
 }
 
+/**
+ * Installs the specified packages as development dependencies using the given package manager.
+ *
+ * @param packages - The list of package names to install.
+ * @param packageManager - The package manager to use (e.g., 'npm', 'pnpm', 'yarn', 'bun').
+ *
+ * @remark
+ * Uses the appropriate install command and flags for the specified package manager.
+ */
 async function installPackages(packages: string[], packageManager: string): Promise<void> {
   const installCmd = packageManager === 'npm' ? 'install' : 'add';
   const devFlag = packageManager === 'npm' ? '--save-dev' : '-D';
@@ -50,6 +64,14 @@ async function installPackages(packages: string[], packageManager: string): Prom
   await execa(packageManager, [installCmd, devFlag, ...packages], { stdio: 'inherit' });
 }
 
+/**
+ * Applies configuration files for the specified configuration packages.
+ *
+ * @param configs - The list of configuration package names to apply.
+ *
+ * @remark
+ * This function is currently a placeholder and does not perform any actual configuration application.
+ */
 async function applyConfigurations(configs: string[]): Promise<void> {
   // TODO: Apply configuration files based on selected packages
   // For now, this is a placeholder
@@ -190,6 +212,14 @@ export const equipCommand = new Command('equip')
     }
   });
 
+/**
+ * Returns a set of configuration, utility, and fieldguide package selections based on the specified preset.
+ *
+ * @param preset - The preset type: 'minimal', 'standard', or 'full'.
+ * @returns The corresponding {@link PackageSelection} for the given preset.
+ *
+ * @remark Fieldguides are always returned as an empty array; they are intended to be auto-detected later.
+ */
 function getPresetSelection(preset: 'minimal' | 'standard' | 'full'): PackageSelection {
   switch (preset) {
     case 'minimal':

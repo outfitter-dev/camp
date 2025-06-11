@@ -44,6 +44,15 @@ export interface TerrainFeatures {
   bun: boolean;
 }
 
+/**
+ * Determines whether a given npm package is listed as a dependency in the project's `package.json`.
+ *
+ * Checks for the presence of the specified package in the `dependencies`, `devDependencies`, or `peerDependencies` fields of `package.json` within the provided directory.
+ *
+ * @param packageName - The name of the npm package to check for.
+ * @param cwd - The directory to search in. Defaults to the current working directory.
+ * @returns `true` if the package is found in any dependency section; otherwise, `false`.
+ */
 async function hasPackage(
   packageName: string,
   cwd: string = process.cwd()
@@ -65,6 +74,13 @@ async function hasPackage(
   return false;
 }
 
+/**
+ * Checks if a file exists at the specified path within a given directory.
+ *
+ * @param filePath - Relative path to the file to check.
+ * @param cwd - Directory to resolve {@link filePath} from. Defaults to the current working directory.
+ * @returns `true` if the file exists, otherwise `false`.
+ */
 async function fileExists(
   filePath: string,
   cwd: string = process.cwd()
@@ -72,6 +88,14 @@ async function fileExists(
   return pathExists(join(cwd, filePath));
 }
 
+/**
+ * Detects the presence of common frameworks, languages, tools, and features in a project directory.
+ *
+ * Inspects the specified directory for configuration files and package dependencies to determine which development environment features are present. Returns a {@link TerrainFeatures} object with boolean flags for each detected feature.
+ *
+ * @param cwd - The directory to analyze. Defaults to the current working directory.
+ * @returns An object indicating detected frameworks, languages, testing tools, state management libraries, build tools, project features, and package managers.
+ */
 export async function detectTerrain(
   cwd: string = process.cwd()
 ): Promise<TerrainFeatures> {
@@ -147,6 +171,14 @@ export async function detectTerrain(
   return terrain;
 }
 
+/**
+ * Generates a prioritized summary of detected development environment features.
+ *
+ * Converts a {@link TerrainFeatures} object into an array of descriptive strings, listing the primary framework, languages, testing tools, state management libraries, build tools, and special features present in the project. Only the first detected framework, testing tool, and state management library are included, in order of priority.
+ *
+ * @param terrain - The detected terrain features to summarize.
+ * @returns An array of human-readable strings describing the project's environment.
+ */
 export function getTerrainSummary(terrain: TerrainFeatures): string[] {
   const features: string[] = [];
 

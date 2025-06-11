@@ -1,98 +1,120 @@
-/**
- * Jest + ts-jest tests for the fieldguides:update command.
- * Mocks: fs/promises, node-fetch.
- * These tests cover happy paths, edge cases, and failure conditions.
- */
+import { describe, it, expect, beforeEach, afterAll, vi } from 'vitest'
+import fs from 'fs/promises'
+import fetch from 'node-fetch'
+import consola from 'consola'
+import ora from 'ora'
+import { update } from '../update'
 
-import { handler as updateFieldguide } from '../update';
-import { join } from 'path';
-import fs from 'fs/promises';
-import fetch from 'node-fetch';
+vi.mock('fs/promises', () => ({
+  readFile: vi.fn(),
+  writeFile: vi.fn(),
+  access: vi.fn(),
+}))
+vi.mock('node-fetch', () => ({
+  default: vi.fn(),
+}))
+vi.mock('consola', () => ({
+  default: {
+    info: vi.fn(),
+    success: vi.fn(),
+    error: vi.fn(),
+  },
+}))
+vi.mock('ora', () => ({
+  default: vi.fn(() => ({
+    start: vi.fn(),
+    stop: vi.fn(),
+    fail: vi.fn(),
+  })),
+}))
 
-function createMockFetch(body: unknown, status = 200) {
-  return jest.fn().mockResolvedValue({
-    ok: status >= 200 && status < 300,
-    status,
-    json: async () => body,
-  });
-}
+const exitMock = vi.spyOn(process, 'exit').mockImplementation(() => undefined)
 
-jest.mock('node-fetch', () => jest.fn());
-jest.mock('fs/promises', () => ({
-  readFile: jest.fn(),
-  writeFile: jest.fn(),
-  mkdir: jest.fn(),
-}));
+describe('update command', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
 
-afterEach(() => {
-  jest.resetAllMocks();
-});
+  afterAll(() => {
+    vi.restoreAllMocks()
+  })
 
-describe('fieldguides:update – happy path', () => {
-  it('downloads and writes new guide when remote version is newer', async () => {
-    (fetch as jest.Mock).mockImplementation(
-      createMockFetch({ version: '1.2.3', data: { foo: 'bar' } })
-    );
-    (fs.readFile as jest.Mock).mockRejectedValueOnce(new Error('File not found'));
+  it('updates field guides manifest and writes files successfully', async () => {
+    const mockManifest = JSON.stringify(['guide1.md', 'guide2.md'])
+    (fs.readFile as unknown as vi.Mock).mockResolvedValue(mockManifest)
+    (fs.access as unknown as vi.Mock).mockRejectedValue({ code: 'ENOENT' })
+    (fetch as unknown as vi.Mock).mockResolvedValue({
+      ok: true,
+      text: () => Promise.resolve('guide content'),
+    })
+    (fs.writeFile as unknown as vi.Mock).mockResolvedValue(undefined)
 
-    await updateFieldguide({ guide: 'test-guide', output: '/tmp' });
+    await update({ manifest: 'manifest.json', output: 'outDir', force: true })
 
-    expect(fs.mkdir).toHaveBeenCalledWith(join('/tmp', 'fieldguides'), { recursive: true });
-    expect(fs.writeFile).toHaveBeenCalledWith(
-      join('/tmp', 'fieldguides', 'test-guide.json'),
-      JSON.stringify({ version: '1.2.3', data: { foo: 'bar' } }, null, 2)
-    );
-  });
+    expect(fs.readFile).toHaveBeenCalledWith('manifest.json', 'utf-8')
+    expect(fetch).toHaveBeenCalledTimes(2)
+    expect(fs.writeFile).toHaveBeenCalledWith(expect.stringContaining('outDir/guide1.md'), 'guide content')
+    expect(fs.writeFile).toHaveBeenCalledWith(expect.stringContaining('outDir/guide2.md'), 'guide content')
+    expect(consola.success).toHaveBeenCalledWith('Field guides updated successfully')
+    expect(exitMock).not.toHaveBeenCalled()
+  })
 
-  it('does not write when remote version is unchanged', async () => {
-    (fetch as jest.Mock).mockImplementation(
-      createMockFetch({ version: '1.0.0', data: {} })
-    );
-    (fs.readFile as jest.Mock).mockResolvedValueOnce(
-      JSON.stringify({ version: '1.0.0', data: {} })
-    );
-    const consoleInfoSpy = jest.spyOn(console, 'info').mockImplementation();
+  it('throws when mandatory flag --manifest is missing', async () => {
+    // @ts-expect-error missing manifest
+    await expect(update({ output: 'outDir', force: false })).rejects.toThrow(/missing.*--manifest/i)
+    expect(fs.readFile).not.toHaveBeenCalled()
+  })
 
-    await updateFieldguide({ guide: 'test-guide', output: '/tmp' });
+  it('skips download when manifest array is empty', async () => {
+    (fs.readFile as unknown as vi.Mock).mockResolvedValue(JSON.stringify([]))
 
-    expect(fs.writeFile).not.toHaveBeenCalled();
-    expect(consoleInfoSpy).toHaveBeenCalledWith('No updates available for test-guide');
-    consoleInfoSpy.mockRestore();
-  });
-});
+    await update({ manifest: 'manifest.json', output: 'outDir', force: false })
 
-describe('fieldguides:update – edge cases', () => {
-  it('creates directory if manifest missing', async () => {
-    (fetch as jest.Mock).mockImplementation(createMockFetch({ version: '2.0.0' }));
-    (fs.readFile as jest.Mock).mockRejectedValue(new Error('File not found'));
+    expect(fs.writeFile).not.toHaveBeenCalled()
+    expect(consola.info).toHaveBeenCalledWith('No field guides to update')
+  })
 
-    await updateFieldguide({ guide: 'new-guide', output: '/tmp' });
+  it('aborts overwrite when file exists and --force not set', async () => {
+    (fs.readFile as unknown as vi.Mock).mockResolvedValue(JSON.stringify(['guide.md']))
+    (fs.access as unknown as vi.Mock).mockResolvedValue(undefined)
 
-    expect(fs.mkdir).toHaveBeenCalledWith(join('/tmp', 'fieldguides'), { recursive: true });
-    expect(fs.writeFile).toHaveBeenCalled();
-  });
+    await update({ manifest: 'manifest.json', output: 'outDir', force: false })
 
-  it('invalid flags should error', async () => {
-    await expect(
-      // @ts-expect-error testing invalid input
-      updateFieldguide({ unknown: 'flag' })
-    ).rejects.toThrow('Invalid guide name');
-    expect(fs.writeFile).not.toHaveBeenCalled();
-  });
-});
+    expect(fs.writeFile).not.toHaveBeenCalled()
+    expect(consola.error).toHaveBeenCalledWith(expect.stringContaining('already exists'))
+    expect(exitMock).toHaveBeenCalledWith(1)
+  })
 
-describe('fieldguides:update – failure handling', () => {
-  it('handles network failures gracefully', async () => {
-    (fetch as jest.Mock).mockRejectedValueOnce(new Error('Network Error'));
-    await expect(
-      updateFieldguide({ guide: 'fail-guide', output: '/tmp' })
-    ).rejects.toThrow('Network Error');
-  });
+  it('handles fetch failure', async () => {
+    (fs.readFile as unknown as vi.Mock).mockResolvedValue(JSON.stringify(['guide.md']))
+    (fs.access as unknown as vi.Mock).mockRejectedValue({ code: 'ENOENT' })
+    (fetch as unknown as vi.Mock).mockRejectedValue(new Error('Network error'))
 
-  it('throws on non-2xx status codes', async () => {
-    (fetch as jest.Mock).mockImplementation(createMockFetch(null, 500));
-    await expect(
-      updateFieldguide({ guide: 'error-guide', output: '/tmp' })
-    ).rejects.toThrow('Failed to fetch error-guide: 500');
-  });
-});
+    await update({ manifest: 'manifest.json', output: 'outDir', force: true })
+
+    expect(consola.error).toHaveBeenCalledWith(expect.stringContaining('Network error'))
+    expect(exitMock).toHaveBeenCalledWith(1)
+  })
+
+  it('handles writeFile failure with ENOSPC', async () => {
+    (fs.readFile as unknown as vi.Mock).mockResolvedValue(JSON.stringify(['guide.md']))
+    (fs.access as unknown as vi.Mock).mockRejectedValue({ code: 'ENOENT' })
+    (fetch as unknown as vi.Mock).mockResolvedValue({
+      ok: true,
+      text: () => Promise.resolve('content'),
+    })
+    (fs.writeFile as unknown as vi.Mock).mockRejectedValue({ code: 'ENOSPC' })
+
+    await update({ manifest: 'manifest.json', output: 'outDir', force: true })
+
+    expect(consola.error).toHaveBeenCalledWith(expect.stringContaining('ENOSPC'))
+    expect(exitMock).toHaveBeenCalledWith(1)
+  })
+
+  it('throws on invalid JSON in manifest', async () => {
+    (fs.readFile as unknown as vi.Mock).mockResolvedValue('invalid json')
+
+    await expect(update({ manifest: 'manifest.json', output: 'outDir', force: false })).rejects.toThrow(SyntaxError)
+    expect(consola.error).not.toHaveBeenCalled()
+  })
+})

@@ -5,10 +5,24 @@ import { PRESET_CONFIGURATIONS, CONFIG_PACKAGES, UTILITY_PACKAGES } from '../con
 import { getRecommendedFieldguideIds } from '../config/fieldguide-mappings.js';
 import * as prompts from '../ui/prompts.js';
 
+/**
+ * Retrieves the package selection associated with a given preset.
+ *
+ * @param preset - The preset type for which to obtain the package selection.
+ * @returns The package selection defined by the specified {@link preset}.
+ */
 export function getPresetSelection(preset: PresetType): PackageSelection {
   return PRESET_CONFIGURATIONS[preset];
 }
 
+/**
+ * Returns the default package selection based on the provided terrain features.
+ *
+ * The selection includes all configuration and utility packages marked as selected by default, along with recommended fieldguide IDs determined by the given terrain.
+ *
+ * @param terrain - The terrain features used to determine recommended fieldguides.
+ * @returns The default package selection for the specified terrain.
+ */
 export function getDefaultSelection(terrain: TerrainFeatures): PackageSelection {
   return {
     configs: CONFIG_PACKAGES.filter(p => p.selected).map(p => p.value),
@@ -17,6 +31,13 @@ export function getDefaultSelection(terrain: TerrainFeatures): PackageSelection 
   };
 }
 
+/**
+ * Prompts the user to interactively select configuration and utility packages, and displays recommended fieldguides based on the provided terrain.
+ *
+ * @param terrain - The terrain features used to determine recommended fieldguides.
+ * @param recommendedFieldguides - A list of fieldguide recommendations to display to the user.
+ * @returns A package selection object containing the user's chosen configuration and utility packages, along with recommended fieldguide IDs for the given terrain.
+ */
 export async function getInteractiveSelection(
   terrain: TerrainFeatures,
   recommendedFieldguides: FieldguideRecommendation[]

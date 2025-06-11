@@ -10,6 +10,16 @@ interface InitOptions {
   utils?: boolean;
 }
 
+/**
+ * Initializes Outfitter Packlist in the current Node.js project.
+ *
+ * Sets up recommended ESLint and TypeScript configurations, installs required dependencies, and adds useful scripts to `package.json` based on the provided options. Exits the process if `package.json` is not found in the project root.
+ *
+ * @param options - Configuration options to control which features and dependencies are set up.
+ *
+ * @remark
+ * This function modifies `package.json` and may create or overwrite `.eslintrc.js` and `tsconfig.json` files in the project root.
+ */
 export async function init(options: InitOptions = {}): Promise<void> {
   console.log(pc.cyan('🎒 Initializing Outfitter Packlist...'));
 
@@ -100,6 +110,11 @@ export async function init(options: InitOptions = {}): Promise<void> {
   console.log(pc.white('  npm run type-check  # Check TypeScript'));
 }
 
+/**
+ * Detects the package manager used in the current project by checking for lock files.
+ *
+ * @returns The name of the detected package manager: 'pnpm', 'yarn', 'bun', or 'npm' if none are found.
+ */
 async function detectPackageManager(): Promise<string> {
   try {
     await fs.access('pnpm-lock.yaml');
@@ -143,6 +158,14 @@ async function installDependencies(
   });
 }
 
+/**
+ * Creates a default ESLint configuration file in the specified project directory.
+ *
+ * If `.eslintrc.js` already exists and `force` is not set, the function logs a warning and does not overwrite the file.
+ *
+ * @param projectRoot - The root directory where the ESLint config should be created.
+ * @param force - If true, overwrites any existing `.eslintrc.js` file.
+ */
 async function createEslintConfig(projectRoot: string, force?: boolean) {
   const eslintConfigPath = path.join(projectRoot, '.eslintrc.js');
 
@@ -170,6 +193,14 @@ async function createEslintConfig(projectRoot: string, force?: boolean) {
   console.log(pc.green('✓ Created .eslintrc.js'));
 }
 
+/**
+ * Creates a default `tsconfig.json` in the specified project directory if it does not already exist.
+ *
+ * If the file exists and `force` is not set, the function logs a warning and does not overwrite the file.
+ *
+ * @param projectRoot - The root directory where `tsconfig.json` should be created.
+ * @param force - If true, overwrites any existing `tsconfig.json`.
+ */
 async function createTsConfig(projectRoot: string, force?: boolean) {
   const tsconfigPath = path.join(projectRoot, 'tsconfig.json');
 

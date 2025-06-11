@@ -1,6 +1,14 @@
 import chalk from 'chalk';
 import { execa } from 'execa';
 
+/**
+ * Applies a set of configuration packages to the project.
+ *
+ * @param configs - An array of configuration package names to apply.
+ *
+ * @remark
+ * This function currently serves as a scaffold and does not perform actual configuration changes. Future implementations will handle creating or updating configuration files and running initialization commands as needed.
+ */
 export async function applyConfigurations(configs: string[]): Promise<void> {
   // TODO: Implement actual configuration application
   // For each config package, we need to:
@@ -32,6 +40,12 @@ export async function applyConfigurations(configs: string[]): Promise<void> {
   }
 }
 
+/**
+ * Initializes Husky by running the installation command to set up Git hooks.
+ *
+ * @remark
+ * This function executes `npx husky install` and inherits standard input/output streams for direct console interaction.
+ */
 export async function initializeHusky(): Promise<void> {
   // TODO: Actually initialize husky
   // This would typically run husky install and set up hooks
