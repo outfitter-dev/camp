@@ -85,9 +85,16 @@ export const equipCommand = new Command('equip')
 
     // Detect project terrain
     const terrainSpinner = ora('Analyzing project terrain...').start();
-    const terrain = await detectTerrain();
-    const terrainSummary = getTerrainSummary(terrain);
-    terrainSpinner.succeed('Project terrain analyzed');
+    let terrain;
+    let terrainSummary: Array<string> = [];
+    try {
+      terrain = await detectTerrain();
+      terrainSummary = getTerrainSummary(terrain);
+      terrainSpinner.succeed('Project terrain analyzed');
+    } catch (err) {
+      terrainSpinner.fail('Failed to analyze project terrain');
+      throw err;
+    }
 
     if (terrainSummary.length > 0) {
       console.log(chalk.cyan('\n🗻 Detected terrain:'));
@@ -221,7 +228,8 @@ export const equipCommand = new Command('equip')
       if (gitHooks) {
         const hooksSpinner = ora('Setting up git hooks...').start();
         try {
-          // TODO: Initialize husky
+          await execa('npx', ['husky-init', '--yes'], { stdio: 'inherit' });
+          await execa(packageManager, ['install'], { stdio: 'inherit' });
           hooksSpinner.succeed('Git hooks initialized');
         } catch (error) {
           hooksSpinner.fail('Failed to initialize git hooks');
