@@ -2,11 +2,8 @@
 
 import { Command } from 'commander';
 import chalk from 'chalk';
-import { initCommand } from './commands/init.js';
-import { addCommand } from './commands/add.js';
-import { listCommand } from './commands/list.js';
-import { updateCommand } from './commands/update.js';
-import { packCommand } from './commands/pack.js';
+import { equipCommand } from './commands/equip.js';
+import { fieldguidesCommand } from './commands/fieldguides.js';
 
 const program = new Command();
 
@@ -18,11 +15,8 @@ program
   .version('0.1.0');
 
 // Add commands
-program.addCommand(initCommand);
-program.addCommand(addCommand);
-program.addCommand(listCommand);
-program.addCommand(updateCommand);
-program.addCommand(packCommand);
+program.addCommand(equipCommand);
+program.addCommand(fieldguidesCommand);
 
 // Error handling
 program.exitOverride();
