@@ -17,11 +17,14 @@ const availableFieldguides = {
 };
 
 /**
- * Lists fieldguides that are either installed locally or available for installation.
+ * Displays a list of installed or available fieldguides with their installation status and descriptions.
  *
- * Depending on the {@link options.installed} flag, displays either the installed fieldguides or all available fieldguides with their descriptions, highlighting which are installed.
+ * If {@link options.installed} is true, shows only the installed fieldguides. Otherwise, lists all available fieldguides, indicating which are installed and providing descriptions.
  *
- * @param options - If `installed` is true, only lists installed fieldguides; otherwise, lists all available fieldguides and their installation status.
+ * @param options - Controls whether to show only installed fieldguides or all available ones.
+ *
+ * @remark
+ * Supports legacy configuration files that use the `supplies` key instead of `fieldguides`.
  */
 export async function listFieldguides(options: {
   installed?: boolean;

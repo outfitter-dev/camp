@@ -69,10 +69,10 @@ export const CommonEnvSchemas = Object.freeze({
 }) as const;
 
 /**
- * Creates a type-safe environment schema for Next.js applications by combining common variables and Next.js-specific variables with any additional schema provided.
+ * Validates and parses environment variables for Next.js applications using a combined schema of common, Next.js-specific, and optional additional variables.
  *
- * @param additionalSchema - Additional Zod schema shape to extend the default environment schema.
- * @returns A {@link Result} containing the parsed environment object on success, or an {@link AppError} with validation details on failure.
+ * @param additionalSchema - Optional Zod schema shape to extend the default environment schema.
+ * @returns A {@link Result} containing the parsed environment object if validation succeeds, or an {@link AppError} with validation errors and missing variables if validation fails.
  */
 export function createNextEnvSchema<T extends z.ZodRawShape>(
   additionalSchema: T = {} as T
@@ -101,10 +101,12 @@ export function createNextEnvSchema<T extends z.ZodRawShape>(
 }
 
 /**
- * Creates a type-safe environment schema for Node.js applications by combining common environment variable schemas with any additional schema provided.
+ * Validates and parses Node.js environment variables using a combined Zod schema.
  *
- * @param additionalSchema - Additional Zod schema shape to extend the default Node.js environment schema.
- * @returns A {@link Result} containing the parsed environment object on success, or an {@link AppError} with validation details on failure.
+ * Merges common Node.js environment variable schemas with any additional schema provided, then validates and parses the current environment. Returns a result containing the parsed environment object on success, or an {@link AppError} with validation details on failure.
+ *
+ * @param additionalSchema - Optional Zod schema shape to extend the default Node.js environment schema.
+ * @returns A {@link Result} containing the parsed environment object on success, or an {@link AppError} on failure.
  */
 export function createNodeEnvSchema<T extends z.ZodRawShape>(
   additionalSchema: T = {} as T
