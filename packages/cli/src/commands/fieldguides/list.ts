@@ -1,5 +1,6 @@
 import chalk from 'chalk';
-import { readJSON, pathExists } from 'fs-extra';
+import fsExtra from 'fs-extra';
+const { readJSON, pathExists } = fsExtra;
 import { join } from 'path';
 
 // TODO: This would come from a registry or the fieldguides package

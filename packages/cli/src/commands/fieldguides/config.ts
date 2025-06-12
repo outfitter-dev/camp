@@ -1,5 +1,6 @@
 import chalk from 'chalk';
-import { readJSON, writeJSON, pathExists } from 'fs-extra';
+import fsExtra from 'fs-extra';
+const { readJSON, writeJSON, pathExists } = fsExtra;
 import { join } from 'path';
 
 interface ExportOptions {

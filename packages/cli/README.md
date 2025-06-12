@@ -1,42 +1,40 @@
-# @outfitter/cli
+# outfitter
 
-> Command-line tool for managing development standards, patterns, and project
-> setup
+> Command-line tool for equipping your development journey with configurations and fieldguides
 
 ## Installation
 
 ```bash
-npm install -g @outfitter/cli
+npm install -g outfitter
 # or
-pnpm add -g @outfitter/cli
+pnpm add -g outfitter
+# or
+yarn global add outfitter
 ```
 
 ## Quick Start
 
 ```bash
-# Initialize a new project with supplies
-outfitter init
+# Initialize a new project with Outfitter configurations
+outfitter equip
 
-# Add specific supplies to your project
-outfitter add react-patterns typescript-standards
+# Manage fieldguides (documentation & patterns)
+outfitter fieldguides list
+outfitter fieldguides add react-patterns typescript-standards
 
-# See what's available
-outfitter list
-
-# Update to latest versions
-outfitter update
+# View help
+outfitter --help
 ```
 
 ## Commands
 
-### `outfitter init`
+### `outfitter equip` (alias: `init`)
 
-Initialize a project with Outfitter supplies.
+Interactively install Outfitter configurations and utilities to your project.
 
 ```bash
-outfitter init                    # Interactive setup
-outfitter init --preset nextjs    # Use Next.js preset
-outfitter init --with-claude      # Include CLAUDE.md for AI assistance
+outfitter equip                   # Interactive setup
+outfitter equip --preset nextjs   # Use Next.js preset
 ```
 
 **Available presets:**
@@ -46,44 +44,25 @@ outfitter init --with-claude      # Include CLAUDE.md for AI assistance
 - `node` - Node.js backend services
 - `minimal` - Just TypeScript standards
 
-### `outfitter add`
+### `outfitter fieldguides` (alias: `fg`)
 
-Add specific supplies to your project.
-
-```bash
-outfitter add react-patterns
-outfitter add typescript-standards testing-standards
-```
-
-### `outfitter list`
-
-List available supplies.
+Manage project fieldguides - living documentation and patterns for your team.
 
 ```bash
-outfitter list              # Show all available supplies
-outfitter list --installed  # Show only installed supplies
-```
+# List available fieldguides
+outfitter fieldguides list
 
-### `outfitter update`
+# Add fieldguides to your project
+outfitter fieldguides add react-patterns typescript-standards
 
-Update supplies to their latest versions.
+# Update existing fieldguides
+outfitter fieldguides update
 
-```bash
-outfitter update          # Update all supplies
-outfitter update --check  # Check for updates without installing
-```
+# Create a new fieldguide
+outfitter fieldguides create
 
-### `outfitter pack`
-
-Manage supply configurations (packlists).
-
-```bash
-# Export current configuration
-outfitter pack export
-outfitter pack export --output team-standard.json
-
-# Import a configuration
-outfitter pack import team-standard.json
+# Configure fieldguide settings
+outfitter fieldguides config
 ```
 
 ## Configuration
@@ -181,8 +160,7 @@ standards and patterns.
 
 ## Development
 
-This package is part of the
-[@outfitter/monorepo](https://github.com/outfitter-dev/monorepo).
+This package is part of the [Outfitter monorepo](https://github.com/outfitter-dev/monorepo).
 
 See the [Development Guide](../../docs/contributing/development.md) for
 instructions on building, testing, and contributing to this package.

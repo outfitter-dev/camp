@@ -1,7 +1,9 @@
 import chalk from 'chalk';
 import ora from 'ora';
-import { readJSON, writeJSON, pathExists } from 'fs-extra';
+import fsExtra from 'fs-extra';
 import { join } from 'path';
+
+const { readJSON, writeJSON, pathExists } = fsExtra;
 
 /**
  * Adds the specified fieldguides to the local configuration file, avoiding duplicates.

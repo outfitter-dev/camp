@@ -1,5 +1,6 @@
 import { listFieldguides } from '../../list';
-import { readJSON, pathExists } from 'fs-extra';
+import fsExtra from 'fs-extra';
+const { readJSON, pathExists } = fsExtra;
 
 jest.mock('fs-extra', () => ({
   readJSON: jest.fn(),

@@ -1,4 +1,5 @@
-import { pathExists } from 'fs-extra';
+import fsExtra from 'fs-extra';
+const { pathExists } = fsExtra;
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 

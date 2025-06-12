@@ -3,7 +3,8 @@ import { checkbox, confirm } from '@inquirer/prompts';
 import chalk from 'chalk';
 import ora from 'ora';
 import { execa } from 'execa';
-import { pathExistsSync } from 'fs-extra';
+import fsExtra from 'fs-extra';
+const { pathExistsSync } = fsExtra;
 import { detectTerrain, getTerrainSummary } from '../utils/detect-terrain.js';
 import {
   getRecommendedFieldguides,

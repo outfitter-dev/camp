@@ -1,7 +1,8 @@
 import inquirer from 'inquirer';
 import chalk from 'chalk';
 import ora from 'ora';
-import { ensureDir, writeJSON, pathExists } from 'fs-extra';
+import fsExtra from 'fs-extra';
+const { ensureDir, writeJSON, pathExists } = fsExtra;
 import { join } from 'path';
 
 interface CreateOptions {

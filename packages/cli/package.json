@@ -1,5 +1,5 @@
 {
-  "name": "@outfitter/cli",
+  "name": "outfitter",
   "version": "0.1.0",
   "description": "Command-line tool for equipping your development journey with configurations and fieldguides",
   "type": "module",
