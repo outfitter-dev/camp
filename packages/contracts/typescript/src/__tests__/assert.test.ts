@@ -30,8 +30,8 @@ describe('assertDefined', () => {
   });
 
   it('should throw for null or undefined', () => {
-    expect(() => assertDefined(null)).toThrow('Value must not be null');
-    expect(() => assertDefined(undefined)).toThrow('Value must not be null');
+    expect(() => assertDefined(null)).toThrow('Value must be defined');
+    expect(() => assertDefined(undefined)).toThrow('Value must be defined');
   });
 });
 

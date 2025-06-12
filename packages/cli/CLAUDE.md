@@ -5,10 +5,10 @@ code in this repository.
 
 ## Overview
 
-This is the `outfitter` CLI package - a command-line tool for managing
-Outfitter supplies (development standards, patterns, and guides) in projects.
-It's part of the `@outfitter/monorepo` and provides commands to initialize
-projects, add/update supplies, and manage supply configurations (packlists).
+This is the `outfitter` CLI package - a command-line tool for managing Outfitter
+supplies (development standards, patterns, and guides) in projects. It's part of
+the `@outfitter/monorepo` and provides commands to initialize projects,
+add/update supplies, and manage supply configurations (packlists).
 
 ## Key Commands
 

@@ -35,14 +35,14 @@ type PackageManager = 'npm' | 'pnpm' | 'yarn' | 'bun';
  */
 function findProjectRoot(startDir: string = process.cwd()): string | null {
   let currentDir = startDir;
-  
+
   while (currentDir !== dirname(currentDir)) {
     if (pathExistsSync(join(currentDir, 'package.json'))) {
       return currentDir;
     }
     currentDir = dirname(currentDir);
   }
-  
+
   return null;
 }
 
@@ -56,7 +56,7 @@ function detectPackageManager(): PackageManager {
   if (!projectRoot) {
     return 'npm';
   }
-  
+
   // Check for lock files in the project root
   if (pathExistsSync(join(projectRoot, 'pnpm-lock.yaml'))) return 'pnpm';
   if (pathExistsSync(join(projectRoot, 'yarn.lock'))) return 'yarn';
@@ -89,19 +89,33 @@ async function installPackages(
   });
 }
 
-async function applyConfigurations(selectedConfigs: Array<string>): Promise<void> {
+async function applyConfigurations(
+  selectedConfigs: Array<string>
+): Promise<void> {
   // TODO: Apply configuration files based on selected packages
   console.log(chalk.yellow('\n⚠️  Configuration file generation coming soon'));
   console.log(chalk.gray('   For now, please configure packages manually:'));
-  
+
   if (selectedConfigs.includes('@outfitter/eslint-config')) {
-    console.log(chalk.gray('   • ESLint: Create .eslintrc.js extending @outfitter/eslint-config'));
+    console.log(
+      chalk.gray(
+        '   • ESLint: Create .eslintrc.js extending @outfitter/eslint-config'
+      )
+    );
   }
   if (selectedConfigs.includes('@outfitter/typescript-config')) {
-    console.log(chalk.gray('   • TypeScript: Update tsconfig.json to extend from @outfitter/typescript-config'));
+    console.log(
+      chalk.gray(
+        '   • TypeScript: Update tsconfig.json to extend from @outfitter/typescript-config'
+      )
+    );
   }
   if (selectedConfigs.includes('@outfitter/prettier-config')) {
-    console.log(chalk.gray('   • Prettier: Add "prettier": "@outfitter/prettier-config" to package.json'));
+    console.log(
+      chalk.gray(
+        '   • Prettier: Add "prettier": "@outfitter/prettier-config" to package.json'
+      )
+    );
   }
 }
 
@@ -190,12 +204,12 @@ export const equipCommand = new Command('equip')
                 : '📖';
           console.log(`  ${icon} ${fg.name} - ${fg.description}`);
         });
-        
+
         const includeFieldguides = await confirm({
           message: 'Would you like to include these recommended fieldguides?',
           default: true,
         });
-        
+
         if (includeFieldguides) {
           selectedFieldguides = getRecommendedFieldguideIds(terrain);
         }
@@ -221,19 +235,19 @@ export const equipCommand = new Command('equip')
       try {
         // Combine installations to reduce lockfile churn
         const installations: Array<[Array<string>, boolean]> = [];
-        
+
         if (configPackages.length > 0) {
           installations.push([configPackages, true]);
         }
-        
+
         if (utilityPackages.length > 0) {
           installations.push([utilityPackages, false]);
         }
-        
+
         for (const [packages, isDev] of installations) {
           await installPackages(packages, packageManager, isDev);
         }
-        
+
         installSpinner.succeed('Packages installed');
       } catch (error) {
         installSpinner.fail('Failed to install packages');

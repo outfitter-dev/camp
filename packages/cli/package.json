@@ -13,7 +13,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsx src/index.ts",
-    "prepare": "pnpm build",
+    "prepare": "npm run build",
     "test": "vitest",
     "type-check": "tsc --noEmit"
   },

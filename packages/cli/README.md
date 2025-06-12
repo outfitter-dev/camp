@@ -1,6 +1,7 @@
 # outfitter
 
-> Command-line tool for equipping your development journey with configurations and fieldguides
+> Command-line tool for equipping your development journey with configurations
+> and fieldguides
 
 ## Installation
 
@@ -160,7 +161,8 @@ standards and patterns.
 
 ## Development
 
-This package is part of the [Outfitter monorepo](https://github.com/outfitter-dev/monorepo).
+This package is part of the
+[Outfitter monorepo](https://github.com/outfitter-dev/monorepo).
 
 See the [Development Guide](../../docs/contributing/development.md) for
 instructions on building, testing, and contributing to this package.
