@@ -83,6 +83,11 @@ function extractLinks(content: string, filePath: string): Array<LinkInfo> {
   return links;
 }
 
+/**
+ * Validates internal cross-references in markdown files within the "fieldguides" directory.
+ *
+ * Scans all markdown files for internal links, checks that each link points to an existing file, and reports any broken references with detailed diagnostics. If all links are valid, optionally checks for missing bidirectional references between files in the same top-level directory and suggests reciprocal links where appropriate. Exits the process with an error code if broken links are found.
+ */
 async function validateCrossReferences() {
   console.log('🔍 Validating cross-references in fieldguides...\n');
 

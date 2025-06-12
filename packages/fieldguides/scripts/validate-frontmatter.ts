@@ -149,6 +149,14 @@ interface FileValidationResult {
   skipped?: boolean;
 }
 
+/**
+ * Validates the frontmatter of a markdown file according to project standards.
+ *
+ * For standards files (`CODING.md`, `SECURITY.md`, `TESTING.md`), ensures no frontmatter is present. For other markdown files, checks for required frontmatter, validates each field, and verifies that the `slug` matches the filename. Skips validation for `README.md` and files ending with `.example.md`.
+ *
+ * @param filePath - The absolute path to the markdown file to validate.
+ * @returns The validation result, including any errors found and file metadata.
+ */
 function validateFile(filePath: string): FileValidationResult {
   const fileName = path.basename(filePath);
   const relativePath = path.relative(process.cwd(), filePath);

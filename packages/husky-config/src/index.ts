@@ -22,6 +22,16 @@ export interface HuskyInitOptions {
   hooks?: Array<'pre-commit' | 'commit-msg'>;
 }
 
+/**
+ * Initializes Husky Git hooks in the specified project directory and installs selected hook scripts.
+ *
+ * Copies predefined hook scripts into the project's `.husky` directory and ensures they are executable.
+ *
+ * @param options - Options to specify the working directory and which hooks to install.
+ *
+ * @remark
+ * Throws and logs any errors encountered during initialization or file operations.
+ */
 export function initHusky(options: HuskyInitOptions = {}): void {
   const { cwd = process.cwd(), hooks = ['pre-commit', 'commit-msg'] } = options;
 
@@ -56,6 +66,15 @@ export function initHusky(options: HuskyInitOptions = {}): void {
   }
 }
 
+/**
+ * Ensures the "prepare" script in package.json is set to "husky".
+ *
+ * If the "prepare" script does not exist, it is added and the file is updated. If it already exists, no changes are made.
+ *
+ * @param packageJsonPath - Optional path to the package.json file. Defaults to the package.json in the current working directory.
+ *
+ * @remark Throws if reading, parsing, or writing the package.json file fails.
+ */
 export function addPrepareScript(packageJsonPath?: string): void {
   const pkgPath = packageJsonPath ?? join(process.cwd(), 'package.json');
 

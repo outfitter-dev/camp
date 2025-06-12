@@ -10,13 +10,13 @@ interface OutfitterConfig {
 }
 
 /**
- * Adds the specified fieldguides to the local configuration file, avoiding duplicates.
+ * Adds the specified fieldguides to the local configuration, ensuring no duplicates.
  *
- * Updates `.outfitter/config.json` in the current working directory by appending new fieldguides to the `fieldguides` array, removing the legacy `supplies` key if present. Only fieldguides not already listed are added.
+ * Updates `.outfitter/config.json` in the current working directory by appending new fieldguides to the `fieldguides` array. If the legacy `supplies` key exists, it is removed. Only fieldguides not already present are added.
  *
- * @param fieldguides - Names of fieldguides to add to the configuration.
+ * @param fieldguides - Names of fieldguides to add.
  *
- * @remark Exits the process with code 1 if the configuration file does not exist.
+ * @throws {Error} If the configuration file does not exist.
  */
 export async function addFieldguides(
   fieldguides: Array<string>

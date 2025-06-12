@@ -54,7 +54,11 @@ export interface TerrainFeatures {
   packageManager?: 'npm' | 'yarn' | 'pnpm' | 'bun';
 }
 
-// Type guard functions
+/**
+ * Determines whether a value is an {@link OutfitterConfig} object.
+ *
+ * Returns true if the value is a non-null object containing either the `fieldguides` or `supplies` property.
+ */
 export function isOutfitterConfig(value: unknown): value is OutfitterConfig {
   return (
     typeof value === 'object' &&
@@ -63,6 +67,11 @@ export function isOutfitterConfig(value: unknown): value is OutfitterConfig {
   );
 }
 
+/**
+ * Determines whether a value is a non-null object, suitable for use as a {@link PackageJson}.
+ *
+ * @returns True if the value is a non-null object; otherwise, false.
+ */
 export function isPackageJson(value: unknown): value is PackageJson {
   return typeof value === 'object' && value !== null;
 }

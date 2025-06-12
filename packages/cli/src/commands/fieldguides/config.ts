@@ -12,16 +12,15 @@ interface ImportOptions {
 }
 
 /**
- * Imports or exports a fieldguide configuration file based on the specified action.
+ * Imports or exports a fieldguide configuration file, supporting both current and legacy formats.
  *
- * For 'export', writes the current local fieldguide configuration to a specified output file, including metadata and supporting legacy keys.
- * For 'import', reads a configuration file, validates its structure, and prepares to initialize or update the local configuration.
+ * Performs an export by writing the local fieldguide configuration (including metadata and legacy key support) to a specified output file, or performs an import by reading and validating a configuration file and preparing to initialize or update the local configuration.
  *
- * @param action - The operation to perform: 'export' or 'import'.
- * @param options - Options for the chosen action. For 'export', specifies the output file path; for 'import', specifies the input file path.
+ * @param action - The operation to perform: 'export' writes the local configuration to a file; 'import' reads and validates a configuration file.
+ * @param options - Options for the selected action, specifying the relevant file path.
  *
  * @remark
- * Exits the process with code 1 if required files are missing or if the configuration format is invalid.
+ * Terminates the process with exit code 1 if required files are missing or if the configuration format is invalid.
  */
 export async function manageFieldguideConfig(
   action: 'export' | 'import',
