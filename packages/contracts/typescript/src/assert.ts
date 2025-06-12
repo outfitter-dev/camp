@@ -51,16 +51,13 @@ export function exhaustiveCheck<T>(value: never, defaultValue: T): T {
 }
 
 /**
- * Assert a condition is true, narrowing the type
+ * Asserts that a condition is truthy, enabling type narrowing for subsequent code.
  *
- * @example
- * ```ts
- * function processUser(user: { name?: string }) {
- *   assert(user.name, 'User must have a name');
- *   // user.name is now string (not string | undefined)
- *   console.log(user.name.toUpperCase());
- * }
- * ```
+ * Throws an error with the provided message if the condition is not met.
+ *
+ * @param message - Optional error message to include if the assertion fails.
+ *
+ * @throws {Error} If {@link condition} is falsy.
  */
 export function assert(
   condition: unknown,
@@ -72,16 +69,18 @@ export function assert(
 }
 
 /**
- * Assert that a value is defined (not null or undefined)
+ * Asserts that a value is neither null nor undefined.
+ *
+ * Throws an error if the value is null or undefined, narrowing its type to exclude null and undefined.
  *
  * @example
- * ```ts
  * function processConfig(config?: Config) {
  *   assertDefined(config, 'Config is required');
  *   // config is now Config (not Config | undefined)
  *   return config.apiUrl;
  * }
- * ```
+ *
+ * @throws {Error} If the value is null or undefined.
  */
 export function assertDefined<T>(
   value: T,

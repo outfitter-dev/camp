@@ -229,10 +229,13 @@ export function createTimestamp(value: number): Result<Timestamp, AppError> {
 }
 
 /**
- * Utility function to create a custom branded type
- * @param validator Function that validates the base type
- * @param errorMessage Error message for validation failure
- * @returns A constructor function for the branded type
+ * Creates a validated constructor for a custom branded type.
+ *
+ * Returns a function that validates a value using the provided {@link validator}. If validation passes, the value is returned as the branded type; otherwise, a validation error is returned.
+ *
+ * @param validator - Function to determine if a value is valid for the branded type.
+ * @param errorMessage - Error message used if validation fails.
+ * @returns A function that takes a value and returns a {@link Result} containing either the branded type or an {@link AppError} on failure.
  */
 export function createBrandedType<T, TBrand>(
   validator: (value: T) => boolean,

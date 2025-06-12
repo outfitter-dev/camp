@@ -54,11 +54,12 @@ export function humanize(error: AppError): string {
 }
 
 /**
- * Convert an AppError to a detailed message suitable for developers/logs.
- * Includes error code, message, and relevant details.
+ * Formats an {@link AppError} into a detailed string for developer debugging.
  *
- * @param error - The AppError to format
- * @returns A detailed error message for debugging
+ * The output includes the error code, message, serialized details if present, and the message from an original error cause if available.
+ *
+ * @param error - The {@link AppError} to format.
+ * @returns A multi-line string containing error information for debugging purposes.
  */
 export function formatForDevelopers(error: AppError): string {
   const parts = [`[${error.code}] ${error.message}`];

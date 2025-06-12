@@ -45,11 +45,11 @@ export interface TerrainFeatures {
 }
 
 /**
- * Determines whether a given npm package is listed as a dependency in the project's `package.json`.
+ * Checks if a specified npm package is listed as a dependency in the project's `package.json`.
  *
- * Checks for the presence of the specified package in the `dependencies`, `devDependencies`, or `peerDependencies` fields of `package.json` within the provided directory.
+ * Searches for the package in the `dependencies`, `devDependencies`, or `peerDependencies` fields within the given directory.
  *
- * @param packageName - The name of the npm package to check for.
+ * @param packageName - The name of the npm package to check.
  * @param cwd - The directory to search in. Defaults to the current working directory.
  * @returns `true` if the package is found in any dependency section; otherwise, `false`.
  */

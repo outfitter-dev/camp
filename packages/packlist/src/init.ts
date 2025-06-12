@@ -16,11 +16,11 @@ interface PackageJson {
 }
 
 /**
- * Initializes Outfitter Packlist in the current Node.js project.
+ * Sets up Outfitter Packlist in the current Node.js project.
  *
- * Sets up recommended ESLint and TypeScript configurations, installs required dependencies, and adds useful scripts to `package.json` based on the provided options. Exits the process if `package.json` is not found in the project root.
+ * Configures recommended ESLint and TypeScript settings, installs necessary dependencies, and adds useful scripts to `package.json` according to the provided options. Exits the process if `package.json` is not found in the project root.
  *
- * @param options - Configuration options to control which features and dependencies are set up.
+ * @param options - Options to control which features and dependencies are set up.
  *
  * @remark
  * This function modifies `package.json` and may create or overwrite `.eslintrc.js` and `tsconfig.json` files in the project root.

@@ -26,6 +26,15 @@ export interface ChangesetInitOptions {
   baseBranch?: string;
 }
 
+/**
+ * Initializes a changeset setup in the specified directory.
+ *
+ * Creates a `.changeset` directory with a default configuration and README if they do not already exist. The configuration file is customized based on the provided options.
+ *
+ * @param options - Optional settings to specify the working directory, access level, and base branch for the changeset configuration.
+ *
+ * @throws {Error} If file system operations fail during initialization.
+ */
 export function initChangesets(options: ChangesetInitOptions = {}): void {
   const {
     cwd = process.cwd(),
@@ -79,6 +88,16 @@ We have a quick list of common questions to get you started engaging with this p
   }
 }
 
+/**
+ * Adds standard changeset scripts to a package.json file if they do not already exist.
+ *
+ * @param packageJsonPath - Optional path to the package.json file. Defaults to the package.json in the current working directory.
+ *
+ * @remark
+ * The function updates the file in place and logs whether scripts were added or already present.
+ *
+ * @throws {Error} If reading, parsing, or writing the package.json file fails.
+ */
 export function addChangesetScripts(packageJsonPath?: string): void {
   const pkgPath = packageJsonPath ?? join(process.cwd(), 'package.json');
 
