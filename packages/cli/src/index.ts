@@ -12,7 +12,7 @@ program
   .description(
     'CLI tool for equipping your development journey with configurations and fieldguides'
   )
-  .version('1.0.1');
+  .version('1.0.2');
 
 // Add commands
 program.addCommand(equipCommand);
