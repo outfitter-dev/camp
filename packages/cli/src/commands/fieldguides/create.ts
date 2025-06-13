@@ -11,6 +11,10 @@ interface CreateOptions {
   force?: boolean;
 }
 
+interface InquirerAnswers {
+  preset: string;
+}
+
 const presets = {
   nextjs: [
     'typescript-standards',
@@ -54,7 +58,7 @@ export async function createFieldguideConfig(
   // Interactive setup if no preset
   let selectedPreset = options.preset;
   if (!selectedPreset || !presets[selectedPreset as keyof typeof presets]) {
-    const answers = await inquirer.prompt([
+    const answers = (await inquirer.prompt([
       {
         type: 'list',
         name: 'preset',
@@ -66,7 +70,7 @@ export async function createFieldguideConfig(
           { name: 'Minimal (TypeScript only)', value: 'minimal' },
         ],
       },
-    ]);
+    ])) as InquirerAnswers;
     selectedPreset = answers.preset;
   }
 

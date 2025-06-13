@@ -3,6 +3,12 @@ const { pathExists } = fsExtra;
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 
+interface PackageJson {
+  dependencies?: Record<string, string>;
+  devDependencies?: Record<string, string>;
+  peerDependencies?: Record<string, string>;
+}
+
 export interface TerrainFeatures {
   // Frameworks
   nextjs: boolean;
@@ -61,7 +67,9 @@ async function hasPackage(
   try {
     const packageJsonPath = join(cwd, 'package.json');
     if (await pathExists(packageJsonPath)) {
-      const packageJson = JSON.parse(await readFile(packageJsonPath, 'utf-8'));
+      const packageJson = JSON.parse(
+        await readFile(packageJsonPath, 'utf-8')
+      ) as PackageJson;
       const deps = {
         ...(packageJson.dependencies ?? {}),
         ...(packageJson.devDependencies ?? {}),

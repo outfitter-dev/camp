@@ -1,52 +1,136 @@
 import chalk from 'chalk';
 import { execa } from 'execa';
+import fsExtra from 'fs-extra';
+import { join } from 'path';
+
+const { writeFile, pathExists, writeJSON } = fsExtra;
 
 export async function applyConfigurations(
   configs: Array<string>
 ): Promise<void> {
-  // TODO: Implement actual configuration application
-  // For each config package, we need to:
-  // 1. Check if it has an init function or CLI
-  // 2. Copy default config files if needed
-  // 3. Update package.json scripts if needed
-
   console.log(chalk.gray('Applying configurations...'));
+  const cwd = process.cwd();
 
-  // Placeholder for now
   for (const config of configs) {
-    switch (config) {
-      case '@outfitter/eslint-config':
-        // TODO: Create .eslintrc.js
-        break;
-      case '@outfitter/typescript-config':
-        // TODO: Create/update tsconfig.json
-        break;
-      case '@outfitter/prettier-config':
-        // TODO: Create .prettierrc
-        break;
-      case '@outfitter/husky-config':
-        // Will be handled separately by initializeHusky
-        break;
-      case '@outfitter/changeset-config':
-        // TODO: Run changeset init
-        break;
-      default:
-        console.warn(
-          chalk.yellow(`⚠ Unknown configuration package: ${config}`)
-        );
-        break;
+    try {
+      switch (config) {
+        case '@outfitter/eslint-config':
+          await createEslintConfig(cwd);
+          break;
+        case '@outfitter/typescript-config':
+          await createTsconfigJson(cwd);
+          break;
+        case '@outfitter/prettier-config':
+          await createPrettierConfig(cwd);
+          break;
+        case '@outfitter/husky-config':
+          // Will be handled separately by initializeHusky
+          console.log(
+            chalk.gray('  ✓ Husky config will be initialized separately')
+          );
+          break;
+        case '@outfitter/changeset-config':
+          await initializeChangesets(cwd);
+          break;
+        default:
+          console.warn(
+            chalk.yellow(`⚠ Unknown configuration package: ${config}`)
+          );
+          break;
+      }
+    } catch (error) {
+      console.error(
+        chalk.red(`  ✗ Failed to apply ${config}:`),
+        (error as Error).message
+      );
     }
+  }
+}
+
+async function createEslintConfig(cwd: string): Promise<void> {
+  const configPath = join(cwd, 'eslint.config.mjs');
+
+  if (await pathExists(configPath)) {
+    console.log(chalk.gray('  ✓ ESLint config already exists'));
+    return;
+  }
+
+  const config = `import config from '@outfitter/eslint-config';
+
+export default config;
+`;
+
+  await writeFile(configPath, config, 'utf8');
+  console.log(chalk.green('  ✓ Created eslint.config.mjs'));
+}
+
+async function createTsconfigJson(cwd: string): Promise<void> {
+  const configPath = join(cwd, 'tsconfig.json');
+
+  if (await pathExists(configPath)) {
+    console.log(chalk.gray('  ✓ TypeScript config already exists'));
+    return;
+  }
+
+  const config = {
+    extends: '@outfitter/typescript-config/base',
+    compilerOptions: {
+      outDir: './dist',
+      rootDir: './src',
+    },
+    include: ['src/**/*'],
+    exclude: ['node_modules', 'dist'],
+  };
+
+  await writeJSON(configPath, config, { spaces: 2 });
+  console.log(chalk.green('  ✓ Created tsconfig.json'));
+}
+
+async function createPrettierConfig(cwd: string): Promise<void> {
+  const configPath = join(cwd, '.prettierrc');
+
+  if (await pathExists(configPath)) {
+    console.log(chalk.gray('  ✓ Prettier config already exists'));
+    return;
+  }
+
+  const config = {
+    extends: '@outfitter/prettier-config',
+  };
+
+  await writeJSON(configPath, config, { spaces: 2 });
+  console.log(chalk.green('  ✓ Created .prettierrc'));
+}
+
+async function initializeChangesets(cwd: string): Promise<void> {
+  const changesetDir = join(cwd, '.changeset');
+
+  if (await pathExists(changesetDir)) {
+    console.log(chalk.gray('  ✓ Changesets already initialized'));
+    return;
+  }
+
+  try {
+    await execa('npx', ['@changesets/cli', 'init'], {
+      cwd,
+      stdio: 'pipe',
+    });
+    console.log(chalk.green('  ✓ Initialized changesets'));
+  } catch (error) {
+    throw new Error(
+      `Failed to initialize changesets: ${(error as Error).message}`
+    );
   }
 }
 
 /**
  * Initializes Husky by running the installation command to set up Git hooks.
- *
- * @remark
- * This function executes `npx husky install` and inherits standard input/output streams for direct console interaction.
  */
 export async function initializeHusky(): Promise<void> {
-  // TODO: Actually initialize husky
-  // This would typically run husky install and set up hooks
-  await execa('husky', ['install'], { stdio: 'inherit' });
+  try {
+    await execa('npx', ['husky', 'init'], { stdio: 'pipe' });
+    console.log(chalk.green('  ✓ Initialized Husky'));
+  } catch (error) {
+    throw new Error(`Failed to initialize Husky: ${(error as Error).message}`);
+  }
 }

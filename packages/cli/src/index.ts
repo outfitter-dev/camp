@@ -23,10 +23,16 @@ program.exitOverride();
 
 try {
   await program.parseAsync(process.argv);
-} catch (error: any) {
-  if (error.code === 'commander.help') {
+} catch (error: unknown) {
+  if (
+    error instanceof Error &&
+    'code' in error &&
+    error.code === 'commander.help'
+  ) {
     process.exit(0);
   }
-  console.error(chalk.red('Error:'), error.message);
+  const message =
+    error instanceof Error ? error.message : 'An unexpected error occurred';
+  console.error(chalk.red('Error:'), message);
   process.exit(1);
 }

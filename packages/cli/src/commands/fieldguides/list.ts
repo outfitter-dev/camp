@@ -3,8 +3,13 @@ import fsExtra from 'fs-extra';
 const { readJSON, pathExists } = fsExtra;
 import { join } from 'path';
 
+interface OutfitterConfig {
+  fieldguides?: Array<string>;
+  supplies?: Array<string>; // Legacy support
+}
+
 // TODO: This would come from a registry or the fieldguides package
-const availableFieldguides = {
+const availableFieldguides: Record<string, string> = {
   'typescript-standards': 'Core TypeScript patterns and conventions',
   'react-patterns': 'React component and hook patterns',
   'nextjs-patterns': 'Next.js specific patterns and best practices',
@@ -34,7 +39,7 @@ export async function listFieldguides(options: {
 
   try {
     if (await pathExists(configPath)) {
-      const config = await readJSON(configPath);
+      const config = (await readJSON(configPath)) as OutfitterConfig;
       installedFieldguides = config.fieldguides || config.supplies || []; // Support old 'supplies' key for backwards compatibility
     }
   } catch (e) {

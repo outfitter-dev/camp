@@ -11,6 +11,13 @@ interface ImportOptions {
   file: string;
 }
 
+interface OutfitterConfig {
+  fieldguides?: Array<string>;
+  supplies?: Array<string>; // Legacy support
+  name?: string;
+  version?: string;
+}
+
 /**
  * Imports or exports a fieldguide configuration file based on the specified action.
  *
@@ -42,7 +49,7 @@ export async function manageFieldguideConfig(
       process.exit(1);
     }
 
-    const config = await readJSON(configPath);
+    const config = (await readJSON(configPath)) as OutfitterConfig;
 
     const exportConfig = {
       name: 'Custom Fieldguide Configuration',
@@ -67,7 +74,7 @@ export async function manageFieldguideConfig(
       process.exit(1);
     }
 
-    const importConfig = await readJSON(importPath);
+    const importConfig = (await readJSON(importPath)) as OutfitterConfig;
 
     if (
       !(importConfig.fieldguides || importConfig.supplies) ||
