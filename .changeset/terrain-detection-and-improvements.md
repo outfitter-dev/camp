@@ -23,4 +23,3 @@ feat(cli): add terrain detection and comprehensive improvements
 
 - Updated ChangesetConfig interface to support false and tuple types for changelog field
 - Added support for more flexible changelog configurations
-EOF < /dev/null

@@ -1,7 +1,7 @@
-# outfitter
+# Outfitter
 
 > Command-line tool for equipping your development journey with configurations
-> and fieldguides
+> and fieldguides.
 
 ## Installation
 
@@ -11,6 +11,8 @@ npm install -g outfitter
 pnpm add -g outfitter
 # or
 yarn global add outfitter
+# or
+brew install outfitter
 ```
 
 ## Quick Start
@@ -18,9 +20,13 @@ yarn global add outfitter
 ```bash
 # Initialize a new project with Outfitter configurations
 outfitter equip
+# or
+outfitter init
 
 # Manage fieldguides (documentation & patterns)
 outfitter fieldguides list
+# or
+outfitter fg list
 outfitter fieldguides add react-patterns typescript-standards
 
 # View help
@@ -71,11 +77,13 @@ outfitter fieldguides config
 Outfitter automatically detects your project's technology stack to provide tailored recommendations and configurations. This "terrain detection" analyzes your project for:
 
 ### Detected Frameworks
+
 - **Frontend**: Next.js, React, Vue, Svelte, Angular
 - **Build Tools**: Vite, Webpack
 - **Languages**: TypeScript, JavaScript, Python
 
 ### Detected Tools
+
 - **Testing**: Vitest, Jest, Playwright, Cypress
 - **State Management**: Zustand, Redux, MobX
 - **Package Managers**: pnpm, yarn, npm, bun
@@ -83,11 +91,13 @@ Outfitter automatically detects your project's technology stack to provide tailo
 - **Containerization**: Docker
 
 ### Detected Project Types
+
 - Monorepo structures (pnpm workspaces, Lerna, Nx, Rush)
 - TypeScript projects
 - Python projects
 
 The terrain detection runs automatically when you use commands like `outfitter equip` or `outfitter fieldguides add`, ensuring that:
+
 - Recommended configurations match your tech stack
 - Fieldguides are relevant to your frameworks
 - Installation commands use your preferred package manager
@@ -96,7 +106,7 @@ The terrain detection runs automatically when you use commands like `outfitter e
 
 Projects initialized with Outfitter have a `.outfitter/` directory containing:
 
-```
+```text
 .outfitter/
 ├── config.json      # Project configuration and installed supplies
 ├── supplies/        # Local copies of installed supplies
