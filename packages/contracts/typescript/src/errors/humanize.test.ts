@@ -118,7 +118,7 @@ describe('formatForDevelopers', () => {
       code: ErrorCode.INTERNAL_ERROR,
       message: 'Wrapper error',
       details: {},
-      originalError: 'String cause' as any,
+      originalError: new Error('String cause'),
     };
     const formatted = formatForDevelopers(error as AppError);
     expect(formatted).toContain('Cause: String cause');

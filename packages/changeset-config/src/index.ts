@@ -13,7 +13,7 @@ export interface ChangesetInitOptions {
 interface ChangesetConfig {
   access: 'public' | 'restricted';
   baseBranch: string;
-  changelog?: string | Array<string>;
+  changelog?: string | Array<string> | false | [string, Record<string, any>];
   commit?: boolean;
   fixed?: Array<Array<string>>;
   linked?: Array<Array<string>>;

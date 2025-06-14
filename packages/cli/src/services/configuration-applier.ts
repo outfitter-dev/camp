@@ -24,10 +24,7 @@ export async function applyConfigurations(
           await createPrettierConfig(cwd);
           break;
         case '@outfitter/husky-config':
-          // Will be handled separately by initializeHusky
-          console.log(
-            chalk.gray('  ✓ Husky config will be initialized separately')
-          );
+          await initializeHusky();
           break;
         case '@outfitter/changeset-config':
           await initializeChangesets(cwd);
@@ -87,19 +84,18 @@ async function createTsconfigJson(cwd: string): Promise<void> {
 }
 
 async function createPrettierConfig(cwd: string): Promise<void> {
-  const configPath = join(cwd, '.prettierrc');
+  const configPath = join(cwd, 'prettier.config.cjs');
 
   if (await pathExists(configPath)) {
     console.log(chalk.gray('  ✓ Prettier config already exists'));
     return;
   }
 
-  const config = {
-    extends: '@outfitter/prettier-config',
-  };
+  const config = `module.exports = require('@outfitter/prettier-config');
+`;
 
-  await writeJSON(configPath, config, { spaces: 2 });
-  console.log(chalk.green('  ✓ Created .prettierrc'));
+  await writeFile(configPath, config, 'utf8');
+  console.log(chalk.green('  ✓ Created prettier.config.cjs'));
 }
 
 async function initializeChangesets(cwd: string): Promise<void> {
