@@ -15,7 +15,7 @@ export async function applyConfigurations(
     '@outfitter/eslint-config': createEslintConfig,
     '@outfitter/typescript-config': createTsconfigJson,
     '@outfitter/prettier-config': createPrettierConfig,
-    '@outfitter/husky-config': () => initializeHusky(cwd),
+    '@outfitter/husky-config': initializeHusky,
     '@outfitter/changeset-config': initializeChangesets,
   };
 
@@ -45,9 +45,7 @@ async function createEslintConfig(cwd: string): Promise<void> {
     return;
   }
 
-  const config = `import config from '@outfitter/eslint-config';
-
-export default config;
+  const config = `export { default } from '@outfitter/eslint-config';
 `;
 
   await writeFile(configPath, config, 'utf8');
@@ -119,7 +117,7 @@ export async function initializeHusky(cwd: string): Promise<void> {
   try {
     await execa('npx', ['husky', 'init'], {
       cwd,
-      stdio: 'pipe',
+      stdio: 'inherit',
     });
     console.log(chalk.green('  ✓ Initialized Husky'));
   } catch (error) {
