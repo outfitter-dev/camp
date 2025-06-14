@@ -66,6 +66,32 @@ outfitter fieldguides create
 outfitter fieldguides config
 ```
 
+## Terrain Detection
+
+Outfitter automatically detects your project's technology stack to provide tailored recommendations and configurations. This "terrain detection" analyzes your project for:
+
+### Detected Frameworks
+- **Frontend**: Next.js, React, Vue, Svelte, Angular
+- **Build Tools**: Vite, Webpack
+- **Languages**: TypeScript, JavaScript, Python
+
+### Detected Tools
+- **Testing**: Vitest, Jest, Playwright, Cypress
+- **State Management**: Zustand, Redux, MobX
+- **Package Managers**: pnpm, yarn, npm, bun
+- **CI/CD**: GitHub Actions, GitLab CI
+- **Containerization**: Docker
+
+### Detected Project Types
+- Monorepo structures (pnpm workspaces, Lerna, Nx, Rush)
+- TypeScript projects
+- Python projects
+
+The terrain detection runs automatically when you use commands like `outfitter equip` or `outfitter fieldguides add`, ensuring that:
+- Recommended configurations match your tech stack
+- Fieldguides are relevant to your frameworks
+- Installation commands use your preferred package manager
+
 ## Configuration
 
 Projects initialized with Outfitter have a `.outfitter/` directory containing:
