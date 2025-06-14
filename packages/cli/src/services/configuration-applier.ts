@@ -11,30 +11,23 @@ export async function applyConfigurations(
   console.log(chalk.gray('Applying configurations...'));
   const cwd = process.cwd();
 
+  const handlers: Record<string, (cwd: string) => Promise<void>> = {
+    '@outfitter/eslint-config': createEslintConfig,
+    '@outfitter/typescript-config': createTsconfigJson,
+    '@outfitter/prettier-config': createPrettierConfig,
+    '@outfitter/husky-config': () => initializeHusky(cwd),
+    '@outfitter/changeset-config': initializeChangesets,
+  };
+
   for (const config of configs) {
+    const handler = handlers[config];
+    if (!handler) {
+      console.warn(chalk.yellow(`⚠ Unknown configuration package: ${config}`));
+      continue;
+    }
+
     try {
-      switch (config) {
-        case '@outfitter/eslint-config':
-          await createEslintConfig(cwd);
-          break;
-        case '@outfitter/typescript-config':
-          await createTsconfigJson(cwd);
-          break;
-        case '@outfitter/prettier-config':
-          await createPrettierConfig(cwd);
-          break;
-        case '@outfitter/husky-config':
-          await initializeHusky();
-          break;
-        case '@outfitter/changeset-config':
-          await initializeChangesets(cwd);
-          break;
-        default:
-          console.warn(
-            chalk.yellow(`⚠ Unknown configuration package: ${config}`)
-          );
-          break;
-      }
+      await handler(cwd);
     } catch (error) {
       console.error(
         chalk.red(`  ✗ Failed to apply ${config}:`),
@@ -109,7 +102,7 @@ async function initializeChangesets(cwd: string): Promise<void> {
   try {
     await execa('npx', ['@changesets/cli', 'init'], {
       cwd,
-      stdio: 'pipe',
+      stdio: 'inherit',
     });
     console.log(chalk.green('  ✓ Initialized changesets'));
   } catch (error) {
@@ -122,9 +115,12 @@ async function initializeChangesets(cwd: string): Promise<void> {
 /**
  * Initializes Husky by running the installation command to set up Git hooks.
  */
-export async function initializeHusky(): Promise<void> {
+export async function initializeHusky(cwd: string): Promise<void> {
   try {
-    await execa('npx', ['husky', 'init'], { stdio: 'pipe' });
+    await execa('npx', ['husky', 'init'], {
+      cwd,
+      stdio: 'pipe',
+    });
     console.log(chalk.green('  ✓ Initialized Husky'));
   } catch (error) {
     throw new Error(`Failed to initialize Husky: ${(error as Error).message}`);
