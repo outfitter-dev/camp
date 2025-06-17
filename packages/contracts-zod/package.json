@@ -1,6 +1,6 @@
 {
   "name": "@outfitter/contracts-zod",
-  "version": "0.1.0",
+  "version": "1.0.3",
   "description": "Zod helpers that integrate with @outfitter/contracts Result and AppError types.",
   "type": "module",
   "main": "./dist/index.js",
@@ -33,5 +33,17 @@
     "typescript": "^5.8.3",
     "vitest": "^1.6.1"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/outfitter-dev/monorepo.git",
+    "directory": "packages/contracts-zod"
+  },
+  "bugs": {
+    "url": "https://github.com/outfitter-dev/monorepo/issues"
+  },
+  "homepage": "https://github.com/outfitter-dev/monorepo/tree/main/packages/contracts-zod#readme",
+  "publishConfig": {
+    "access": "public"
+  }
 }

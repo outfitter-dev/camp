@@ -1,6 +1,6 @@
 {
   "name": "@outfitter/packlist",
-  "version": "0.1.0",
+  "version": "1.0.3",
   "description": "Unified development configuration manager for Outfitter projects",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -50,5 +50,8 @@
   "bugs": {
     "url": "https://github.com/outfitter-dev/monorepo/issues"
   },
-  "homepage": "https://github.com/outfitter-dev/monorepo/tree/main/packages/packlist#readme"
+  "homepage": "https://github.com/outfitter-dev/monorepo/tree/main/packages/packlist#readme",
+  "publishConfig": {
+    "access": "public"
+  }
 }

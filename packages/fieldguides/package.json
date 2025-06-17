@@ -1,6 +1,6 @@
 {
   "name": "@outfitter/fieldguides",
-  "version": "0.1.0",
+  "version": "1.0.3",
   "description": "Living documentation system that equips AI agents with consistent development practices",
   "type": "module",
   "main": "./src/index.ts",
@@ -66,5 +66,8 @@
   "bugs": {
     "url": "https://github.com/outfitter-dev/monorepo/issues"
   },
-  "homepage": "https://github.com/outfitter-dev/monorepo/tree/main/packages/fieldguides#readme"
+  "homepage": "https://github.com/outfitter-dev/monorepo/tree/main/packages/fieldguides#readme",
+  "publishConfig": {
+    "access": "public"
+  }
 }
