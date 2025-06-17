@@ -1,5 +1,13 @@
 # @repo/husky-config
 
+## 0.1.1
+
+### Patch Changes
+
+- chore: prepare initial npm publication
+
+  Bump all packages to 1.0.1 for initial npm publication
+
 ## 0.1.0
 
 ### Minor Changes

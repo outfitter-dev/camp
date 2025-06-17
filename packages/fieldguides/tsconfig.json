@@ -42,5 +42,5 @@
     "composite": true
   },
   "include": ["scripts/**/*.ts", "src/**/*.ts"],
-  "exclude": ["node_modules", "scripts/**/*.js", "content/templates/**/*"]
+  "exclude": ["node_modules", "scripts/**/*.js", "scripts/**/*.d.ts", "content/templates/**/*"]
 }

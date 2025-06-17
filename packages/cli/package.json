@@ -1,6 +1,6 @@
 {
   "name": "outfitter",
-  "version": "1.0.2",
+  "version": "1.0.1",
   "description": "Command-line tool for equipping your development journey with configurations and fieldguides",
   "type": "module",
   "bin": {

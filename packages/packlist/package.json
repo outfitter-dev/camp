@@ -1,6 +1,6 @@
 {
   "name": "@outfitter/packlist",
-  "version": "0.1.0",
+  "version": "1.0.1",
   "description": "Unified development configuration manager for Outfitter projects",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

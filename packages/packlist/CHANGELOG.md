@@ -1,5 +1,21 @@
 # @outfitter/packlist
 
+## 0.1.1
+
+### Patch Changes
+
+- chore: prepare initial npm publication
+
+  Bump all packages to 1.0.1 for initial npm publication
+
+- Updated dependencies
+- Updated dependencies [4350dd6]
+  - @outfitter/contracts@0.1.2
+  - @outfitter/eslint-config@0.1.1
+  - @outfitter/typescript-config@0.1.1
+  - @outfitter/husky-config@0.1.1
+  - @outfitter/changeset-config@0.1.1
+
 ## 0.1.0
 
 ### Minor Changes

@@ -1,6 +1,6 @@
 {
   "name": "@outfitter/fieldguides",
-  "version": "0.1.0",
+  "version": "1.0.1",
   "description": "Living documentation system that equips AI agents with consistent development practices",
   "type": "module",
   "main": "./src/index.ts",
