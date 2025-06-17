@@ -1,6 +1,6 @@
 {
   "name": "@outfitter/husky-config",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",

@@ -1,6 +1,6 @@
 {
   "name": "@outfitter/typescript-config",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "Shared TypeScript configurations for Outfitter projects",
   "main": "./base.json",
   "exports": {
@@ -28,5 +28,8 @@
   "bugs": {
     "url": "https://github.com/outfitter-dev/monorepo/issues"
   },
-  "homepage": "https://github.com/outfitter-dev/monorepo/tree/main/packages/typescript-config#readme"
+  "homepage": "https://github.com/outfitter-dev/monorepo/tree/main/packages/typescript-config#readme",
+  "publishConfig": {
+    "access": "public"
+  }
 }

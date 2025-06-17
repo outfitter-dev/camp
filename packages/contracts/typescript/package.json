@@ -1,6 +1,6 @@
 {
   "name": "@outfitter/contracts",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "Core contracts for building type-safe applications, including Result, AppError, and domain types.",
   "keywords": [
     "typescript",
@@ -40,10 +40,13 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/outfitter-dev/monorepo.git",
-    "directory": "packages/typescript-utils"
+    "directory": "packages/contracts/typescript"
   },
   "bugs": {
     "url": "https://github.com/outfitter-dev/monorepo/issues"
   },
-  "homepage": "https://github.com/outfitter-dev/monorepo/tree/main/packages/contracts/typescript#readme"
+  "homepage": "https://github.com/outfitter-dev/monorepo/tree/main/packages/contracts/typescript#readme",
+  "publishConfig": {
+    "access": "public"
+  }
 }

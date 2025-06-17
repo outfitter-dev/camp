@@ -90,7 +90,11 @@ export async function manageFieldguideConfig(
       // TODO: Create minimal config
     }
 
-    const fieldguideCount = (importConfig.fieldguides || importConfig.supplies || []).length;
+    const fieldguideCount = (
+      importConfig.fieldguides ||
+      importConfig.supplies ||
+      []
+    ).length;
     console.log(
       chalk.green('✓') +
         ` Imported ${fieldguideCount} fieldguides from ${chalk.cyan(importConfig.name)}`

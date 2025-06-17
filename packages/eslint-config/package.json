@@ -1,6 +1,6 @@
 {
   "name": "@outfitter/eslint-config",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "Shared ESLint configuration for Outfitter projects",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -37,5 +37,8 @@
   "bugs": {
     "url": "https://github.com/outfitter-dev/monorepo/issues"
   },
-  "homepage": "https://github.com/outfitter-dev/monorepo/tree/main/packages/eslint-config#readme"
+  "homepage": "https://github.com/outfitter-dev/monorepo/tree/main/packages/eslint-config#readme",
+  "publishConfig": {
+    "access": "public"
+  }
 }
