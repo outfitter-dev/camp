@@ -1,6 +1,6 @@
 {
   "name": "@outfitter/eslint-config",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Shared ESLint configuration for Outfitter projects",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

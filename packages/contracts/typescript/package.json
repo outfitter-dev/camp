@@ -1,6 +1,6 @@
 {
   "name": "@outfitter/contracts",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Core contracts for building type-safe applications, including Result, AppError, and domain types.",
   "keywords": [
     "typescript",
