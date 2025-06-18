@@ -42,12 +42,12 @@ export function showPackageManager(manager: string): void {
 }
 
 /**
- * Displays an info message in gray text.
+ * Displays an info message in gray text with a newline prefix.
  *
  * @param message - The message to display.
  */
-export function info(message: string): void {
-  console.log(chalk.gray(`ℹ️  ${message}`));
+export function logInfo(message: string): void {
+  console.log(chalk.gray(`\nℹ️  ${message}`));
 }
 
 /**

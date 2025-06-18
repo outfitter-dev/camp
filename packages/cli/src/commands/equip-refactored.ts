@@ -50,16 +50,18 @@ export const equipCommand = new Command('equip')
     const pm = await packageManager.detectPackageManager();
     ui.showPackageManager(pm);
 
-    // Show monorepo context if applicable
+    // Detect workspace once and pass the result
     const isWorkspace = await packageManager.isWorkspaceRoot();
+    
+    // Show monorepo context if applicable
     if (isWorkspace) {
       if (options.filter) {
-        ui.info(`Installing to workspace package: ${options.filter}`);
+        ui.logInfo(`Installing to workspace package: ${options.filter}`);
       } else if (options.workspaceRoot) {
-        ui.info('Installing to workspace root');
+        ui.logInfo('Installing to workspace root');
       } else {
         // Default behavior for workspace
-        ui.info('Detected monorepo - installing to workspace root');
+        ui.logInfo('Detected monorepo - installing to workspace root');
       }
     }
 
@@ -70,7 +72,8 @@ export const equipCommand = new Command('equip')
       installSpinner.start();
       try {
         await packageManager.installPackages(allPackages, pm, {
-          filter: options.filter
+          filter: options.filter,
+          isWorkspace // Pass the pre-detected workspace status
         });
         installSpinner.succeed('Packages installed');
       } catch (error) {

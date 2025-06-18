@@ -9,21 +9,27 @@ import type { PackageManager, InstallCommand } from '../types/index.js';
  * @returns True if the directory contains workspace configuration files.
  */
 export async function isWorkspaceRoot(): Promise<boolean> {
-  // Check for various workspace config files
-  if (await pathExists('pnpm-workspace.yaml')) return true;
-  if (await pathExists('lerna.json')) return true;
-  
-  // Check package.json for workspaces field
-  if (await pathExists('package.json')) {
-    try {
-      const packageJson = await fsExtra.readJson('package.json');
-      if (packageJson.workspaces) return true;
-    } catch {
-      // Ignore errors reading package.json
+  try {
+    // Check for various workspace config files
+    if (await pathExists('pnpm-workspace.yaml')) return true;
+    if (await pathExists('lerna.json')) return true;
+    
+    // Check package.json for workspaces field
+    if (await pathExists('package.json')) {
+      try {
+        const packageJson = await fsExtra.readJson('package.json');
+        if (packageJson.workspaces) return true;
+      } catch {
+        // Ignore errors reading package.json
+      }
     }
+    
+    return false;
+  } catch (error) {
+    // If we can't determine workspace status, assume it's not a workspace
+    console.warn('Warning: Unable to detect workspace status:', error);
+    return false;
   }
-  
-  return false;
 }
 
 /**
@@ -66,6 +72,7 @@ export async function installPackages(
   manager: PackageManager,
   options?: {
     filter?: string; // For targeting specific workspace packages
+    isWorkspace?: boolean; // Pre-detected workspace status
   }
 ): Promise<void> {
   if (packages.length === 0) return;
@@ -73,8 +80,8 @@ export async function installPackages(
   const { command, installVerb, devFlag } = getInstallCommand(manager);
   const args = [installVerb, devFlag];
   
-  // Check if we're in a workspace root and add appropriate flags
-  const isWorkspace = await isWorkspaceRoot();
+  // Use provided workspace status or detect if not provided
+  const isWorkspace = options?.isWorkspace ?? await isWorkspaceRoot();
   
   if (isWorkspace) {
     if (options?.filter) {
@@ -95,7 +102,7 @@ export async function installPackages(
       } else if (manager === 'yarn') {
         args.push('-W');
       } else if (manager === 'npm') {
-        args.push('-ws');
+        args.push('-w');
       }
     }
   }
