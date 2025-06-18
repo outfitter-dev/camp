@@ -3,7 +3,10 @@
   "changelog": "@changesets/cli/changelog",
   "commit": false,
   "fixed": [],
-  "linked": [],
+  "linked": [
+    ["@outfitter/contracts", "@outfitter/contracts-zod"],
+    ["@outfitter/eslint-config", "@outfitter/typescript-config"]
+  ],
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",

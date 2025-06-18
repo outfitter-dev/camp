@@ -1,6 +1,8 @@
 export interface EquipOptions {
   preset?: PresetType;
   yes?: boolean;
+  filter?: string;
+  workspaceRoot?: boolean;
 }
 
 export interface PackageSelection {

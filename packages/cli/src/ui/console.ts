@@ -42,6 +42,15 @@ export function showPackageManager(manager: string): void {
 }
 
 /**
+ * Displays an info message in gray text.
+ *
+ * @param message - The message to display.
+ */
+export function info(message: string): void {
+  console.log(chalk.gray(`ℹ️  ${message}`));
+}
+
+/**
  * Displays a list of recommended next steps after setting up the Outfitter project.
  *
  * Prints instructions for linting, reviewing AI assistant documentation, and, if applicable, exploring available fieldguides.
