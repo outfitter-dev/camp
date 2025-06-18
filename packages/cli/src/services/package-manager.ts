@@ -5,7 +5,7 @@ import type { PackageManager, InstallCommand } from '../types/index.js';
 
 /**
  * Detects if the current directory is a workspace/monorepo root.
- * 
+ *
  * @returns True if the directory contains workspace configuration files.
  */
 export async function isWorkspaceRoot(): Promise<boolean> {
@@ -13,7 +13,7 @@ export async function isWorkspaceRoot(): Promise<boolean> {
     // Check for various workspace config files
     if (await pathExists('pnpm-workspace.yaml')) return true;
     if (await pathExists('lerna.json')) return true;
-    
+
     // Check package.json for workspaces field
     if (await pathExists('package.json')) {
       try {
@@ -23,7 +23,7 @@ export async function isWorkspaceRoot(): Promise<boolean> {
         // Ignore errors reading package.json
       }
     }
-    
+
     return false;
   } catch (error) {
     // If we can't determine workspace status, assume it's not a workspace
@@ -79,10 +79,10 @@ export async function installPackages(
 
   const { command, installVerb, devFlag } = getInstallCommand(manager);
   const args = [installVerb, devFlag];
-  
+
   // Use provided workspace status or detect if not provided
-  const isWorkspace = options?.isWorkspace ?? await isWorkspaceRoot();
-  
+  const isWorkspace = options?.isWorkspace ?? (await isWorkspaceRoot());
+
   if (isWorkspace) {
     if (options?.filter) {
       // Install to specific package/app with filter
@@ -106,9 +106,9 @@ export async function installPackages(
       }
     }
   }
-  
+
   args.push(...packages);
-  
+
   await execa(command, args, {
     stdio: 'inherit',
   });

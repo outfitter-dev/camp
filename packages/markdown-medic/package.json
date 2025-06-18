@@ -14,7 +14,7 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "bin": {
-    "mdlint": "./dist/cli.js"
+    "mdic": "./dist/cli.js"
   },
   "files": [
     "dist",
@@ -28,12 +28,9 @@
     "prepublishOnly": "pnpm run build"
   },
   "dependencies": {
-    "markdownlint": "^0.36.1",
     "markdownlint-cli2": "^0.15.0",
     "chalk": "^5.4.1",
-    "commander": "^12.1.0",
-    "glob": "^11.0.0",
-    "js-yaml": "^4.1.0"
+    "commander": "^12.1.0"
   },
   "devDependencies": {
     "@outfitter/typescript-config": "workspace:*",

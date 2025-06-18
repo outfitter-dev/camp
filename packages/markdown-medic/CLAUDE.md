@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-This is the `@outfitter/markdown-medic` package - an opinionated markdown linting and formatting tool that goes beyond basic linting. It provides health checks, auto-healing, and smart defaults for technical documentation.
+This is the `@outfitter/markdown-medic` package - an opinionated wrapper around `markdownlint-cli2` that provides presets and custom rules for markdown linting and formatting. The CLI command is `mdic` (short for "Markdown Inspect & Correct").
 
 ## Key Commands
 
@@ -17,10 +17,6 @@ pnpm build
 # Watch mode for development
 pnpm dev
 
-# Run tests
-pnpm test              # Watch mode
-pnpm test --run        # Single run
-
 # Type checking
 pnpm type-check
 ```
@@ -31,8 +27,8 @@ pnpm type-check
 # Build first
 pnpm build
 
-# Test commands
-node dist/cli.js --init                    # Create config
+# Test commands (or use 'mdic' after global install)
+node dist/cli.js --init                    # Create config (.mdic.yaml)
 node dist/cli.js README.md                 # Check a file
 node dist/cli.js --fix "**/*.md"          # Fix all markdown
 node dist/cli.js --preset strict          # Use strict preset
@@ -42,90 +38,85 @@ node dist/cli.js --preset strict          # Use strict preset
 
 ### Package Structure
 
-- `src/cli.ts` - Command-line interface with `mdlint` command
-- `src/check.ts` - Core checking logic that combines markdownlint + custom rules
-- `src/fix.ts` - Auto-fixing logic for correctable issues
-- `src/config.ts` - Configuration loading and management
-- `src/presets.ts` - Built-in presets (strict, standard, relaxed)
-- `src/rules/` - Custom rule implementations
-
-### Custom Rules
-
-Beyond standard markdownlint rules, we implement:
-
-1. **consistent-terminology** - Enforces correct spelling/capitalization
-2. **code-block-language** - Requires language tags on code blocks
-3. **frontmatter-required** - Requires YAML frontmatter
-4. **toc-required** - Requires TOC for long documents
-5. **no-dead-links** - Checks for broken local file links
-
-### Configuration
-
-The tool uses `.mdlint.yaml` files with this structure:
-
-```yaml
-preset: standard              # Base preset
-rules:                       # Rule overrides
-  line-length: 100
-  custom-rule: true
-ignore:                      # Files to ignore
-  - node_modules/**
-terminology:                 # Term enforcement
-  - { incorrect: "NPM", correct: "npm" }
-```
+- `src/cli.ts` - CLI wrapper that configures and calls markdownlint-cli2
+- `src/presets.ts` - Built-in presets (strict, standard, relaxed) as YAML strings
+- `src/config-generator.ts` - Helper to generate configs with custom rules
+- `src/rules/consistent-terminology.js` - Custom markdownlint rule (CommonJS)
+- `src/index.ts` - Library exports
 
 ### Key Design Decisions
 
-1. **Markdownlint Foundation** - We wrap markdownlint for standard rules and add custom ones
-2. **YAML Configuration** - Familiar format, easy to edit
-3. **Presets** - Quick starting points for different strictness levels
-4. **Fix Support** - Auto-fix where possible, following prettier philosophy
-5. **Extensible** - Easy to add new custom rules
+1. **Built on markdownlint-cli2** - We don't reinvent the wheel, just add value
+2. **Presets as YAML** - Direct compatibility with markdownlint config format
+3. **Custom rules as CommonJS** - Required by markdownlint's rule loader
+4. **Thin wrapper** - Minimal code, maximum compatibility
+5. **Zero config default** - Works immediately with sensible defaults
+
+### How It Works
+
+1. CLI parses arguments and determines if a preset should be used
+2. If no config exists, creates a temporary one from the preset
+3. Passes everything to markdownlint-cli2
+4. Cleans up temporary files on exit
+
+### Custom Rules
+
+Custom rules follow markdownlint's format:
+
+```javascript
+module.exports = {
+  names: ['MD100', 'rule-name'],
+  description: 'Rule description',
+  tags: ['category'],
+  function: function rule(params, onError) {
+    // Rule implementation
+  },
+};
+```
 
 ## Usage Patterns
 
 ### As a CLI Tool
 
-```bash
-# Global installation
-npm install -g @outfitter/markdown-medic
-mdlint --fix
+The primary use case - provides immediate value with zero config:
 
-# Project installation
-npm install -D @outfitter/markdown-medic
-npx mdlint
+```bash
+# Just works
+npx @outfitter/markdown-medic
+
+# With options
+npx @outfitter/markdown-medic --fix --preset strict
 ```
 
 ### As a Library
 
+For programmatic usage:
+
 ```typescript
-import { checkMarkdown, fixMarkdown } from '@outfitter/markdown-medic';
+import { markdownlintCli2 } from '@outfitter/markdown-medic';
+import { generateConfig } from '@outfitter/markdown-medic';
 
-const results = await checkMarkdown(content, { config });
-const fixed = await fixMarkdown(content, { config });
-```
+// Generate a config
+const config = generateConfig({
+  preset: 'strict',
+  terminology: [{ incorrect: 'NPM', correct: 'npm' }],
+});
 
-### In CI/CD
-
-```yaml
-- name: Lint Markdown
-  run: |
-    npm install -g @outfitter/markdown-medic
-    mdlint
+// Run markdownlint-cli2
+await markdownlintCli2({ config, fix: true });
 ```
 
 ## Important Notes
 
-- The package is designed to be installed globally or as a dev dependency
-- It should work with any markdown files, not just in Outfitter projects
-- The CLI name is `mdlint` to avoid confusion with `markdownlint`
-- Custom rules should be added to `src/rules/` with check and fix functions
-- Presets balance strictness with practicality for technical docs
+- The package is a thin wrapper - most functionality comes from markdownlint-cli2
+- Custom rules must be CommonJS modules for compatibility
+- Presets are just YAML strings that get written to temp files if needed
+- All markdownlint-cli2 options are supported
+- Config files are compatible with VS Code's markdownlint extension
 
 ## Future Enhancements
 
-- GitHub Action for easy CI integration
-- VS Code extension for real-time linting
 - More custom rules (spell check, inclusive language, etc.)
+- GitHub Action wrapper
 - Integration with other Outfitter tools
-- Caching for expensive checks (dead links, etc.)
+- Config migration tool from other linters

@@ -16,8 +16,14 @@ export const equipCommand = new Command('equip')
     'Use a preset configuration (minimal, standard, full)'
   )
   .option('-y, --yes', 'Skip prompts and use defaults')
-  .option('--filter <target>', 'Install to specific workspace package (monorepos)')
-  .option('--workspace-root', 'Explicitly install to workspace root (monorepos)')
+  .option(
+    '--filter <target>',
+    'Install to specific workspace package (monorepos)'
+  )
+  .option(
+    '--workspace-root',
+    'Explicitly install to workspace root (monorepos)'
+  )
   .action(async (options: EquipOptions) => {
     ui.showWelcome();
 
@@ -52,7 +58,7 @@ export const equipCommand = new Command('equip')
 
     // Detect workspace once and pass the result
     const isWorkspace = await packageManager.isWorkspaceRoot();
-    
+
     // Show monorepo context if applicable
     if (isWorkspace) {
       if (options.filter) {
@@ -73,7 +79,7 @@ export const equipCommand = new Command('equip')
       try {
         await packageManager.installPackages(allPackages, pm, {
           filter: options.filter,
-          isWorkspace // Pass the pre-detected workspace status
+          isWorkspace, // Pass the pre-detected workspace status
         });
         installSpinner.succeed('Packages installed');
       } catch (error) {

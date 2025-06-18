@@ -1,5 +1,5 @@
 ---
-"outfitter": minor
+'outfitter': minor
 ---
 
 feat: add monorepo support to equip command

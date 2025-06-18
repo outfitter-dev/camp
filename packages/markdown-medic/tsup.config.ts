@@ -7,4 +7,6 @@ export default defineConfig({
   sourcemap: true,
   clean: true,
   shims: true,
+  // Copy custom rules to dist
+  onSuccess: 'mkdir -p dist/rules && cp -r src/rules/*.js dist/rules/',
 });

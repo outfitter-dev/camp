@@ -1,16 +1,16 @@
 # @outfitter/markdown-medic
 
-> Opinionated markdown linting and formatting for healthy documentation
+> Opinionated markdown linting and formatting powered by markdownlint-cli2
 
 ## Overview
 
-Markdown Medic is an opinionated markdown linter and formatter that goes beyond basic linting. It provides:
+Markdown Medic is a thin wrapper around the excellent `markdownlint-cli2` that provides:
 
-- 🏥 **Health checks** - Diagnose common markdown ailments
-- 💊 **Auto-healing** - Fix issues automatically where possible
-- 🔧 **Configurable rules** - Customize via `.mdlint.yaml` config
-- 📋 **Multiple presets** - Choose from strict, standard, or relaxed
-- 🎯 **Smart defaults** - Sensible rules for technical documentation
+- 🎯 **Opinionated presets** - Strict, standard, and relaxed configurations
+- 📝 **Smart defaults** - Sensible rules for technical documentation
+- 🔧 **Custom rules** - Extended functionality like terminology enforcement
+- ⚡ **Zero config** - Works out of the box with built-in presets
+- 🏥 **Auto-healing** - Fix issues automatically with `--fix`
 
 ## Installation
 
@@ -27,130 +27,184 @@ npm install -D @outfitter/markdown-medic
 ### CLI
 
 ```bash
-# Check markdown files
-mdlint
+# Check all markdown files (uses standard preset by default)
+mdic
 
 # Fix auto-fixable issues
-mdlint --fix
+mdic --fix
 
 # Check specific files or patterns
-mdlint "docs/**/*.md" "README.md"
+mdic "docs/**/*.md" README.md
 
 # Use a specific preset
-mdlint --preset strict
+mdic --preset strict
+mdic --preset relaxed
 
-# Custom config file
-mdlint --config .mdlint.yaml
+# Create a config file
+mdic --init
+mdic --init strict  # Initialize with strict preset
+
+# Use custom config
+mdic --config .mdic.yaml
 ```
 
 ### Configuration
 
-Create a `.mdlint.yaml` file in your project root:
+When you run `mdic --init`, it creates a `.mdic.yaml` file:
 
 ```yaml
-# Preset: strict, standard, or relaxed
-preset: standard
+# Markdown Medic - Standard Preset
+# Balanced rules for technical documentation
 
-# Custom rule overrides
-rules:
-  # Markdown rules
-  line-length: 100
-  heading-style: atx
-  list-marker-space: true
-  
-  # Custom rules
-  no-dead-links: true
-  consistent-terminology: true
-  
-# Ignore patterns
-ignore:
-  - node_modules
-  - .git
-  - CHANGELOG.md
-  
-# Custom terminology
+# Extend base markdownlint rules
+extends: null
+
+# Default state for all rules
+default: true
+
+# Rule overrides
+MD003:
+  style: atx
+MD004:
+  style: dash
+# ... more rules ...
+
+# Terminology enforcement
 terminology:
-  - { incorrect: "NPM", correct: "npm" }
-  - { incorrect: "Javascript", correct: "JavaScript" }
-```
+  - { incorrect: 'NPM', correct: 'npm' }
+  - { incorrect: 'Javascript', correct: 'JavaScript' }
+  - { incorrect: 'Typescript', correct: 'TypeScript' }
+  # ... more terms ...
 
-### Programmatic API
+# Custom rules
+customRules:
+  - ./node_modules/@outfitter/markdown-medic/dist/rules/consistent-terminology.js
 
-```typescript
-import { checkMarkdown, fixMarkdown } from '@outfitter/markdown-medic';
-
-// Check markdown content
-const results = await checkMarkdown(content, {
-  preset: 'standard',
-  rules: {
-    'line-length': 100
-  }
-});
-
-// Fix markdown content
-const fixed = await fixMarkdown(content, options);
+# Ignore patterns
+ignores:
+  - node_modules/**
+  - CHANGELOG.md
 ```
 
 ## Presets
 
 ### Strict
+
 - Line length: 80 characters
+- All markdownlint rules enabled
 - No inline HTML
-- Ordered heading levels
-- Consistent list markers
-- No trailing punctuation in headings
+- Strict heading hierarchy
+- Enforces consistent formatting
 
 ### Standard (default)
-- Line length: 100 characters
-- Limited inline HTML
-- Flexible heading styles
-- Consistent formatting
+
+- Line length: Ignored (use Prettier)
+- Balanced ruleset for technical docs
+- Inline HTML allowed
+- Flexible but consistent
 
 ### Relaxed
-- No line length limit
-- Inline HTML allowed
-- Flexible formatting
-- Focus on structural issues
 
-## Custom Rules
+- Minimal rules enabled
+- Focus on basic consistency
+- Very permissive
+- Good for legacy codebases
 
-Beyond standard markdownlint rules, Markdown Medic adds:
+## Features
 
-- **no-dead-links** - Check for broken links
-- **consistent-terminology** - Enforce consistent spelling/capitalization
-- **frontmatter-required** - Require YAML frontmatter
-- **toc-required** - Require table of contents for long documents
-- **code-block-language** - Require language tags on code blocks
+### Built on markdownlint-cli2
+
+This package leverages all the features of `markdownlint-cli2`:
+
+- ⚡ Fast parallel processing
+- 📁 Glob pattern support
+- 🔍 Configuration file discovery
+- 💾 Caching for performance
+- 🎯 Targeted fixes
+- 📊 Multiple output formats
+- 🔌 Plugin support
+
+### Custom Rules
+
+#### Consistent Terminology
+
+Automatically fixes common terminology issues:
+
+- `NPM` → `npm`
+- `Javascript` → `JavaScript`
+- `VSCode` → `VS Code`
+- And many more...
 
 ## Integration
+
+### package.json Scripts
+
+```json
+{
+  "scripts": {
+    "lint:md": "mdic",
+    "lint:md:fix": "mdic --fix"
+  }
+}
+```
+
+### VS Code
+
+The config files work seamlessly with the [markdownlint VS Code extension](https://marketplace.visualstudio.com/items?itemName=DavidAnson.vscode-markdownlint).
 
 ### GitHub Actions
 
 ```yaml
 - name: Lint Markdown
-  uses: outfitter-dev/markdown-medic-action@v1
-  with:
-    config: .mdlint.yaml
-    fix: true
+  run: |
+    npm install -g @outfitter/markdown-medic
+    mdic
 ```
 
 ### Pre-commit Hook
 
 ```yaml
-- repo: https://github.com/outfitter-dev/markdown-medic
-  rev: v1.0.4
-  hooks:
-    - id: markdown-medic
+repos:
+  - repo: local
+    hooks:
+      - id: mdic
+        name: Lint Markdown
+        entry: mdic
+        language: system
+        types: [markdown]
 ```
 
-## Philosophy
+## Why Another Markdown Linter?
 
-Markdown Medic believes in:
+`markdownlint-cli2` is fantastic, but:
 
-- 📏 **Consistency** over flexibility
-- 🔧 **Automation** over manual review  
-- 📚 **Readability** over brevity
-- 🎯 **Clarity** over cleverness
+1. **Configuration is complex** - Many options and rules to understand
+2. **No built-in presets** - You need to build your config from scratch
+3. **Missing common rules** - Like terminology enforcement
+
+Markdown Medic provides:
+
+- **Immediate value** - Sensible presets that just work
+- **Easy adoption** - One command to get started
+- **Extended functionality** - Custom rules for common needs
+- **Full compatibility** - It's just markdownlint under the hood
+
+## Advanced Usage
+
+Since this is built on `markdownlint-cli2`, you can use all its features:
+
+```bash
+# Use markdownlint-cli2 options
+mdic --no-globs docs/api.md
+
+# Multiple config files
+mdic --config .markdownlint.yaml --config .markdownlint.local.yaml
+
+# Output formats
+mdic --output results.json
+```
+
+See the [markdownlint-cli2 documentation](https://github.com/DavidAnson/markdownlint-cli2) for all available options.
 
 ## License
 
