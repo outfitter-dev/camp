@@ -1,4 +1,4 @@
-# @outfitter/markdown-medic
+# @outfitter/md-medic
 
 > Opinionated markdown linting and formatting powered by markdownlint-cli2
 
@@ -16,10 +16,10 @@ Markdown Medic is a thin wrapper around the excellent `markdownlint-cli2` that p
 
 ```bash
 # Install globally
-npm install -g @outfitter/markdown-medic
+npm install -g @outfitter/md-medic
 
 # Or as a dev dependency
-npm install -D @outfitter/markdown-medic
+npm install -D @outfitter/md-medic
 ```
 
 ## Usage
@@ -45,12 +45,12 @@ mdic --init
 mdic --init strict  # Initialize with strict preset
 
 # Use custom config
-mdic --config .mdic.yaml
+mdic --config .mdic.config.yaml
 ```
 
 ### Configuration
 
-When you run `mdic --init`, it creates a `.mdic.yaml` file:
+When you run `mdic --init`, it creates a `.mdic.config.yaml` file:
 
 ```yaml
 # Markdown Medic - Standard Preset
@@ -78,7 +78,7 @@ terminology:
 
 # Custom rules
 customRules:
-  - ./node_modules/@outfitter/markdown-medic/dist/rules/consistent-terminology.js
+  - ./node_modules/@outfitter/md-medic/dist/rules/consistent-terminology.js
 
 # Ignore patterns
 ignores:
@@ -157,7 +157,7 @@ The config files work seamlessly with the [markdownlint VS Code extension](https
 ```yaml
 - name: Lint Markdown
   run: |
-    npm install -g @outfitter/markdown-medic
+    npm install -g @outfitter/md-medic
     mdic
 ```
 

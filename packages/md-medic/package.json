@@ -1,5 +1,5 @@
 {
-  "name": "@outfitter/markdown-medic",
+  "name": "@outfitter/md-medic",
   "version": "1.0.4",
   "description": "Opinionated markdown linting and formatting for healthy documentation",
   "keywords": [
@@ -51,7 +51,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/outfitter-dev/monorepo.git",
-    "directory": "packages/markdown-medic"
+    "directory": "packages/md-medic"
   },
   "bugs": {
     "url": "https://github.com/outfitter-dev/monorepo/issues"

@@ -34,7 +34,7 @@ program
         const preset = options.init || 'standard';
         await createConfigFile(preset);
         console.log(
-          chalk.green(`✅ Created .mdic.yaml with ${preset} preset`)
+          chalk.green(`✅ Created .mdic.config.yaml with ${preset} preset`)
         );
         return;
       }
@@ -111,8 +111,8 @@ async function createConfigFile(presetName: string): Promise<void> {
     preset: presetName as PresetName,
     terminology: defaultTerminology,
     customRules: [
-      './node_modules/@outfitter/markdown-medic/dist/rules/consistent-terminology.js',
+      './node_modules/@outfitter/md-medic/dist/rules/consistent-terminology.js',
     ],
   });
-  writeFileSync('.mdic.yaml', config);
+  writeFileSync('.mdic.config.yaml', config);
 }

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-This is the `@outfitter/markdown-medic` package - an opinionated wrapper around `markdownlint-cli2` that provides presets and custom rules for markdown linting and formatting. The CLI command is `mdic` (short for "Markdown Inspect & Correct").
+This is the `@outfitter/md-medic` package - an opinionated wrapper around `markdownlint-cli2` that provides presets and custom rules for markdown linting and formatting. The CLI command is `mdic` (short for "Markdown Inspect & Correct").
 
 ## Key Commands
 
@@ -28,7 +28,7 @@ pnpm type-check
 pnpm build
 
 # Test commands (or use 'mdic' after global install)
-node dist/cli.js --init                    # Create config (.mdic.yaml)
+node dist/cli.js --init                    # Create config (.mdic.config.yaml)
 node dist/cli.js README.md                 # Check a file
 node dist/cli.js --fix "**/*.md"          # Fix all markdown
 node dist/cli.js --preset strict          # Use strict preset
@@ -93,8 +93,8 @@ npx @outfitter/markdown-medic --fix --preset strict
 For programmatic usage:
 
 ```typescript
-import { markdownlintCli2 } from '@outfitter/markdown-medic';
-import { generateConfig } from '@outfitter/markdown-medic';
+import { markdownlintCli2 } from '@outfitter/md-medic';
+import { generateConfig } from '@outfitter/md-medic';
 
 // Generate a config
 const config = generateConfig({
