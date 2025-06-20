@@ -11,7 +11,7 @@ npm install @outfitter/contracts
 pnpm add @outfitter/contracts
 ```
 
-## Sub-path Exports (v1.1.0+)
+## Sub-path Exports (Available in v1.1.0+)
 
 For better tree-shaking and smaller bundles, you can import from specific modules:
 
@@ -27,7 +27,7 @@ import { DeepReadonly } from '@outfitter/contracts/types';
 import { makeError, success, failure } from '@outfitter/contracts';
 ```
 
-**Requirements**: Node.js ≥ 14.13 or a bundler that supports package.json "exports" field.
+**Requirements**: Node.js ≥ 18.12 or a bundler that supports package.json "exports" field.
 
 ## Overview
 

@@ -47,7 +47,8 @@
       "import": "./dist/types/index.mjs",
       "require": "./dist/types/index.js",
       "default": "./dist/types/index.js"
-    }
+    },
+    "./package.json": "./package.json"
   },
   "sideEffects": false,
   "files": [
@@ -82,6 +83,6 @@
     "access": "public"
   },
   "engines": {
-    "node": ">=14.13"
+    "node": ">=18.12"
   }
 }
