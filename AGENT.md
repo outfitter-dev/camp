@@ -23,10 +23,8 @@ Monorepo with 8 packages using pnpm workspaces. Build order: `contracts/typescri
 - Always use pnpm, never npm/yarn
 - Result pattern mandatory for error handling:
 `import { Result, success, failure, makeError } from '@outfitter/contracts'`
-- TypeScript strict mode, prefer `Array<T>` over `T[]`, no `I` prefix on
-interfaces
+- TypeScript strict mode, prefer `Array<T>` over `T[]`, no `I` prefix on interfaces
 - Workspace dependencies use `workspace:*` protocol
 - Conventional commits: `type(scope): subject` (feat, fix, docs, etc.)
 - Tests in `src/__tests__/` directories, 80% coverage target (90% for critical)
-- Zero runtime dependencies in core libs, parse boundaries with proven libraries
-(Zod/Joi/Yup), TSDoc for documentation
+- Zero runtime dependencies in core libs, parse boundaries with proven libraries (Zod/Joi/Yup), TSDoc for documentation
