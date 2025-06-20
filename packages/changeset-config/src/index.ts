@@ -1,6 +1,6 @@
-import { existsSync, mkdirSync, writeFileSync, readFileSync } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -13,7 +13,7 @@ export interface ChangesetInitOptions {
 interface ChangesetConfig {
   access: 'public' | 'restricted';
   baseBranch: string;
-  changelog?: string | Array<string> | false | [string, Record<string, any>];
+  changelog?: string | Array<string> | false | [string, Record<string, unknown>];
   commit?: boolean;
   fixed?: Array<Array<string>>;
   linked?: Array<Array<string>>;
@@ -27,11 +27,7 @@ interface PackageJson {
 }
 
 export function initChangesets(options: ChangesetInitOptions = {}): void {
-  const {
-    cwd = process.cwd(),
-    access = 'public',
-    baseBranch = 'main',
-  } = options;
+  const { cwd = process.cwd(), access = 'public', baseBranch = 'main' } = options;
 
   try {
     // Create .changeset directory
@@ -46,16 +42,14 @@ export function initChangesets(options: ChangesetInitOptions = {}): void {
 
     if (!existsSync(configTarget)) {
       // Read and modify config based on options
-      const configData = JSON.parse(
-        readFileSync(configSource, 'utf8')
-      ) as ChangesetConfig;
+      const configData = JSON.parse(readFileSync(configSource, 'utf8')) as ChangesetConfig;
       const config: ChangesetConfig = {
         ...configData,
         access,
         baseBranch,
       };
 
-      writeFileSync(configTarget, JSON.stringify(config, null, 2) + '\n');
+      writeFileSync(configTarget, `${JSON.stringify(config, null, 2)}\n`);
       console.log('✓ Created changeset config');
     }
 
@@ -107,7 +101,7 @@ export function addChangesetScripts(packageJsonPath?: string): void {
     }
 
     if (added) {
-      writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n');
+      writeFileSync(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`);
       console.log('✓ Added changeset scripts to package.json');
     } else {
       console.log('ℹ Changeset scripts already exist');

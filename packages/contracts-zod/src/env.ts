@@ -1,7 +1,6 @@
+import type { AppError, Result } from '@outfitter/contracts';
+import { ErrorCode, failure, makeError, success } from '@outfitter/contracts';
 import { z } from 'zod';
-
-import type { Result, AppError } from '@outfitter/contracts';
-import { success, failure, makeError, ErrorCode } from '@outfitter/contracts';
 
 /**
  * Validates and parses environment variables against a provided Zod schema.
@@ -12,7 +11,7 @@ import { success, failure, makeError, ErrorCode } from '@outfitter/contracts';
  */
 export function createEnvSchema<T extends z.ZodRawShape>(
   schema: T,
-  env: NodeJS.ProcessEnv = process.env
+  env: NodeJS.ProcessEnv = process.env,
 ): Result<z.infer<z.ZodObject<T>>, AppError> {
   const envSchema = z.object(schema);
 
@@ -23,30 +22,23 @@ export function createEnvSchema<T extends z.ZodRawShape>(
     if (error instanceof z.ZodError) {
       return failure(
         makeError(ErrorCode.VALIDATION_ERROR, 'Environment validation failed', {
-          issues: error.issues.map(issue => ({
+          issues: error.issues.map((issue) => ({
             path: issue.path.join('.'),
             message: issue.message,
             code: issue.code,
             received: 'received' in issue ? issue.received : undefined,
           })),
           missingVariables: error.issues
-            .filter(
-              issue =>
-                issue.code === 'invalid_type' && issue.received === 'undefined'
-            )
-            .map(issue => issue.path.join('.')),
-        })
+            .filter((issue) => issue.code === 'invalid_type' && issue.received === 'undefined')
+            .map((issue) => issue.path.join('.')),
+        }),
       );
     }
 
     return failure(
-      makeError(
-        ErrorCode.INTERNAL_ERROR,
-        'Unexpected error during environment validation',
-        {
-          cause: error,
-        }
-      )
+      makeError(ErrorCode.INTERNAL_ERROR, 'Unexpected error during environment validation', {
+        cause: error,
+      }),
     );
   }
 }
@@ -55,9 +47,7 @@ export function createEnvSchema<T extends z.ZodRawShape>(
  * Common environment variable schemas for reuse
  */
 export const CommonEnvSchemas = {
-  NODE_ENV: z
-    .enum(['development', 'production', 'test'])
-    .default('development'),
+  NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   PORT: z.coerce.number().min(1).max(65535).default(3000),
   DATABASE_URL: z.string().url(),
   API_KEY: z.string().min(1),
@@ -74,9 +64,7 @@ export const CommonEnvSchemas = {
  * @param additionalSchema - Additional Zod schema shape to extend the default environment schema.
  * @returns A {@link Result} containing the parsed environment object on success, or an {@link AppError} with validation details on failure.
  */
-export function createNextEnvSchema<T extends z.ZodRawShape>(
-  additionalSchema: T = {} as T
-) {
+export function createNextEnvSchema<T extends z.ZodRawShape>(additionalSchema: T = {} as T) {
   return createEnvSchema({
     NODE_ENV: CommonEnvSchemas.NODE_ENV,
     PORT: CommonEnvSchemas.PORT,
@@ -92,9 +80,7 @@ export function createNextEnvSchema<T extends z.ZodRawShape>(
  * @param additionalSchema - Additional Zod schema shape to extend the default Node.js environment schema.
  * @returns A {@link Result} containing the parsed environment object on success, or an {@link AppError} with validation details on failure.
  */
-export function createNodeEnvSchema<T extends z.ZodRawShape>(
-  additionalSchema: T = {} as T
-) {
+export function createNodeEnvSchema<T extends z.ZodRawShape>(additionalSchema: T = {} as T) {
   return createEnvSchema({
     NODE_ENV: CommonEnvSchemas.NODE_ENV,
     PORT: CommonEnvSchemas.PORT,
@@ -116,7 +102,7 @@ export function createNodeEnvSchema<T extends z.ZodRawShape>(
 export function parseEnvVar<T>(
   name: string,
   schema: z.ZodSchema<T>,
-  defaultValue?: T
+  defaultValue?: T,
 ): Result<T, AppError> {
   const value = process.env[name];
 
@@ -130,19 +116,15 @@ export function parseEnvVar<T>(
   } catch (error) {
     if (error instanceof z.ZodError) {
       return failure(
-        makeError(
-          ErrorCode.VALIDATION_ERROR,
-          `Invalid environment variable: ${name}`,
-          {
-            variable: name,
-            value: value,
-            issues: error.issues.map(issue => ({
-              message: issue.message,
-              code: issue.code,
-              received: 'received' in issue ? issue.received : undefined,
-            })),
-          }
-        )
+        makeError(ErrorCode.VALIDATION_ERROR, `Invalid environment variable: ${name}`, {
+          variable: name,
+          value: value,
+          issues: error.issues.map((issue) => ({
+            message: issue.message,
+            code: issue.code,
+            received: 'received' in issue ? issue.received : undefined,
+          })),
+        }),
       );
     }
 
@@ -150,8 +132,8 @@ export function parseEnvVar<T>(
       makeError(
         ErrorCode.INTERNAL_ERROR,
         `Unexpected error parsing environment variable: ${name}`,
-        { variable: name, cause: error }
-      )
+        { variable: name, cause: error },
+      ),
     );
   }
 }
@@ -182,8 +164,8 @@ export function validateRequiredEnvVars(
       makeError(
         ErrorCode.VALIDATION_ERROR,
         `Missing required environment variables: ${missing.join(', ')}`,
-        { missingVariables: missing }
-      )
+        { missingVariables: missing },
+      ),
     );
   }
 

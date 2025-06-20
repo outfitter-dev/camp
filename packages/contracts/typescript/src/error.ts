@@ -31,10 +31,7 @@ export const ErrorCategory = {
 /**
  * Check if an error code belongs to a category
  */
-export function isErrorInCategory(
-  code: ErrorCode,
-  category: keyof typeof ErrorCategory
-): boolean {
+export function isErrorInCategory(code: ErrorCode, category: keyof typeof ErrorCategory): boolean {
   return (ErrorCategory[category] as ReadonlyArray<ErrorCode>).includes(code);
 }
 
@@ -57,7 +54,7 @@ export function makeError(
   code: ErrorCode,
   message: string,
   details?: DeepReadonly<Record<string, unknown>>,
-  originalError?: Error
+  originalError?: Error,
 ): AppError {
   // Validate inputs
   if (!Object.values(ErrorCode).includes(code)) {
@@ -100,7 +97,7 @@ export function tryMakeError(
   code: unknown,
   message: unknown,
   details?: unknown,
-  originalError?: unknown
+  originalError?: unknown,
 ): { success: true; data: AppError } | { success: false; error: string } {
   try {
     // Type validation
@@ -124,9 +121,7 @@ export function tryMakeError(
 
     if (
       details !== undefined &&
-      (typeof details !== 'object' ||
-        details === null ||
-        Array.isArray(details))
+      (typeof details !== 'object' || details === null || Array.isArray(details))
     ) {
       return { success: false, error: 'Error details must be a plain object' };
     }
@@ -142,17 +137,14 @@ export function tryMakeError(
       code as ErrorCode,
       message as string,
       details as DeepReadonly<Record<string, unknown>> | undefined,
-      originalError as Error | undefined
+      originalError as Error | undefined,
     );
 
     return { success: true, data: error };
   } catch (error) {
     return {
       success: false,
-      error:
-        error instanceof Error
-          ? error.message
-          : 'Unknown error in tryMakeError',
+      error: error instanceof Error ? error.message : 'Unknown error in tryMakeError',
     };
   }
 }
@@ -182,10 +174,5 @@ export function toAppError(error: unknown): AppError {
     return makeError(ErrorCode.INTERNAL_ERROR, error.message, undefined, error);
   }
 
-  return makeError(
-    ErrorCode.INTERNAL_ERROR,
-    'Unknown error occurred',
-    { raw: error },
-    undefined
-  );
+  return makeError(ErrorCode.INTERNAL_ERROR, 'Unknown error occurred', { raw: error }, undefined);
 }

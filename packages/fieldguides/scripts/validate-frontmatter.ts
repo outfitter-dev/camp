@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-import fs from 'fs';
-import path from 'path';
-import matter from 'gray-matter';
+import fs from 'node:fs';
+import path from 'node:path';
 import { glob } from 'glob';
+import matter from 'gray-matter';
 
 // ANSI color codes for output
 const colors = {
@@ -16,13 +16,7 @@ const colors = {
 } as const;
 
 // Valid document types
-const VALID_TYPES = [
-  'convention',
-  'pattern',
-  'guide',
-  'template',
-  'reference',
-] as const;
+const VALID_TYPES = ['convention', 'pattern', 'guide', 'template', 'reference'] as const;
 type ValidType = (typeof VALID_TYPES)[number];
 
 // Files that should NOT have frontmatter
@@ -71,8 +65,7 @@ const validationRules: Record<string, ValidationRule> = {
     required: true,
     validate: (value: unknown): string | null => {
       if (typeof value !== 'string') return 'Must be a string';
-      if (value.length > 60)
-        return `Too long (${value.length} chars) - max 60 characters`;
+      if (value.length > 60) return `Too long (${value.length} chars) - max 60 characters`;
       if (!/^[A-Z]/.test(value)) return 'Should start with a capital letter';
       return null;
     },
@@ -81,8 +74,7 @@ const validationRules: Record<string, ValidationRule> = {
     required: true,
     validate: (value: unknown): string | null => {
       if (typeof value !== 'string') return 'Must be a string';
-      if (value.length > 72)
-        return `Too long (${value.length} chars) - max 72 characters`;
+      if (value.length > 72) return `Too long (${value.length} chars) - max 72 characters`;
       if (!value.endsWith('.')) return 'Should end with a period';
       return null;
     },
@@ -111,8 +103,7 @@ const validationRules: Record<string, ValidationRule> = {
     validate: (value: unknown): string | null => {
       if (value !== undefined && value !== null) {
         if (!Array.isArray(value)) return 'Must be an array';
-        if (value.some(tag => typeof tag !== 'string'))
-          return 'All tags must be strings';
+        if (value.some((tag) => typeof tag !== 'string')) return 'All tags must be strings';
       }
       return null;
     },
@@ -122,7 +113,7 @@ const validationRules: Record<string, ValidationRule> = {
     validate: (value: unknown): string | null => {
       if (value !== undefined && value !== null) {
         if (!Array.isArray(value)) return 'Must be an array';
-        if (value.some(item => typeof item !== 'string'))
+        if (value.some((item) => typeof item !== 'string'))
           return 'All related items must be strings';
       }
       return null;
@@ -154,7 +145,7 @@ function validateFile(filePath: string): FileValidationResult {
   const relativePath = path.relative(process.cwd(), filePath);
 
   // Check if this is a standards file (should NOT have frontmatter)
-  if (STANDARDS_FILES.some(f => f === fileName)) {
+  if (STANDARDS_FILES.some((f) => f === fileName)) {
     try {
       const content = fs.readFileSync(filePath, 'utf-8');
       if (content.startsWith('---')) {
@@ -210,8 +201,7 @@ function validateFile(filePath: string): FileValidationResult {
         errors: [
           {
             field: 'frontmatter',
-            error:
-              'No frontmatter found - all non-standards files must have frontmatter',
+            error: 'No frontmatter found - all non-standards files must have frontmatter',
           },
         ],
         isStandardsFile: false,
@@ -223,9 +213,7 @@ function validateFile(filePath: string): FileValidationResult {
 
     // Validate required fields
     for (const [field, rule] of Object.entries(validationRules)) {
-      const value = (parsed.data as FrontmatterData)[
-        field as keyof FrontmatterData
-      ];
+      const value = (parsed.data as FrontmatterData)[field as keyof FrontmatterData];
 
       if (rule.required && (value === undefined || value === null)) {
         errors.push({
@@ -245,7 +233,7 @@ function validateFile(filePath: string): FileValidationResult {
 
     // Check slug matches filename
     const expectedSlug = path.basename(fileName, '.md');
-    const dataSlug = parsed.data['slug'];
+    const dataSlug = (parsed.data as FrontmatterData).slug;
     if (dataSlug && dataSlug !== expectedSlug) {
       errors.push({
         field: 'slug',
@@ -273,43 +261,35 @@ function validateFile(filePath: string): FileValidationResult {
 }
 
 async function main(): Promise<void> {
-  console.log(
-    `${colors.blue}Validating frontmatter in fieldguides...${colors.reset}\n`
-  );
+  console.log(`${colors.blue}Validating frontmatter in fieldguides...${colors.reset}\n`);
 
   // Find all markdown files in fieldguides
   const files = await glob('fieldguides/**/*.md', {
     ignore: ['**/node_modules/**', '**/.git/**'],
   });
 
-  const results = files.map(file => validateFile(file));
+  const results = files.map((file) => validateFile(file));
 
   // Separate results
-  const validFiles = results.filter(r => r.errors.length === 0 && !r.skipped);
-  const invalidFiles = results.filter(r => r.errors.length > 0);
-  const skippedFiles = results.filter(r => r.skipped);
+  const validFiles = results.filter((r) => r.errors.length === 0 && !r.skipped);
+  const invalidFiles = results.filter((r) => r.errors.length > 0);
+  const skippedFiles = results.filter((r) => r.skipped);
 
   // Display results
   if (validFiles.length > 0) {
-    console.log(
-      `${colors.green}✓ Valid files (${validFiles.length}):${colors.reset}`
-    );
-    validFiles.forEach(result => {
+    console.log(`${colors.green}✓ Valid files (${validFiles.length}):${colors.reset}`);
+    validFiles.forEach((result) => {
       console.log(`  ${colors.dim}${result.file}${colors.reset}`);
     });
     console.log();
   }
 
   if (invalidFiles.length > 0) {
-    console.log(
-      `${colors.red}✗ Invalid files (${invalidFiles.length}):${colors.reset}`
-    );
-    invalidFiles.forEach(result => {
+    console.log(`${colors.red}✗ Invalid files (${invalidFiles.length}):${colors.reset}`);
+    invalidFiles.forEach((result) => {
       console.log(`  ${colors.red}${result.file}${colors.reset}`);
-      result.errors.forEach(error => {
-        console.log(
-          `    ${colors.yellow}• ${error.field}: ${error.error}${colors.reset}`
-        );
+      result.errors.forEach((error) => {
+        console.log(`    ${colors.yellow}• ${error.field}: ${error.error}${colors.reset}`);
       });
       console.log();
     });
@@ -329,7 +309,7 @@ async function main(): Promise<void> {
 }
 
 // Run validation
-main().catch(error => {
+main().catch((error) => {
   console.error(`${colors.red}Error:${colors.reset}`, error);
   process.exit(1);
 });

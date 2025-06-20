@@ -1,18 +1,13 @@
 import chalk from 'chalk';
 import ora, { type Ora } from 'ora';
 import type { PackageSelection } from '../types/index.js';
-import {
-  getTerrainSummary,
-  type TerrainFeatures,
-} from '../utils/detect-terrain.js';
+import { getTerrainSummary, type TerrainFeatures } from '../utils/detect-terrain.js';
 
 /**
  * Displays a cyan-colored welcome message introducing the Outfitter tool in the CLI.
  */
 export function showWelcome(): void {
-  console.log(
-    chalk.cyan("🎒 Welcome to Outfitter! Let's equip your project.\n")
-  );
+  console.log(chalk.cyan("🎒 Welcome to Outfitter! Let's equip your project.\n"));
 }
 
 /**
@@ -26,7 +21,7 @@ export function showTerrainSummary(terrain: TerrainFeatures): void {
   const summary = getTerrainSummary(terrain);
   if (summary.length > 0) {
     console.log(chalk.cyan('\n🗻 Detected terrain:'));
-    summary.forEach(feature => {
+    summary.forEach((feature) => {
       console.log(`  • ${feature}`);
     });
   }
@@ -58,13 +53,8 @@ export function logInfo(message: string): void {
  * @param packageManager - The package manager to use for running commands.
  * @param selection - The user's package selection, used to determine if fieldguides are included.
  */
-export function showNextSteps(
-  packageManager: string,
-  selection: PackageSelection
-): void {
-  console.log(
-    chalk.green('\n🎉 Your project is now equipped with Outfitter!\n')
-  );
+export function showNextSteps(packageManager: string, selection: PackageSelection): void {
+  console.log(chalk.green('\n🎉 Your project is now equipped with Outfitter!\n'));
 
   console.log(chalk.cyan('Next steps:'));
   console.log(`  • Run '${packageManager} run lint' to check your code`);

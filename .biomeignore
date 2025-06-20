@@ -1,0 +1,13 @@
+# Generated files
+packages/*/dist/**
+packages/*/build/**
+./dist/**
+
+# Template files (contain intentional duplicates and test patterns)  
+./packages/fieldguides/content/templates/**
+./packages/fieldguides/scripts/**
+
+# Lock files
+pnpm-lock.yaml
+yarn.lock
+package-lock.json

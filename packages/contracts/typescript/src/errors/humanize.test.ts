@@ -6,10 +6,7 @@ import { formatForDevelopers, humanize } from './humanize';
 
 describe('humanize', () => {
   it('should return user-friendly message for known error codes', () => {
-    const error = makeError(
-      ErrorCode.UNAUTHORIZED,
-      'Token expired at 2024-01-01'
-    );
+    const error = makeError(ErrorCode.UNAUTHORIZED, 'Token expired at 2024-01-01');
     expect(humanize(error)).toBe('Please log in to continue.');
   });
 
@@ -44,21 +41,14 @@ describe('humanize', () => {
     // Create an error with a code that's not in the mapping
     const error = makeError(
       ErrorCode.INTERNAL_ERROR,
-      'Database connection error with stack trace info'
+      'Database connection error with stack trace info',
     );
-    expect(humanize(error)).toBe(
-      'An unexpected error occurred. Please try again.'
-    );
+    expect(humanize(error)).toBe('An unexpected error occurred. Please try again.');
   });
 
   it('should handle errors with very technical messages', () => {
-    const error = makeError(
-      ErrorCode.INTERNAL_ERROR,
-      'error exception stack trace'
-    );
-    expect(humanize(error)).toBe(
-      'An unexpected error occurred. Please try again.'
-    );
+    const error = makeError(ErrorCode.INTERNAL_ERROR, 'error exception stack trace');
+    expect(humanize(error)).toBe('An unexpected error occurred. Please try again.');
   });
 
   it('should handle errors with empty or very short messages gracefully', () => {
@@ -102,12 +92,7 @@ describe('formatForDevelopers', () => {
 
   it('should include cause when present', () => {
     const originalError = new Error('Original error');
-    const error = makeError(
-      ErrorCode.INTERNAL_ERROR,
-      'Wrapper error',
-      {},
-      originalError
-    );
+    const error = makeError(ErrorCode.INTERNAL_ERROR, 'Wrapper error', {}, originalError);
     const formatted = formatForDevelopers(error);
     expect(formatted).toContain('Cause: Original error');
   });
@@ -134,7 +119,7 @@ describe('formatForDevelopers', () => {
         operation: 'findById',
         timestamp: '2024-01-01T00:00:00Z',
       },
-      originalError
+      originalError,
     );
     const formatted = formatForDevelopers(error);
 

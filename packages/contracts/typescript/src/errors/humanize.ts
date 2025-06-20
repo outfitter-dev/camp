@@ -12,10 +12,8 @@ const errorMessages: Record<ErrorCode, string> = {
   [ErrorCode.FORBIDDEN]: "You don't have permission to access this resource.",
   [ErrorCode.CONFLICT]: 'A conflict occurred. Please refresh and try again.',
   [ErrorCode.INTERNAL_ERROR]: 'An unexpected error occurred. Please try again.',
-  [ErrorCode.EXTERNAL_SERVICE_ERROR]:
-    'External service is unavailable. Please try again later.',
-  [ErrorCode.RATE_LIMIT_EXCEEDED]:
-    'Too many requests. Please wait a moment and try again.',
+  [ErrorCode.EXTERNAL_SERVICE_ERROR]: 'External service is unavailable. Please try again later.',
+  [ErrorCode.RATE_LIMIT_EXCEEDED]: 'Too many requests. Please wait a moment and try again.',
 };
 
 /**

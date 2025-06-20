@@ -1,29 +1,20 @@
 import { Command } from 'commander';
-import type { EquipOptions } from '../types/index.js';
-import * as packageManager from '../services/package-manager.js';
+import { getRecommendedFieldguides } from '../config/fieldguide-mappings.js';
 import * as configApplier from '../services/configuration-applier.js';
+import * as packageManager from '../services/package-manager.js';
 import * as packageSelector from '../services/package-selector.js';
+import type { EquipOptions } from '../types/index.js';
 import * as ui from '../ui/console.js';
 import * as prompts from '../ui/prompts.js';
 import { detectTerrain } from '../utils/detect-terrain.js';
-import { getRecommendedFieldguides } from '../config/fieldguide-mappings.js';
 
 export const equipCommand = new Command('equip')
   .alias('init')
   .description('Interactively install Outfitter configurations and utilities')
-  .option(
-    '--preset <type>',
-    'Use a preset configuration (minimal, standard, full)'
-  )
+  .option('--preset <type>', 'Use a preset configuration (minimal, standard, full)')
   .option('-y, --yes', 'Skip prompts and use defaults')
-  .option(
-    '--filter <target>',
-    'Install to specific workspace package (monorepos)'
-  )
-  .option(
-    '--workspace-root',
-    'Explicitly install to workspace root (monorepos)'
-  )
+  .option('--filter <target>', 'Install to specific workspace package (monorepos)')
+  .option('--workspace-root', 'Explicitly install to workspace root (monorepos)')
   .action(async (options: EquipOptions) => {
     ui.showWelcome();
 
@@ -40,16 +31,13 @@ export const equipCommand = new Command('equip')
     prompts.showRecommendedFieldguides(recommendedFieldguides);
 
     // Determine package selection
-    let selection;
+    let selection: ReturnType<typeof packageSelector.getDefaultSelection>;
     if (options.preset) {
       selection = packageSelector.getPresetSelection(options.preset);
     } else if (options.yes) {
       selection = packageSelector.getDefaultSelection(terrain);
     } else {
-      selection = await packageSelector.getInteractiveSelection(
-        terrain,
-        recommendedFieldguides
-      );
+      selection = await packageSelector.getInteractiveSelection(terrain, recommendedFieldguides);
     }
 
     // Detect and show package manager

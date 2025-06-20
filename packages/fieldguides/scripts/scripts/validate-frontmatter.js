@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-import fs from 'fs';
-import path from 'path';
-import matter from 'gray-matter';
+import fs from 'node:fs';
+import path from 'node:path';
 import { glob } from 'glob';
+import matter from 'gray-matter';
 // ANSI color codes for output
 const colors = {
   reset: '\x1b[0m',
@@ -22,7 +22,7 @@ const VALID_STATUSES = ['draft', 'stable', 'deprecated'];
 const validationRules = {
   slug: {
     required: true,
-    validate: value => {
+    validate: (value) => {
       if (typeof value !== 'string') return 'Must be a string';
       if (!/^[a-z0-9-]+$/.test(value))
         return 'Must be kebab-case (lowercase letters, numbers, and hyphens only)';
@@ -31,27 +31,25 @@ const validationRules = {
   },
   title: {
     required: true,
-    validate: value => {
+    validate: (value) => {
       if (typeof value !== 'string') return 'Must be a string';
-      if (value.length > 60)
-        return `Too long (${value.length} chars) - max 60 characters`;
+      if (value.length > 60) return `Too long (${value.length} chars) - max 60 characters`;
       if (!/^[A-Z]/.test(value)) return 'Should start with a capital letter';
       return null;
     },
   },
   description: {
     required: true,
-    validate: value => {
+    validate: (value) => {
       if (typeof value !== 'string') return 'Must be a string';
-      if (value.length > 72)
-        return `Too long (${value.length} chars) - max 72 characters`;
+      if (value.length > 72) return `Too long (${value.length} chars) - max 72 characters`;
       if (!value.endsWith('.')) return 'Should end with a period';
       return null;
     },
   },
   type: {
     required: true,
-    validate: value => {
+    validate: (value) => {
       if (typeof value !== 'string') return 'Must be a string';
       if (!VALID_TYPES.includes(value)) {
         return `Invalid type "${value}" - must be one of: ${VALID_TYPES.join(', ')}`;
@@ -61,7 +59,7 @@ const validationRules = {
   },
   category: {
     required: false,
-    validate: value => {
+    validate: (value) => {
       if (value !== undefined && value !== null && typeof value !== 'string') {
         return 'Must be a string';
       }
@@ -70,21 +68,20 @@ const validationRules = {
   },
   tags: {
     required: false,
-    validate: value => {
+    validate: (value) => {
       if (value !== undefined && value !== null) {
         if (!Array.isArray(value)) return 'Must be an array';
-        if (value.some(tag => typeof tag !== 'string'))
-          return 'All tags must be strings';
+        if (value.some((tag) => typeof tag !== 'string')) return 'All tags must be strings';
       }
       return null;
     },
   },
   related: {
     required: false,
-    validate: value => {
+    validate: (value) => {
       if (value !== undefined && value !== null) {
         if (!Array.isArray(value)) return 'Must be an array';
-        if (value.some(item => typeof item !== 'string'))
+        if (value.some((item) => typeof item !== 'string'))
           return 'All related items must be strings';
       }
       return null;
@@ -92,7 +89,7 @@ const validationRules = {
   },
   status: {
     required: false,
-    validate: value => {
+    validate: (value) => {
       if (value !== undefined && value !== null) {
         if (typeof value !== 'string') return 'Must be a string';
         if (!VALID_STATUSES.includes(value)) {
@@ -107,7 +104,7 @@ function validateFile(filePath) {
   const fileName = path.basename(filePath);
   const relativePath = path.relative(process.cwd(), filePath);
   // Check if this is a standards file (should NOT have frontmatter)
-  if (STANDARDS_FILES.some(f => f === fileName)) {
+  if (STANDARDS_FILES.some((f) => f === fileName)) {
     try {
       const content = fs.readFileSync(filePath, 'utf-8');
       if (content.startsWith('---')) {
@@ -160,8 +157,7 @@ function validateFile(filePath) {
         errors: [
           {
             field: 'frontmatter',
-            error:
-              'No frontmatter found - all non-standards files must have frontmatter',
+            error: 'No frontmatter found - all non-standards files must have frontmatter',
           },
         ],
         isStandardsFile: false,
@@ -188,7 +184,7 @@ function validateFile(filePath) {
     }
     // Check slug matches filename
     const expectedSlug = path.basename(fileName, '.md');
-    const dataSlug = parsed.data['slug'];
+    const dataSlug = parsed.data.slug;
     if (dataSlug && dataSlug !== expectedSlug) {
       errors.push({
         field: 'slug',
@@ -214,38 +210,30 @@ function validateFile(filePath) {
   }
 }
 async function main() {
-  console.log(
-    `${colors.blue}Validating frontmatter in fieldguides...${colors.reset}\n`
-  );
+  console.log(`${colors.blue}Validating frontmatter in fieldguides...${colors.reset}\n`);
   // Find all markdown files in fieldguides
   const files = await glob('fieldguides/**/*.md', {
     ignore: ['**/node_modules/**', '**/.git/**'],
   });
-  const results = files.map(file => validateFile(file));
+  const results = files.map((file) => validateFile(file));
   // Separate results
-  const validFiles = results.filter(r => r.errors.length === 0 && !r.skipped);
-  const invalidFiles = results.filter(r => r.errors.length > 0);
-  const skippedFiles = results.filter(r => r.skipped);
+  const validFiles = results.filter((r) => r.errors.length === 0 && !r.skipped);
+  const invalidFiles = results.filter((r) => r.errors.length > 0);
+  const skippedFiles = results.filter((r) => r.skipped);
   // Display results
   if (validFiles.length > 0) {
-    console.log(
-      `${colors.green}✓ Valid files (${validFiles.length}):${colors.reset}`
-    );
-    validFiles.forEach(result => {
+    console.log(`${colors.green}✓ Valid files (${validFiles.length}):${colors.reset}`);
+    validFiles.forEach((result) => {
       console.log(`  ${colors.dim}${result.file}${colors.reset}`);
     });
     console.log();
   }
   if (invalidFiles.length > 0) {
-    console.log(
-      `${colors.red}✗ Invalid files (${invalidFiles.length}):${colors.reset}`
-    );
-    invalidFiles.forEach(result => {
+    console.log(`${colors.red}✗ Invalid files (${invalidFiles.length}):${colors.reset}`);
+    invalidFiles.forEach((result) => {
       console.log(`  ${colors.red}${result.file}${colors.reset}`);
-      result.errors.forEach(error => {
-        console.log(
-          `    ${colors.yellow}• ${error.field}: ${error.error}${colors.reset}`
-        );
+      result.errors.forEach((error) => {
+        console.log(`    ${colors.yellow}• ${error.field}: ${error.error}${colors.reset}`);
       });
       console.log();
     });
@@ -262,7 +250,7 @@ async function main() {
   }
 }
 // Run validation
-main().catch(error => {
+main().catch((error) => {
   console.error(`${colors.red}Error:${colors.reset}`, error);
   process.exit(1);
 });

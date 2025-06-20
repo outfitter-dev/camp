@@ -1,0 +1,32 @@
+{
+  "name": "@outfitter/biome-config",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Shared Biome configuration for the Outfitter monorepo, with an ESLint bridge for gap coverage.",
+  "main": "biome.json",
+  "files": [
+    "biome.json",
+    "eslint-bridge.config.js"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@eslint/js": "^9.2.0",
+    "eslint-config-biome": "^1.9.4",
+    "typescript-eslint": "^7.11.0"
+  },
+  "peerDependencies": {
+    "eslint": "^9.2.0"
+  },
+  "keywords": [
+    "biome",
+    "config",
+    "outfitter",
+    "lint",
+    "format"
+  ],
+  "author": "Outfitter",
+  "license": "ISC"
+}

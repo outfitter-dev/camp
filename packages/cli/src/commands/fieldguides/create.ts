@@ -1,9 +1,11 @@
-import inquirer from 'inquirer';
 import chalk from 'chalk';
-import ora from 'ora';
 import fsExtra from 'fs-extra';
+import inquirer from 'inquirer';
+import ora from 'ora';
+
 const { ensureDir, writeJSON, pathExists } = fsExtra;
-import { join } from 'path';
+
+import { join } from 'node:path';
 
 interface CreateOptions {
   preset?: string;
@@ -16,12 +18,7 @@ interface InquirerAnswers {
 }
 
 const presets = {
-  nextjs: [
-    'typescript-standards',
-    'react-patterns',
-    'nextjs-patterns',
-    'testing-standards',
-  ],
+  nextjs: ['typescript-standards', 'react-patterns', 'nextjs-patterns', 'testing-standards'],
   react: ['typescript-standards', 'react-patterns', 'testing-standards'],
   node: ['typescript-standards', 'testing-standards', 'security-standards'],
   minimal: ['typescript-standards'],
@@ -39,18 +36,14 @@ const presets = {
  *
  * @throws {Error} If an error occurs during directory creation or file writing.
  */
-export async function createFieldguideConfig(
-  options: CreateOptions
-): Promise<void> {
+export async function createFieldguideConfig(options: CreateOptions): Promise<void> {
   const cwd = process.cwd();
   const outfitterDir = join(cwd, '.outfitter');
 
   // Check if already initialized
   if ((await pathExists(outfitterDir)) && !options.force) {
     console.error(
-      chalk.red(
-        'Fieldguide configuration already exists. Use --force to reinitialize.'
-      )
+      chalk.red('Fieldguide configuration already exists. Use --force to reinitialize.'),
     );
     process.exit(1);
   }
@@ -92,18 +85,12 @@ export async function createFieldguideConfig(
 
     spinner.succeed('Fieldguide configuration created successfully!');
 
-    console.log('\n' + chalk.green('✓') + ' Created .outfitter/config.json');
-    console.log('\n' + chalk.cyan('Next steps:'));
+    console.log(`\n${chalk.green('✓')} Created .outfitter/config.json`);
+    console.log(`\n${chalk.cyan('Next steps:')}`);
     console.log(
-      '  1. Run ' +
-        chalk.yellow('outfitter fg add <fieldguide>') +
-        ' to add specific fieldguides'
+      `  1. Run ${chalk.yellow('outfitter fg add <fieldguide>')} to add specific fieldguides`,
     );
-    console.log(
-      '  2. Run ' +
-        chalk.yellow('outfitter fg list') +
-        ' to see available fieldguides'
-    );
+    console.log(`  2. Run ${chalk.yellow('outfitter fg list')} to see available fieldguides`);
   } catch (error) {
     spinner.fail('Failed to create fieldguide configuration');
     throw error;

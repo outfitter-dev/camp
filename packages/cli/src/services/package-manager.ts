@@ -1,7 +1,9 @@
 import fsExtra from 'fs-extra';
+
 const { pathExists } = fsExtra;
+
 import { execa } from 'execa';
-import type { PackageManager, InstallCommand } from '../types/index.js';
+import type { InstallCommand, PackageManager } from '../types/index.js';
 
 /**
  * Detects if the current directory is a workspace/monorepo root.
@@ -73,7 +75,7 @@ export async function installPackages(
   options?: {
     filter?: string; // For targeting specific workspace packages
     isWorkspace?: boolean; // Pre-detected workspace status
-  }
+  },
 ): Promise<void> {
   if (packages.length === 0) return;
 

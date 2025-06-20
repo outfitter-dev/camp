@@ -105,5 +105,5 @@ export default tseslint.config(
       '**/*.test.ts',
       '**/*.test.tsx',
     ],
-  }
+  },
 );

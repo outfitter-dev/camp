@@ -44,6 +44,9 @@
     },
     {
       "path": "./packages/contracts-zod"
+    },
+    {
+      "path": "./packages/baselayer"
     }
   ],
   "exclude": [

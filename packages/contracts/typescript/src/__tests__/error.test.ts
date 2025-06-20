@@ -1,12 +1,6 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
-import {
-  ErrorCode,
-  makeError,
-  tryMakeError,
-  isAppError,
-  toAppError,
-} from '../error';
+import { ErrorCode, isAppError, makeError, toAppError, tryMakeError } from '../error';
 
 describe('AppError', () => {
   it('should create app errors', () => {
@@ -61,47 +55,46 @@ describe('AppError', () => {
 
   describe('makeError validation', () => {
     it('should validate error code', () => {
-      expect(() => makeError('INVALID_CODE' as ErrorCode, 'message')).toThrow(
-        'Invalid error code'
-      );
+      expect(() => makeError('INVALID_CODE' as ErrorCode, 'message')).toThrow('Invalid error code');
     });
 
     it('should validate message is non-empty string', () => {
       expect(() => makeError(ErrorCode.VALIDATION_ERROR, '')).toThrow(
-        'Error message must be a non-empty string'
+        'Error message must be a non-empty string',
       );
       expect(() => makeError(ErrorCode.VALIDATION_ERROR, '   ')).toThrow(
-        'Error message cannot be empty or whitespace only'
+        'Error message cannot be empty or whitespace only',
       );
+      // biome-ignore lint/suspicious/noExplicitAny: Testing runtime behavior with invalid types
       expect(() => makeError(ErrorCode.VALIDATION_ERROR, null as any)).toThrow(
-        'Error message must be a non-empty string'
+        'Error message must be a non-empty string',
       );
     });
 
     it('should validate details is plain object', () => {
-      expect(() =>
-        makeError(ErrorCode.VALIDATION_ERROR, 'message', [] as any)
-      ).toThrow('Error details must be a plain object');
-      expect(() =>
-        makeError(ErrorCode.VALIDATION_ERROR, 'message', null as any)
-      ).toThrow('Error details must be a plain object');
-      expect(() =>
-        makeError(ErrorCode.VALIDATION_ERROR, 'message', 'string' as any)
-      ).toThrow('Error details must be a plain object');
+      // biome-ignore lint/suspicious/noExplicitAny: Testing runtime behavior with invalid types
+      expect(() => makeError(ErrorCode.VALIDATION_ERROR, 'message', [] as any)).toThrow(
+        'Error details must be a plain object',
+      );
+      // biome-ignore lint/suspicious/noExplicitAny: Testing runtime behavior with invalid types
+      expect(() => makeError(ErrorCode.VALIDATION_ERROR, 'message', null as any)).toThrow(
+        'Error details must be a plain object',
+      );
+      // biome-ignore lint/suspicious/noExplicitAny: Testing runtime behavior with invalid types
+      expect(() => makeError(ErrorCode.VALIDATION_ERROR, 'message', 'string' as any)).toThrow(
+        'Error details must be a plain object',
+      );
     });
 
     it('should validate cause is Error instance', () => {
       expect(() =>
-        makeError(
-          ErrorCode.VALIDATION_ERROR,
-          'message',
-          undefined,
-          'not an error' as any
-        )
+        // biome-ignore lint/suspicious/noExplicitAny: Testing runtime behavior with invalid types
+        makeError(ErrorCode.VALIDATION_ERROR, 'message', undefined, 'not an error' as any),
       ).toThrow('Error cause must be an Error instance');
-      expect(() =>
-        makeError(ErrorCode.VALIDATION_ERROR, 'message', undefined, {} as any)
-      ).toThrow('Error cause must be an Error instance');
+      // biome-ignore lint/suspicious/noExplicitAny: Testing runtime behavior with invalid types
+      expect(() => makeError(ErrorCode.VALIDATION_ERROR, 'message', undefined, {} as any)).toThrow(
+        'Error cause must be an Error instance',
+      );
     });
 
     it('should accept valid inputs', () => {
@@ -109,7 +102,7 @@ describe('AppError', () => {
         ErrorCode.VALIDATION_ERROR,
         'Valid message',
         { key: 'value' },
-        new Error('cause')
+        new Error('cause'),
       );
       expect(validError.code).toBe(ErrorCode.VALIDATION_ERROR);
       expect(validError.message).toBe('Valid message');
@@ -140,9 +133,7 @@ describe('AppError', () => {
       const result = tryMakeError(ErrorCode.VALIDATION_ERROR, '');
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error).toContain(
-          'Error message must be a non-empty string'
-        );
+        expect(result.error).toContain('Error message must be a non-empty string');
       }
     });
 
@@ -155,12 +146,7 @@ describe('AppError', () => {
     });
 
     it('should return failure for invalid cause', () => {
-      const result = tryMakeError(
-        ErrorCode.VALIDATION_ERROR,
-        'message',
-        undefined,
-        'not an error'
-      );
+      const result = tryMakeError(ErrorCode.VALIDATION_ERROR, 'message', undefined, 'not an error');
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error).toContain('Error cause must be an Error instance');

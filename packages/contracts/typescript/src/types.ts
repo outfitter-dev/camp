@@ -1,1 +1,1 @@
-export type AnyFunction = (...args: Array<any>) => any;
+export type AnyFunction = (...args: Array<unknown>) => unknown;

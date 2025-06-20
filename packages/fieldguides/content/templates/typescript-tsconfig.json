@@ -26,7 +26,6 @@
     "module": "esnext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
-    "allowImportingTsExtensions": false,
     "resolvePackageJsonExports": true,
     "resolvePackageJsonImports": true,
     "allowArbitraryExtensions": false,
@@ -36,7 +35,6 @@
     "moduleSuffixes": [],
     "verbatimModuleSyntax": true,
     "isolatedModules": true,
-    "preserveConstEnums": true,
     "preserveValueImports": false,
 
     // Emit - Optimized for bundlers
@@ -56,7 +54,6 @@
     "newLine": "lf",
     "stripInternal": false,
     "noEmitHelpers": false,
-    "noEmitOnError": true,
     "preserveConstEnums": false,
     "declarationDir": null,
 

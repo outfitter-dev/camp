@@ -1,5 +1,5 @@
-import { type AppError, makeError, ErrorCode } from '../error';
-import { type Result, success, failure } from '../result';
+import { type AppError, ErrorCode, makeError } from '../error';
+import { failure, type Result, success } from '../result';
 
 /**
  * Create a branded type for compile-time safety
@@ -40,9 +40,7 @@ export function isPositiveInteger(value: unknown): value is PositiveInteger {
   return typeof value === 'number' && Number.isInteger(value) && value > 0;
 }
 
-export function isNonNegativeInteger(
-  value: unknown
-): value is NonNegativeInteger {
+export function isNonNegativeInteger(value: unknown): value is NonNegativeInteger {
   return typeof value === 'number' && Number.isInteger(value) && value >= 0;
 }
 
@@ -59,9 +57,7 @@ export function isUrl(value: unknown): value is Url {
 export function isUuid(value: unknown): value is Uuid {
   return (
     typeof value === 'string' &&
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-      value
-    )
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)
   );
 }
 
@@ -78,17 +74,15 @@ export function isTimestamp(value: unknown): value is Timestamp {
  */
 export function createUserId(id: string): Result<UserId, AppError> {
   if (!id.trim()) {
-    return failure(
-      makeError(ErrorCode.VALIDATION_ERROR, 'User ID cannot be empty')
-    );
+    return failure(makeError(ErrorCode.VALIDATION_ERROR, 'User ID cannot be empty'));
   }
   if (!/^[a-zA-Z0-9_-]+$/.test(id)) {
     return failure(
       makeError(
         ErrorCode.VALIDATION_ERROR,
         'Invalid user ID format. Only alphanumeric characters, underscores, and hyphens are allowed',
-        { providedId: id }
-      )
+        { providedId: id },
+      ),
     );
   }
   return success(id as UserId);
@@ -102,63 +96,54 @@ export function createEmail(email: string): Result<Email, AppError> {
     return failure(
       makeError(ErrorCode.VALIDATION_ERROR, 'Invalid email format', {
         providedEmail: email,
-      })
+      }),
     );
   }
 
   return success(trimmed as Email);
 }
 
-export function createNonEmptyString(
-  str: string
-): Result<NonEmptyString, AppError> {
+export function createNonEmptyString(str: string): Result<NonEmptyString, AppError> {
   const trimmed = str.trim();
   if (!trimmed) {
     return failure(
-      makeError(
-        ErrorCode.VALIDATION_ERROR,
-        'String cannot be empty or contain only whitespace'
-      )
+      makeError(ErrorCode.VALIDATION_ERROR, 'String cannot be empty or contain only whitespace'),
     );
   }
   return success(trimmed as NonEmptyString);
 }
 
-export function createPositiveInteger(
-  num: number
-): Result<PositiveInteger, AppError> {
+export function createPositiveInteger(num: number): Result<PositiveInteger, AppError> {
   if (!Number.isInteger(num)) {
     return failure(
       makeError(ErrorCode.VALIDATION_ERROR, 'Value must be an integer', {
         providedValue: num,
-      })
+      }),
     );
   }
   if (num <= 0) {
     return failure(
       makeError(ErrorCode.VALIDATION_ERROR, 'Value must be positive', {
         providedValue: num,
-      })
+      }),
     );
   }
   return success(num as PositiveInteger);
 }
 
-export function createNonNegativeInteger(
-  num: number
-): Result<NonNegativeInteger, AppError> {
+export function createNonNegativeInteger(num: number): Result<NonNegativeInteger, AppError> {
   if (!Number.isInteger(num)) {
     return failure(
       makeError(ErrorCode.VALIDATION_ERROR, 'Value must be an integer', {
         providedValue: num,
-      })
+      }),
     );
   }
   if (num < 0) {
     return failure(
       makeError(ErrorCode.VALIDATION_ERROR, 'Value must be non-negative', {
         providedValue: num,
-      })
+      }),
     );
   }
   return success(num as NonNegativeInteger);
@@ -174,21 +159,20 @@ export function createUrl(url: string): Result<Url, AppError> {
         ErrorCode.VALIDATION_ERROR,
         'Invalid URL format',
         { providedUrl: url },
-        error as Error
-      )
+        error as Error,
+      ),
     );
   }
 }
 
 export function createUuid(uuid: string): Result<Uuid, AppError> {
-  const uuidRegex =
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
   if (!uuidRegex.test(uuid)) {
     return failure(
       makeError(ErrorCode.VALIDATION_ERROR, 'Invalid UUID format', {
         providedUuid: uuid,
-      })
+      }),
     );
   }
 
@@ -198,13 +182,9 @@ export function createUuid(uuid: string): Result<Uuid, AppError> {
 export function createPercentage(value: number): Result<Percentage, AppError> {
   if (value < 0 || value > 100) {
     return failure(
-      makeError(
-        ErrorCode.VALIDATION_ERROR,
-        'Percentage must be between 0 and 100',
-        {
-          providedValue: value,
-        }
-      )
+      makeError(ErrorCode.VALIDATION_ERROR, 'Percentage must be between 0 and 100', {
+        providedValue: value,
+      }),
     );
   }
   return success(value as Percentage);
@@ -215,14 +195,14 @@ export function createTimestamp(value: number): Result<Timestamp, AppError> {
     return failure(
       makeError(ErrorCode.VALIDATION_ERROR, 'Timestamp must be an integer', {
         providedValue: value,
-      })
+      }),
     );
   }
   if (value <= 0) {
     return failure(
       makeError(ErrorCode.VALIDATION_ERROR, 'Timestamp must be positive', {
         providedValue: value,
-      })
+      }),
     );
   }
   return success(value as Timestamp);
@@ -236,14 +216,14 @@ export function createTimestamp(value: number): Result<Timestamp, AppError> {
  */
 export function createBrandedType<T, B>(
   validator: (value: T) => boolean,
-  errorMessage: string
+  errorMessage: string,
 ): (value: T) => Result<Brand<T, B>, AppError> {
   return (value: T) => {
     if (!validator(value)) {
       return failure(
         makeError(ErrorCode.VALIDATION_ERROR, errorMessage, {
           providedValue: value,
-        })
+        }),
       );
     }
     return success(value as Brand<T, B>);
@@ -254,4 +234,5 @@ export function createBrandedType<T, B>(
  * Helper to extract the base type from a branded type
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
+// biome-ignore lint/suspicious/noExplicitAny: Required for generic constraint in conditional types
 export type Unbrand<T> = T extends Brand<infer U, any> ? U : T;

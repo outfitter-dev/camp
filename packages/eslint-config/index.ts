@@ -20,11 +20,7 @@ export const legacyConfig: Linter.Config = {
     'import/resolver': {
       typescript: {
         alwaysTryTypes: true,
-        project: [
-          './tsconfig.json',
-          './packages/*/tsconfig.json',
-          './apps/*/tsconfig.json',
-        ],
+        project: ['./tsconfig.json', './packages/*/tsconfig.json', './apps/*/tsconfig.json'],
       },
     },
   },
@@ -69,14 +65,7 @@ export const legacyConfig: Linter.Config = {
     'import/order': [
       'warn',
       {
-        groups: [
-          'builtin',
-          'external',
-          'internal',
-          'parent',
-          'sibling',
-          'index',
-        ],
+        groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
         'newlines-between': 'always',
         alphabetize: {
           order: 'asc',

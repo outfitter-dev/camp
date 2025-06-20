@@ -1,0 +1,19 @@
+# Ignore files handled by Biome
+*.js
+*.jsx
+*.ts
+*.tsx
+*.json
+*.jsonc
+
+# Ignore files handled by md-medic
+*.md
+
+# Standard ignores
+/dist
+/build
+/.next
+/coverage
+/node_modules
+.pnp.cjs
+.pnp.loader.mjs 

@@ -3,19 +3,15 @@
  * Validates cross-references in fieldguides markdown files
  * Ensures all internal links point to existing files
  */
-import { readdir, readFile } from 'fs/promises';
-import { join, resolve, dirname } from 'path';
-import { existsSync } from 'fs';
+import { existsSync } from 'node:fs';
+import { readdir, readFile } from 'node:fs/promises';
+import { dirname, join, resolve } from 'node:path';
 async function findMarkdownFiles(dir) {
   const files = [];
   const entries = await readdir(dir, { withFileTypes: true });
   for (const entry of entries) {
     const fullPath = join(dir, entry.name);
-    if (
-      entry.isDirectory() &&
-      !entry.name.startsWith('.') &&
-      entry.name !== 'node_modules'
-    ) {
+    if (entry.isDirectory() && !entry.name.startsWith('.') && entry.name !== 'node_modules') {
       files.push(...(await findMarkdownFiles(fullPath)));
     } else if (entry.isFile() && entry.name.endsWith('.md')) {
       files.push(fullPath);
@@ -70,12 +66,12 @@ async function validateCrossReferences() {
     const links = extractLinks(content, file);
     allLinks.push(...links);
   }
-  const brokenLinks = allLinks.filter(link => !link.exists);
-  const validLinks = allLinks.filter(link => link.exists);
+  const brokenLinks = allLinks.filter((link) => !link.exists);
+  const validLinks = allLinks.filter((link) => link.exists);
   if (brokenLinks.length > 0) {
     console.log('❌ Found broken cross-references:\n');
     const groupedByFile = brokenLinks.reduce((acc, link) => {
-      const relativeFile = link.file.replace(fieldguidesDir + '/', '');
+      const relativeFile = link.file.replace(`${fieldguidesDir}/`, '');
       if (!acc[relativeFile]) {
         acc[relativeFile] = [];
       }
@@ -104,12 +100,12 @@ async function validateCrossReferences() {
   const fileReferences = new Map();
   // Build reference map
   for (const link of validLinks) {
-    const source = link.file.replace(fieldguidesDir + '/', '');
-    const target = link.target.replace(fieldguidesDir + '/', '');
+    const source = link.file.replace(`${fieldguidesDir}/`, '');
+    const target = link.target.replace(`${fieldguidesDir}/`, '');
     if (!fileReferences.has(source)) {
       fileReferences.set(source, new Set());
     }
-    fileReferences.get(source).add(target);
+    fileReferences.get(source)?.add(target);
   }
   // Check for missing reverse references
   const missingReverse = [];
@@ -136,7 +132,7 @@ async function validateCrossReferences() {
   }
 }
 // Run validation
-validateCrossReferences().catch(error => {
+validateCrossReferences().catch((error) => {
   console.error('Error:', error);
   process.exit(1);
 });

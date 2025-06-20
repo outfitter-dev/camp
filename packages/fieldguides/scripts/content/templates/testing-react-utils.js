@@ -7,10 +7,12 @@ type: template
 ---
 */
 // Custom test utilities for React applications with dual Jest/Vitest support
-import { render as rtlRender, waitFor, screen } from '@testing-library/react';
+
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BrowserRouter } from 'react-router-dom';
+import { render as rtlRender, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { BrowserRouter } from 'react-router-dom';
+
 // Detect test runner
 const isVitest = typeof globalThis.vi !== 'undefined';
 const isJest = typeof jest !== 'undefined';
@@ -30,9 +32,10 @@ export const spyOn = isVitest
     : () => {
         throw new Error('No test runner detected');
       };
+
+import { delay, HttpResponse, http } from 'msw';
 // MSW 2.0 Setup
 import { setupServer } from 'msw/node';
-import { http, HttpResponse, delay } from 'msw';
 // Example MSW handlers
 export const handlers = [
   http.get('/api/user', async () => {
@@ -75,7 +78,7 @@ function createTestQueryClient() {
     },
   });
 }
-function AllTheProviders({ children, initialEntries = ['/'] }) {
+function _AllTheProviders({ children, initialEntries = ['/'] }) {
   const queryClient = createTestQueryClient();
   return (
     <QueryClientProvider client={queryClient}>
@@ -83,12 +86,7 @@ function AllTheProviders({ children, initialEntries = ['/'] }) {
     </QueryClientProvider>
   );
 }
-function ExtendedProviders({
-  children,
-  initialEntries = ['/'],
-  theme = 'light',
-  user = null,
-}) {
+function ExtendedProviders({ children, initialEntries = ['/'], theme = 'light', user = null }) {
   const queryClient = createTestQueryClient();
   return (
     <QueryClientProvider client={queryClient}>
@@ -105,7 +103,7 @@ function ExtendedProviders({
 }
 export function render(
   ui,
-  { initialEntries = ['/'], route = '/', providerProps = {}, ...options } = {}
+  { initialEntries = ['/'], route = '/', providerProps = {}, ...options } = {},
 ) {
   // Set initial route
   window.history.pushState({}, 'Test page', route);
@@ -134,17 +132,12 @@ export function expectToHaveError(element, error) {
 export async function waitForLoadingToFinish(container = document) {
   await waitFor(
     () => {
-      expect(
-        container.querySelector('[aria-busy="true"]')
-      ).not.toBeInTheDocument();
+      expect(container.querySelector('[aria-busy="true"]')).not.toBeInTheDocument();
     },
-    { timeout: 3000 }
+    { timeout: 3000 },
   );
 }
-export async function waitForElementToBeRemoved(
-  callback,
-  options = { timeout: 3000 }
-) {
+export async function waitForElementToBeRemoved(callback, options = { timeout: 3000 }) {
   await waitFor(() => {
     expect(callback()).not.toBeInTheDocument();
   }, options);
@@ -186,15 +179,15 @@ export async function fillForm(user, fields) {
 export function expectToBeAccessible(container) {
   // Check for common accessibility issues
   const images = container.querySelectorAll('img');
-  images.forEach(img => {
+  images.forEach((img) => {
     expect(img).toHaveAttribute('alt');
   });
   const buttons = container.querySelectorAll('button');
-  buttons.forEach(button => {
+  buttons.forEach((button) => {
     expect(button).toHaveAccessibleName();
   });
   const inputs = container.querySelectorAll('input, select, textarea');
-  inputs.forEach(input => {
+  inputs.forEach((input) => {
     const label = container.querySelector(`label[for="${input.id}"]`);
     expect(label || input.getAttribute('aria-label')).toBeTruthy();
   });
