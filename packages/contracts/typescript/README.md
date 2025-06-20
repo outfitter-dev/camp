@@ -1,7 +1,6 @@
 # @outfitter/contracts
 
-> Core contracts for building type-safe applications, including Result,
-> AppError, and domain types.
+> Core contracts for building type-safe applications, including Result, AppError, and domain types.
 
 ## Installation
 
@@ -36,8 +35,7 @@ This package provides essential TypeScript utilities that form the foundation of
 - **Result Pattern**: Type-safe error handling without exceptions
 - **AppError**: Structured error representation with error codes and context
 - **Type Utilities**: Advanced TypeScript utility types
-- **Environment Validation**: Type-safe environment variable handling (via
-sub-path)
+- **Environment Validation**: Type-safe environment variable handling (via sub-path)
 - **Assertions**: Runtime validation with type narrowing
 
 ## Core Concepts
@@ -212,31 +210,24 @@ const userId = createUserId('user-123');
 
 - `success<T>(data: T): Success<T>` - Create a success result
 - `failure<E>(error: E): Failure<E>` - Create a failure result
-- `isSuccess<T, E>(result: Result<T, E>): result is Success<T>` - Type guard for
-success
-- `isFailure<T, E>(result: Result<T, E>): result is Failure<E>` - Type guard for
-failure
-- `mapResult<T, U, E>(result: Result<T, E>, fn: (data: T) => U): Result<U, E>` -
-Transform success value
-- `flatMapResult<T, U, E>(result: Result<T, E>, fn: (data: T) => Result<U, E>): Result<U, E>` -
-Chain results
+- `isSuccess<T, E>(result: Result<T, E>): result is Success<T>` - Type guard for success
+- `isFailure<T, E>(result: Result<T, E>): result is Failure<E>` - Type guard for failure
+- `mapResult<T, U, E>(result: Result<T, E>, fn: (data: T) => U): Result<U, E>` - Transform success value
+- `flatMapResult<T, U, E>(result: Result<T, E>, fn: (data: T) => Result<U, E>): Result<U, E>` - Chain results
 
 ### Error Functions
 
-- `makeError(code: string, message: string, details?: unknown, cause?: Error): AppError` -
-Create structured error
+- `makeError(code: string, message: string, details?: unknown, cause?: Error): AppError` - Create structured error
 - `isAppError(error: unknown): error is AppError` - Type guard for AppError
 
 ### Environment Functions (via `@outfitter/contracts-zod`)
 
-- `validateEnv<T>(env: unknown, schema: ZodSchema<T>): Result<T, AppError>` -
-Validate environment variables
+- `validateEnv<T>(env: unknown, schema: ZodSchema<T>): Result<T, AppError>` - Validate environment variables
 - `fromZod(error: ZodError): AppError` - Convert a Zod error to an AppError
 
 ### Type Guards
 
-- `isObject(value: unknown): value is Record<string, unknown>` - Check if value
-is object
+- `isObject(value: unknown): value is Record<string, unknown>` - Check if value is object
 - `isString(value: unknown): value is string` - Check if value is string
 - `isNumber(value: unknown): value is number` - Check if value is number
 - `isBoolean(value: unknown): value is boolean` - Check if value is boolean

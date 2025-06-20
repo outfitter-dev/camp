@@ -1,5 +1,8 @@
 ---
-slug: frontmatter-schema title: Frontmatter metadata schema for fieldguides description: Schema and validation rules for fieldguide metadata. type: reference
+slug: frontmatter-schema
+title: Frontmatter metadata schema for fieldguides
+description: Schema and validation rules for fieldguide metadata.
+type: reference
 ---
 
 # Frontmatter Schema

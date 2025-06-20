@@ -277,19 +277,24 @@ test('sub-path exports work correctly', () => {
 ## Risks and Mitigations
 
 ### Risk: Build Complexity
-**Impact**: More entry points = longer builds, more complex output **Mitigation**: Measure build time impact, optimize if needed
+**Impact**: More entry points = longer builds, more complex output
+**Mitigation**: Measure build time impact, optimize if needed
 
 ### Risk: Maintenance Overhead  
-**Impact**: More exports to test and maintain **Mitigation**: Automated testing for all entry points, clear ownership
+**Impact**: More exports to test and maintain
+**Mitigation**: Automated testing for all entry points, clear ownership
 
 ### Risk: Tool Compatibility
-**Impact**: Some bundlers might not handle exports correctly **Mitigation**: Test with popular tools, provide fallback documentation
+**Impact**: Some bundlers might not handle exports correctly
+**Mitigation**: Test with popular tools, provide fallback documentation
 
 ### Risk: Developer Confusion
-**Impact**: Two ways to import the same symbols **Mitigation**: Clear migration guide, consistent documentation
+**Impact**: Two ways to import the same symbols
+**Mitigation**: Clear migration guide, consistent documentation
 
 ### Risk: Semantic-Versioning Drift
-**Impact**: Once a sub-path is published, its removal would constitute a **breaking** change. Forgetting this could lead to inadvertent majors. **Mitigation**: Treat every new sub-path export as part of the public API surface and document it in the contracts changelog. Add an automated check in CI that blocks deleting or renaming an existing export path without a major-version label.
+**Impact**: Once a sub-path is published, its removal would constitute a **breaking** change. Forgetting this could lead to inadvertent majors.
+**Mitigation**: Treat every new sub-path export as part of the public API surface and document it in the contracts changelog. Add an automated check in CI that blocks deleting or renaming an existing export path without a major-version label.
 
 ## Success Metrics
 
@@ -326,14 +331,19 @@ test('sub-path exports work correctly', () => {
 ## Alternatives Considered
 
 ### 1. Split into Multiple Packages
-**Pros**: Maximum granularity, clear separation **Cons**: Version management complexity, more publishing overhead **Decision**: Sub-path exports provide similar benefits with less complexity
+**Pros**: Maximum granularity, clear separation
+**Cons**: Version management complexity, more publishing overhead
+**Decision**: Sub-path exports provide similar benefits with less complexity
 
 ### 2. Keep Current Barrel-Only Approach
 **Pros**: Simple, no migration needed  
-**Cons**: Bundle bloat continues, performance impact for browser/lambda **Decision**: Benefits of tree-shaking outweigh migration costs
+**Cons**: Bundle bloat continues, performance impact for browser/lambda
+**Decision**: Benefits of tree-shaking outweigh migration costs
 
 ### 3. Major Breaking Change (v2.0.0)
-**Pros**: Forces adoption, cleaner long-term **Cons**: Breaks existing consumers, adoption friction **Decision**: Non-breaking approach better for gradual migration
+**Pros**: Forces adoption, cleaner long-term
+**Cons**: Breaks existing consumers, adoption friction
+**Decision**: Non-breaking approach better for gradual migration
 
 ## Open Questions
 

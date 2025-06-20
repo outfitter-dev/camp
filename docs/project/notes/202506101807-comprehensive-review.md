@@ -22,9 +22,7 @@ _Reviewer: **Max, The Principled Engineer**_
 
 ## 1 Overview
 
-> Goal: Harden the monorepo so a **greenfield app** can be bootstrapped from
-> scratch with production-grade linting, testing, security and release
-> automation — _"rock-solid out of the box."_
+> Goal: Harden the monorepo so a **greenfield app** can be bootstrapped from scratch with production-grade linting, testing, security and release automation — _"rock-solid out of the box."_
 
 Severity legend
 
@@ -42,8 +40,7 @@ Severity legend
 ### 🔴 CI / CD Missing
 
 - **Problem** – No GitHub Actions.
-- **Fix** – Add `.github/workflows/ci.yml` running `pnpm run ci` on matrix
-`{ node: [20, 22], os: ubuntu-latest }`.
+- **Fix** – Add `.github/workflows/ci.yml` running `pnpm run ci` on matrix `{ node: [20, 22], os: ubuntu-latest }`.
 - **Code Sketch**
   ```yaml
   name: CI
@@ -188,8 +185,7 @@ Consequences: …
 9. **Tighten ESLint rules** to strict once build passes.
 10. **Launch Docusaurus site** for Fieldguides.
 
-4b. **Select Build-System Path (A: Fix project refs | B: Split multi-entry
-packages)** and record as **ADR-0004** (include option matrix & trade-offs).
+4b. **Select Build-System Path (A: Fix project refs | B: Split multi-entry packages)** and record as **ADR-0004** (include option matrix & trade-offs).
 
 ---
 

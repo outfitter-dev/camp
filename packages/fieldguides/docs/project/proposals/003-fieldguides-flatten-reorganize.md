@@ -8,10 +8,8 @@ This proposal outlines a comprehensive restructuring of the fieldguides document
 
 The current fieldguides structure has several pain points:
 
-1. **Deep nesting** makes files hard to discover (e.g.,
-`languages/typescript/patterns/error-handling.md`)
-2. **Mixed concerns** within directories blur the purpose of different document
-types
+1. **Deep nesting** makes files hard to discover (e.g., `languages/typescript/patterns/error-handling.md`)
+2. **Mixed concerns** within directories blur the purpose of different document types
 3. **No metadata** for tooling, search, or categorization
 4. **Large files** (600+ lines) exceed our context optimization targets
 5. **Unclear distinctions** between standards, conventions, patterns, and guides
@@ -74,8 +72,7 @@ fieldguides/
 
 - **Purpose**: Keep high-noise reference material out of narrative guides
 - **Content**: Lookup tables, API specs, command references
-- **Examples**: `http-status-codes-reference.md`,
-`typescript-compiler-options-reference.md`
+- **Examples**: `http-status-codes-reference.md`, `typescript-compiler-options-reference.md`
 - **File naming**: `<topic>-<content>-reference.md`
 
 ### Frontmatter Schema
@@ -99,16 +96,14 @@ status: stable # optional: draft|stable|deprecated
 
 ### Phase 1: Structure Setup ✅
 
-- Rename directories: `fieldguides-v2` → `fieldguides`, existing →
-`fieldguides-archived`
+- Rename directories: `fieldguides-v2` → `fieldguides`, existing → `fieldguides-archived`
 - Create new directory structure
 - Add README.md to each directory
 - Define frontmatter schema
 
 ### Phase 2: TypeScript Migration ✅
 
-- Move `languages/typescript/standards.md` →
-`conventions/typescript-conventions.md`
+- Move `languages/typescript/standards.md` → `conventions/typescript-conventions.md`
 - Move patterns to flat structure with frontmatter
 - Create example files for patterns
 

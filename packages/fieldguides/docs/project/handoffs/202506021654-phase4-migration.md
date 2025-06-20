@@ -15,8 +15,7 @@ Working on issue #16 - Documentation restructure to optimize for AI context wind
 
 - `CODING.md` (286 lines) - SOLID principles, error handling, naming conventions
 - `TESTING.md` (292 lines) - TDD principles, testing pyramid, FIRST principles
-- `SECURITY.md` (245 lines) - Core security principles, authentication, secret
-management
+- `SECURITY.md` (245 lines) - Core security principles, authentication, secret management
 
 ### Phase 3: TypeScript Content ✅
 
@@ -50,8 +49,7 @@ According to the proposal, Phase 4 should extract:
 
 ## Key Files to Reference
 
-- Proposal:
-`/Users/mg/Developer/mg-outfitter/docs/project/proposals/002-documentation-restructure.md`
+- Proposal: `/Users/mg/Developer/mg-outfitter/docs/project/proposals/002-documentation-restructure.md`
 - GitHub Issue: #16 (check for latest updates)
 - Source files to extract from:
   - `fieldguides/patterns/component-architecture.md`

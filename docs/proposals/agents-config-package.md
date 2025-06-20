@@ -8,20 +8,15 @@ This proposal outlines the creation of `@outfitter/agents-config`, a package tha
 
 ### Current Pain Points
 
-1. **Configuration Fragmentation**: Each project requires manual setup of AI
-agent configurations, leading to inconsistency across teams and repositories.
+1. **Configuration Fragmentation**: Each project requires manual setup of AI agent configurations, leading to inconsistency across teams and repositories.
 
-2. **Complex Configuration Learning Curve**: Tools like CodeRabbit have
-extensive configuration options (profiles, tools, path instructions, tone instructions) that require deep understanding to optimize.
+2. **Complex Configuration Learning Curve**: Tools like CodeRabbit have extensive configuration options (profiles, tools, path instructions, tone instructions) that require deep understanding to optimize.
 
-3. **Monorepo Complexity**: Large codebases with multiple project types need
-sophisticated path-based configurations that are time-consuming to create and maintain.
+3. **Monorepo Complexity**: Large codebases with multiple project types need sophisticated path-based configurations that are time-consuming to create and maintain.
 
-4. **Team Standardization**: No easy way to share and enforce consistent AI
-agent configurations across an organization.
+4. **Team Standardization**: No easy way to share and enforce consistent AI agent configurations across an organization.
 
-5. **Configuration Drift**: Projects start with good configurations but degrade
-over time without centralized maintenance.
+5. **Configuration Drift**: Projects start with good configurations but degrade over time without centralized maintenance.
 
 ### Opportunity
 
@@ -34,8 +29,7 @@ The comprehensive [CodeRabbit Configuration Guide](../fieldguides/content/guides
 Create `@outfitter/agents-config` as a TypeScript package that:
 
 - **Provides Templates**: Pre-built configurations for common project types
-- **Generates Configurations**: Smart configuration generation based on project
-detection
+- **Generates Configurations**: Smart configuration generation based on project detection
 - **Supports Monorepos**: Automatic path-based instruction generation
 - **Enables Customization**: Extensible template system for team-specific needs
 - **Maintains Standards**: Centralized updates to configuration best practices
@@ -361,11 +355,15 @@ tone_instructions: |
 <replacement code>
 ````
 
-reviews: profile: 'assertive' poem: false high_level_summary: true
-request_changes_workflow: true
+reviews:
+  profile: 'assertive'
+  poem: false
+  high_level_summary: true
+  request_changes_workflow: true
 
-tools: gitleaks: { enabled: true } semgrep: { enabled: true }
-
+tools:
+  gitleaks: { enabled: true }
+  semgrep: { enabled: true }
 ````
 
 ### Project-Specific Templates
@@ -770,8 +768,7 @@ __tests__/fixtures/
 
 ### Quality Metrics
 
-- **Validation Rate**: Percentage of generated configs that validate
-successfully
+- **Validation Rate**: Percentage of generated configs that validate successfully
 - **User Satisfaction**: Survey feedback on generated configuration quality
 - **Issue Reports**: Bug reports related to generated configurations
 

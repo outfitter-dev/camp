@@ -21,13 +21,10 @@ Future optional extensions (e.g., io-ts helpers) will use the same pattern: **on
 
 ### Positive
 
-1. **Simpler builds** – TypeScript project references no longer need to model
-multi-entry output; `tsup` stays trivial.
-2. **Clear dependencies** – Consumers explicitly opt into Zod by installing
-`@outfitter/contracts-zod`.
+1. **Simpler builds** – TypeScript project references no longer need to model multi-entry output; `tsup` stays trivial.
+2. **Clear dependencies** – Consumers explicitly opt into Zod by installing `@outfitter/contracts-zod`.
 3. **Better tree-shaking** – No accidental inclusion of Zod in core bundles.
-4. **Peer-dependency confusion eliminated** – Core remains zero-dep; extension
-owns its deps.
+4. **Peer-dependency confusion eliminated** – Core remains zero-dep; extension owns its deps.
 
 ### Negative / Mitigations
 

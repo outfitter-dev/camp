@@ -10,11 +10,9 @@ Agent Outfitter uses an exploration/expedition theme throughout its internal doc
 
 Initially, the expedition metaphors were used throughout all documentation, creating potential issues:
 
-- External projects would inherit playful language inappropriate for
-professional codebases
+- External projects would inherit playful language inappropriate for professional codebases
 - AI agents might propagate themed language into serious technical documentation
-- Developers might find the metaphors distracting or unprofessional in their
-projects
+- Developers might find the metaphors distracting or unprofessional in their projects
 
 ## Decision
 

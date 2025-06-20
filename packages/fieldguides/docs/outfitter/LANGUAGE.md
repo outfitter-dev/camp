@@ -60,8 +60,7 @@ Use action-oriented, expedition-themed headings:
 
 Frame technical concepts through the expedition lens:
 
-- ✅ "Before setting out on any coding expedition, agents must study the
-relevant fieldguides"
+- ✅ "Before setting out on any coding expedition, agents must study the relevant fieldguides"
 - ✅ "This trail has been blazed by many successful projects"
 - ❌ "Before starting development, read the documentation"
 - ❌ "This pattern has been used in many projects"
@@ -101,8 +100,7 @@ Present guidance as expedition preparation:
 ```markdown
 # Setting Up Base Camp 🏕️
 
-Every successful expedition begins with a well-organized base camp. The Agent
-Outfitter provides everything you need to establish yours.
+Every successful expedition begins with a well-organized base camp. The Agent Outfitter provides everything you need to establish yours.
 
 ## Packing Your Gear 🎒
 
