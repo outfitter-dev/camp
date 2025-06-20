@@ -11,6 +11,24 @@ npm install @outfitter/contracts
 pnpm add @outfitter/contracts
 ```
 
+## Sub-path Exports (v1.1.0+)
+
+For better tree-shaking and smaller bundles, you can import from specific modules:
+
+```typescript
+// Import only what you need - better for tree-shaking
+import { makeError } from '@outfitter/contracts/error';
+import { success, failure } from '@outfitter/contracts/result';
+import { assert } from '@outfitter/contracts/assert';
+import { createUserId } from '@outfitter/contracts/branded';
+import { DeepReadonly } from '@outfitter/contracts/types';
+
+// Traditional barrel import (still supported)
+import { makeError, success, failure } from '@outfitter/contracts';
+```
+
+**Requirements**: Node.js ≥ 14.13 or a bundler that supports package.json "exports" field.
+
 ## Overview
 
 This package provides essential TypeScript utilities that form the foundation of
