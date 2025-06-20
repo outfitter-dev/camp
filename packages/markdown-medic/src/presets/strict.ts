@@ -9,8 +9,8 @@ export const strictConfig: MdlintConfig = {
   MD004: { style: 'dash' },
   // ul-indent - Unordered list indentation (indent: 2)
   MD007: { indent: 2 },
-  // line-length - Line length (line_length: 80, code_blocks: false, tables: false)
-  MD013: { line_length: 80, code_blocks: false, tables: false },
+  // line-length - Line length (disabled - prose should not be hard-wrapped)
+  MD013: false,
   // no-duplicate-heading - Multiple headings with the same content (siblings_only: true)
   MD024: { siblings_only: true },
   // ol-prefix - Ordered list item prefix (style: ordered)
