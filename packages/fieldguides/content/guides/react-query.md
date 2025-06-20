@@ -1,5 +1,8 @@
 ---
-slug: react-query title: Fetch data with TanStack Query v5 and Result patterns description: Type-safe data fetching with TanStack Query v5. type: guide
+slug: react-query
+title: Fetch data with TanStack Query v5 and Result patterns
+description: Type-safe data fetching with TanStack Query v5.
+type: guide
 ---
 
 # TanStack Query v5 Integration
@@ -8,16 +11,11 @@ Type-safe data fetching and state management with @tanstack/react-query v5 and t
 
 ## Related Documentation
 
-- [Error Handling Patterns](../patterns/typescript-error-handling.md) - Result
-type integration
-- [React Standards](../patterns/react-patterns.md) - React patterns and best
-practices
-- [Testing React Components](../patterns/testing-react-components.md) - Testing
-data fetching
-- [TypeScript Standards](../standards/typescript-standards.md) - Type safety
-patterns
-- [React Component Standards](../standards/react-component-standards.md) -
-Component integration
+- [Error Handling Patterns](../patterns/typescript-error-handling.md) - Result type integration
+- [React Standards](../patterns/react-patterns.md) - React patterns and best practices
+- [Testing React Components](../patterns/testing-react-components.md) - Testing data fetching
+- [TypeScript Standards](../standards/typescript-standards.md) - Type safety patterns
+- [React Component Standards](../standards/react-component-standards.md) - Component integration
 
 ## Overview
 
@@ -37,8 +35,7 @@ npm install @tanstack/react-query@^5
 - `useErrorBoundary` renamed to `throwOnError`
 - Query functions now receive a single object parameter
 - `isLoading` split into `isLoading` and `isFetching`
-- `placeholderData` identity function receives `previousData` and `query` as
-parameters
+- `placeholderData` identity function receives `previousData` and `query` as parameters
 
 ## Query Key Factory
 

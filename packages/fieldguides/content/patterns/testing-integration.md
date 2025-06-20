@@ -1,5 +1,8 @@
 ---
-slug: testing-integration title: Test component interactions with external dependencies description: Testing how multiple components work together with dependencies. type: pattern
+slug: testing-integration
+title: Test component interactions with external dependencies
+description: Testing how multiple components work together with dependencies.
+type: pattern
 ---
 
 # Integration Testing Patterns

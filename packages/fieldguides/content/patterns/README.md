@@ -1,5 +1,8 @@
 ---
-slug: patterns-index title: Patterns description: Reusable solutions to recurring problems. Problem-focused, not rule-focused type: index
+slug: patterns-index
+title: Patterns
+description: Reusable solutions to recurring problems. Problem-focused, not rule-focused
+type: index
 ---
 
 # Patterns
@@ -22,7 +25,8 @@ Reusable solutions to recurring problems. Problem-focused, not rule-focused.
 
 ## File naming
 
-Patterns: `<topic>-<pattern-name>.md` Examples: `<topic>-<pattern-name>.example.md`
+Patterns: `<topic>-<pattern-name>.md`
+Examples: `<topic>-<pattern-name>.example.md`
 
 Examples:
 

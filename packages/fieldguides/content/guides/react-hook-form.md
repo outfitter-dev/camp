@@ -1,5 +1,8 @@
 ---
-slug: react-hook-form title: Handle forms with React Hook Form v7 and Zod validation description: Type-safe form handling with react-hook-form v7 and Zod validation. type: guide
+slug: react-hook-form
+title: Handle forms with React Hook Form v7 and Zod validation
+description: Type-safe form handling with react-hook-form v7 and Zod validation.
+type: guide
 ---
 
 # React Hook Form v7 Integration
@@ -8,14 +11,11 @@ Type-safe form handling with react-hook-form v7, Zod validation, and Result patt
 
 ## Related Documentation
 
-- [TypeScript Validation](../patterns/typescript-validation.md) - Zod validation
-patterns
+- [TypeScript Validation](../patterns/typescript-validation.md) - Zod validation patterns
 - [React Patterns](../patterns/react-patterns.md) - React component patterns
-- [TypeScript Error Handling](../patterns/typescript-error-handling.md) - Result
-pattern
+- [TypeScript Error Handling](../patterns/typescript-error-handling.md) - Result pattern
 - [TypeScript Standards](../standards/typescript-standards.md) - Type safety
-- [React Component Standards](../standards/react-component-standards.md) - Form
-components
+- [React Component Standards](../standards/react-component-standards.md) - Form components
 
 ## Overview
 
@@ -897,8 +897,7 @@ function useFormState<T>() {
 4. **Map Server Errors**: Convert API errors to field-specific messages
 5. **Use Proper Accessibility**: Labels, error associations, and ARIA attributes
 6. **Optimize Re-renders**: Use `formState` proxy and `useWatch` selectively
-7. **Test Form Behavior**: Unit test validation logic and integration test form
-flow
+7. **Test Form Behavior**: Unit test validation logic and integration test form flow
 8. **Type Everything**: Leverage TypeScript's inference with Zod schemas
 9. **Use Server Actions**: Integrate with Next.js App Router when applicable
 10. **Implement Proper Security**: Validate on both client and server

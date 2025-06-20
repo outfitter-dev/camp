@@ -1,5 +1,8 @@
 ---
-slug: coderabbit-guide title: CodeRabbit Configuration Guide description: Configure AI-powered code reviews that enforce your team's standards and catch issues before they reach production. type: guide
+slug: coderabbit-guide
+title: CodeRabbit Configuration Guide
+description: Configure AI-powered code reviews that enforce your team's standards and catch issues before they reach production.
+type: guide
 ---
 
 # CodeRabbit Configuration Guide

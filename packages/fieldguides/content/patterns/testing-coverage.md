@@ -1,5 +1,8 @@
 ---
-slug: testing-coverage title: Configure test coverage thresholds and reporting description: Modern coverage strategies for Vitest and Jest with actionable metrics. type: pattern
+slug: testing-coverage
+title: Configure test coverage thresholds and reporting
+description: Modern coverage strategies for Vitest and Jest with actionable metrics.
+type: pattern
 ---
 
 # Test Coverage Patterns
@@ -8,8 +11,7 @@ Modern coverage strategies and configuration for maintaining quality metrics acr
 
 ## Related Documentation
 
-- [Testing Standards](../standards/testing-standards.md) - Core testing
-principles
+- [Testing Standards](../standards/testing-standards.md) - Core testing principles
 - [Testing Philosophy](../conventions/testing-philosophy.md) - Testing approach
 - [Vitest Guide](../guides/vitest-guide.md) - Vitest configuration
 - [CI/CD Patterns](./github-actions.md) - Coverage in pipelines

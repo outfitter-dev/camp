@@ -6,10 +6,8 @@ Core testing principles and requirements that apply across all projects, languag
 
 - [Coding Standards](./CODING.md) - Test-driven development integration
 - [Security Standards](./SECURITY.md) - Security testing practices
-- [TypeScript Standards](./standards/typescript-standards.md) - Type-safe
-testing
-- [Testing Standards](./standards/testing-standards.md) - Detailed testing
-methodology
+- [TypeScript Standards](./standards/typescript-standards.md) - Type-safe testing
+- [Testing Standards](./standards/testing-standards.md) - Detailed testing methodology
 
 ## Core Testing Philosophy
 

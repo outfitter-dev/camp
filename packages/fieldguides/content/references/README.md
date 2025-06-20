@@ -1,5 +1,8 @@
 ---
-slug: references-index title: References description: Quick-lookup tables, external spec links, and high-noise reference material. Keeps narrative guides clean type: index
+slug: references-index
+title: References
+description: Quick-lookup tables, external spec links, and high-noise reference material. Keeps narrative guides clean
+type: index
 ---
 
 # References

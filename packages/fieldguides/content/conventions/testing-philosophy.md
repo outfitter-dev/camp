@@ -1,5 +1,8 @@
 ---
-slug: testing-philosophy title: Follow TDD and FIRST principles for reliable tests description: Core testing philosophy with TDD cycle and FIRST principles. type: convention
+slug: testing-philosophy
+title: Follow TDD and FIRST principles for reliable tests
+description: Core testing philosophy with TDD cycle and FIRST principles.
+type: convention
 ---
 
 # Testing Philosophy
@@ -351,10 +354,7 @@ it('handles API response', async () => {
 ## Related Documentation
 
 - [Test Organization](./testing-organization.md) - Modern file structure
-- [Testing Standards](../standards/testing-standards.md) - Comprehensive
-methodology
-- [Testing React Components](../patterns/testing-react-components.md) -
-Component testing
+- [Testing Standards](../standards/testing-standards.md) - Comprehensive methodology
+- [Testing React Components](../patterns/testing-react-components.md) - Component testing
 - [Testing Unit](../patterns/testing-unit.md) - Unit testing patterns
-- [Framework-Agnostic Testing](../patterns/framework-agnostic-testing.md) -
-Portable patterns
+- [Framework-Agnostic Testing](../patterns/framework-agnostic-testing.md) - Portable patterns

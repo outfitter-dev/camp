@@ -1,5 +1,8 @@
 ---
-slug: tanstack-router-guide title: Type-safe routing with TanStack Router description: File-based routing with type safety and data loading. type: guide
+slug: tanstack-router-guide
+title: Type-safe routing with TanStack Router
+description: File-based routing with type safety and data loading.
+type: guide
 ---
 
 # TanStack Router Guide

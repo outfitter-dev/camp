@@ -1,5 +1,8 @@
 ---
-slug: react-state-derivation title: Derive state instead of syncing it description: Calculate state during render vs managing synchronized state. type: pattern
+slug: react-state-derivation
+title: Derive state instead of syncing it
+description: Calculate state during render vs managing synchronized state.
+type: pattern
 ---
 
 # React State Derivation
@@ -9,10 +12,8 @@ Calculate dependent values during render instead of storing them in separate sta
 ## Related Documentation
 
 - [React Patterns](./react-patterns.md) - Component architecture patterns
-- [React Component Standards](../standards/react-component-standards.md) -
-Component design standards
-- [TypeScript Error Handling](./typescript-error-handling.md) - Error state
-patterns
+- [React Component Standards](../standards/react-component-standards.md) - Component design standards
+- [TypeScript Error Handling](./typescript-error-handling.md) - Error state patterns
 
 ## Core Principle
 

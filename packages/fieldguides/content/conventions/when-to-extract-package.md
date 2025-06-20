@@ -1,5 +1,8 @@
 ---
-slug: when-to-extract-package title: When to extract code into a package description: Guidelines for identifying when code should be extracted into a standalone package in a monorepo. type: convention
+slug: when-to-extract-package
+title: When to extract code into a package
+description: Guidelines for identifying when code should be extracted into a standalone package in a monorepo.
+type: convention
 ---
 
 # When to Extract a Package

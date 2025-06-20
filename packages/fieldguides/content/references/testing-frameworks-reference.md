@@ -1,5 +1,8 @@
 ---
-slug: testing-frameworks-reference title: Choose and configure JavaScript testing frameworks description: Guide for selecting and configuring testing frameworks. type: reference
+slug: testing-frameworks-reference
+title: Choose and configure JavaScript testing frameworks
+description: Guide for selecting and configuring testing frameworks.
+type: reference
 ---
 
 # Testing Frameworks Reference
@@ -396,13 +399,9 @@ export default {
 
 ## Related Documentation
 
-- [Testing Philosophy](../conventions/testing-philosophy.md) - Core testing
-principles
-- [Test Organization](../conventions/testing-organization.md) - Structuring test
-files
+- [Testing Philosophy](../conventions/testing-philosophy.md) - Core testing principles
+- [Test Organization](../conventions/testing-organization.md) - Structuring test files
 - [Unit Testing Patterns](../patterns/testing-unit.md) - Writing unit tests
-- [Framework Agnostic Testing](../patterns/framework-agnostic-testing.md) -
-Cross-framework patterns
+- [Framework Agnostic Testing](../patterns/framework-agnostic-testing.md) - Cross-framework patterns
 - [Vitest Guide](../guides/vitest-guide.md) - Complete Vitest setup
-- [Testing Standards](../standards/testing-standards.md) - Testing best
-practices
+- [Testing Standards](../standards/testing-standards.md) - Testing best practices

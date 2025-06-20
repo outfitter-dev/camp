@@ -1,5 +1,8 @@
 ---
-slug: ui-toast-feedback title: Display toast notifications with Sonner and Result patterns description: Type-safe toast notifications with Sonner for consistent user feedback. type: pattern
+slug: ui-toast-feedback
+title: Display toast notifications with Sonner and Result patterns
+description: Type-safe toast notifications with Sonner for consistent user feedback.
+type: pattern
 ---
 
 # Toast Notifications with Sonner
@@ -8,11 +11,9 @@ Type-safe toast notifications with Sonner and Result pattern integration for con
 
 ## Related Documentation
 
-- [TypeScript Error Handling](./typescript-error-handling.md) - Result pattern
-implementation
+- [TypeScript Error Handling](./typescript-error-handling.md) - Result pattern implementation
 - [React Patterns](./react-patterns.md) - Component integration patterns
-- [TypeScript Validation](./typescript-validation.md) - Form validation with
-toasts
+- [TypeScript Validation](./typescript-validation.md) - Form validation with toasts
 
 ## Overview
 
@@ -763,17 +764,13 @@ describe('Toast Notifications', () => {
 
 ## Best Practices
 
-1. **Use Semantic Toast Types**: Success for completion, error for failures,
-loading for progress
-2. **Provide Clear Messages**: Titles should be action-oriented, descriptions
-should explain why
+1. **Use Semantic Toast Types**: Success for completion, error for failures, loading for progress
+2. **Provide Clear Messages**: Titles should be action-oriented, descriptions should explain why
 3. **Handle All Error Types**: Map technical errors to user-friendly messages
 4. **Consider Duration**: Critical errors need longer display time
-5. **Enable User Actions**: Provide undo, retry, or navigation options when
-relevant
+5. **Enable User Actions**: Provide undo, retry, or navigation options when relevant
 6. **Avoid Toast Spam**: Batch similar notifications, use replace for updates
 7. **Test Accessibility**: Ensure screen readers announce toasts appropriately
-8. **Provide Fallbacks**: Use native notifications when available, fall back to
-toasts
+8. **Provide Fallbacks**: Use native notifications when available, fall back to toasts
 9. **Track Analytics**: Monitor which toasts users see most often
 10. **Respect Preferences**: Allow users to configure notification preferences

@@ -1,5 +1,8 @@
 ---
-slug: framework-agnostic-testing title: Write tests that work across Jest and Vitest description: Patterns for portable tests across testing frameworks. type: pattern
+slug: framework-agnostic-testing
+title: Write tests that work across Jest and Vitest
+description: Patterns for portable tests across testing frameworks.
+type: pattern
 ---
 
 # Framework-Agnostic Testing
@@ -8,8 +11,7 @@ Patterns for writing tests that work seamlessly across Jest and Vitest, enabling
 
 ## Related Documentation
 
-- [Testing Standards](../standards/testing-standards.md) - Core testing
-principles
+- [Testing Standards](../standards/testing-standards.md) - Core testing principles
 - [Testing Unit](./testing-unit.md) - Unit testing patterns
 - [Testing Integration](./testing-integration.md) - Integration patterns
 - [Testing React Components](./testing-react-components.md) - Component testing

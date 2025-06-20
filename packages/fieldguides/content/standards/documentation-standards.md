@@ -1,5 +1,8 @@
 ---
-slug: documentation-standards title: Write clear docs that serve humans and AI agents description: Standards for consistent, practical documentation across all projects. type: convention
+slug: documentation-standards
+title: Write clear docs that serve humans and AI agents
+description: Standards for consistent, practical documentation across all projects.
+type: convention
 ---
 
 # Documentation Standards

@@ -1,5 +1,8 @@
 ---
-slug: git-hooks title: 'Git Hooks and Pre-commit Configuration' description: 'Automated code quality checks before commits and pushes.' type: pattern
+slug: git-hooks
+title: 'Git Hooks and Pre-commit Configuration'
+description: 'Automated code quality checks before commits and pushes.'
+type: pattern
 ---
 
 # Git Hooks and Pre-commit Configuration
@@ -8,10 +11,8 @@ Automated code quality checks before commits and pushes.
 
 ## Related Documentation
 
-- [Testing Standards](../standards/testing-standards.md) - Test automation
-practices
-- [TypeScript Standards](../standards/typescript-standards.md) - Code quality
-checks
+- [Testing Standards](../standards/testing-standards.md) - Test automation practices
+- [TypeScript Standards](../standards/typescript-standards.md) - Code quality checks
 - [GitHub Actions](./github-actions.md) - CI/CD integration
 - [Security Scanning](./security-scanning.md) - Security checks
 

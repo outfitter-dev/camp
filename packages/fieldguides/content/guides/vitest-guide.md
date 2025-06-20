@@ -1,5 +1,8 @@
 ---
-slug: vitest-guide title: Fast unit testing with Vitest description: Fast testing with native ESM, TypeScript, and React support. type: guide
+slug: vitest-guide
+title: Fast unit testing with Vitest
+description: Fast testing with native ESM, TypeScript, and React support.
+type: guide
 ---
 
 # Vitest Guide

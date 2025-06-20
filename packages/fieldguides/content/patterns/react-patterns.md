@@ -1,5 +1,8 @@
 ---
-slug: react-patterns title: Build React apps with compound components and custom hooks description: Component patterns, hooks, and best practices for React applications. type: guide
+slug: react-patterns
+title: Build React apps with compound components and custom hooks
+description: Component patterns, hooks, and best practices for React applications.
+type: guide
 ---
 
 # React Patterns
@@ -8,17 +11,13 @@ Component patterns, hooks, and best practices for building React applications wi
 
 ## Related Documentation
 
-- [React State Derivation](./react-state-derivation.md) - Derive state instead
-of syncing it
-- [Testing React Components](./testing-react-components.md) - Testing React
-components
+- [React State Derivation](./react-state-derivation.md) - Derive state instead of syncing it
+- [Testing React Components](./testing-react-components.md) - Testing React components
 - [React Query](../guides/react-query.md) - Data fetching patterns
 - [React Hook Form](../guides/react-hook-form.md) - Form handling
-- [Component Architecture](../standards/react-component-standards.md) -
-Component design patterns
+- [Component Architecture](../standards/react-component-standards.md) - Component design patterns
 - [TypeScript Standards](../standards/typescript-standards.md) - Type-safe React
-- [Performance Optimization](./performance-optimization.md) - React performance
-patterns
+- [Performance Optimization](./performance-optimization.md) - React performance patterns
 
 ## Modern React Features (React 19+)
 

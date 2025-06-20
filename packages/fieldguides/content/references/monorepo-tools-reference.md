@@ -1,5 +1,8 @@
 ---
-slug: monorepo-tools-reference title: Monorepo Tools Reference description: Tool-specific configurations and commands for monorepo management. type: reference
+slug: monorepo-tools-reference
+title: Monorepo Tools Reference
+description: Tool-specific configurations and commands for monorepo management.
+type: reference
 ---
 
 # Monorepo Tools Reference
@@ -8,16 +11,11 @@ Quick reference for tool-specific configurations and commands in monorepo setups
 
 ## Related Documentation
 
-- [Monorepo Standards](../standards/monorepo-standards.md) - Architecture and
-patterns
-- [TypeScript Standards](../standards/typescript-standards.md) - TypeScript in
-monorepos
-- [Testing Standards](../standards/testing-standards.md) - Testing across
-packages
-- [Configuration Standards](../standards/configuration-standards.md) - Shared
-configurations
-- [Deployment Standards](../standards/deployment-standards.md) - Deploying from
-monorepos
+- [Monorepo Standards](../standards/monorepo-standards.md) - Architecture and patterns
+- [TypeScript Standards](../standards/typescript-standards.md) - TypeScript in monorepos
+- [Testing Standards](../standards/testing-standards.md) - Testing across packages
+- [Configuration Standards](../standards/configuration-standards.md) - Shared configurations
+- [Deployment Standards](../standards/deployment-standards.md) - Deploying from monorepos
 
 ## Package Managers
 

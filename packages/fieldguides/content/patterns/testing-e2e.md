@@ -1,5 +1,8 @@
 ---
-slug: testing-e2e title: Test complete user workflows with Playwright description: End-to-end testing patterns using Playwright effectively. type: pattern
+slug: testing-e2e
+title: Test complete user workflows with Playwright
+description: End-to-end testing patterns using Playwright effectively.
+type: pattern
 ---
 
 # End-to-End Testing Patterns
@@ -8,10 +11,8 @@ Modern end-to-end testing with Playwright for reliable, maintainable user workfl
 
 ## Related Documentation
 
-- [Playwright Guide](../guides/playwright-guide.md) - Comprehensive Playwright
-setup
-- [Testing Standards](../standards/testing-standards.md) - Core testing
-principles
+- [Playwright Guide](../guides/playwright-guide.md) - Comprehensive Playwright setup
+- [Testing Standards](../standards/testing-standards.md) - Core testing principles
 - [Testing Philosophy](../conventions/testing-philosophy.md) - Testing approach
 - [CI/CD Patterns](./github-actions.md) - E2E tests in pipelines
 

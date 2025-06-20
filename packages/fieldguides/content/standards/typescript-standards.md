@@ -1,5 +1,8 @@
 ---
-slug: typescript-standards title: TypeScript Standards description: Essential patterns and best practices for type-safe development. type: convention
+slug: typescript-standards
+title: TypeScript Standards
+description: Essential patterns and best practices for type-safe development.
+type: convention
 ---
 
 # TypeScript Standards
@@ -8,20 +11,14 @@ Essential TypeScript patterns, configuration, and best practices for type-safe d
 
 ## Related Documentation
 
-- [Error Handling Patterns](../patterns/typescript-error-handling.md) - Result
-type and error management
-- [Utility Types](../patterns/typescript-utility-types.md) - Advanced type
-manipulation
-- [Validation Patterns](../patterns/typescript-validation.md) - Runtime
-validation with Zod
-- [Configuration Standards](./configuration-standards.md) - TypeScript in
-environment configs
-- [React Component Standards](./react-component-standards.md) - TypeScript with
-React components
+- [Error Handling Patterns](../patterns/typescript-error-handling.md) - Result type and error management
+- [Utility Types](../patterns/typescript-utility-types.md) - Advanced type manipulation
+- [Validation Patterns](../patterns/typescript-validation.md) - Runtime validation with Zod
+- [Configuration Standards](./configuration-standards.md) - TypeScript in environment configs
+- [React Component Standards](./react-component-standards.md) - TypeScript with React components
 - [Testing Standards](./testing-standards.md) - Type-safe testing patterns
 - [Monorepo Standards](./monorepo-standards.md) - TypeScript in monorepos
-- [Documentation Standards](./documentation-standards.md) - TypeScript code
-documentation
+- [Documentation Standards](./documentation-standards.md) - TypeScript code documentation
 
 ## Version Compatibility
 
@@ -34,18 +31,13 @@ utility, and import attributes)
 
 **Features by TypeScript version**:
 
-- 4.9+: `satisfies` operator
-- 5.0+: Const type parameters, `allowImportingTsExtensions`
-- 5.3+: Import attributes
-- 5.4+: `NoInfer` utility type
-- 5.7+: `moduleResolution: "bundler"`, improved const generics
+- TypeScript: 5.7+ (for const type parameters, satisfies operator, NoInfer utility, and import attributes)
 
 ## Core Principles
 
 ### Type System Philosophy
 
-- **Derive types rather than duplicate** - Use TypeScript's utility types and
-inference
+- **Derive types rather than duplicate** - Use TypeScript's utility types and inference
 - **Be explicit at boundaries** - Input/output types should be clearly defined
 - **Leverage type narrowing** - Use guards over casting
 - **Fail at compile time** - Catch errors before runtime

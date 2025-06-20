@@ -1,5 +1,8 @@
 ---
-slug: testing-mocking title: Mock APIs and modules effectively with MSW and Vitest description: Strategies for mocking dependencies, APIs, and modules in tests. type: pattern
+slug: testing-mocking
+title: Mock APIs and modules effectively with MSW and Vitest
+description: Strategies for mocking dependencies, APIs, and modules in tests.
+type: pattern
 ---
 
 # Testing Mocking Patterns
@@ -444,6 +447,5 @@ const mockLogger = {
 ## Related Documentation
 
 - [Unit Testing Patterns](./testing-unit.md) - Writing isolated tests
-- [Integration Testing](./testing-integration.md) - Testing with real
-dependencies
+- [Integration Testing](./testing-integration.md) - Testing with real dependencies
 - [Test Organization](../conventions/testing-organization.md) - Organizing mocks

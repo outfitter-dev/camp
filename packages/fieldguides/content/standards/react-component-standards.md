@@ -1,5 +1,8 @@
 ---
-slug: react-component-standards title: Build scalable components with clear APIs and composition description: Framework-agnostic patterns for maintainable component architecture. type: convention
+slug: react-component-standards
+title: Build scalable components with clear APIs and composition
+description: Framework-agnostic patterns for maintainable component architecture.
+type: convention
 ---
 
 # React Component Standards
@@ -8,15 +11,12 @@ Modern React patterns for building scalable, type-safe component systems.
 
 ## Related Documentation
 
-- [React State Derivation](../patterns/react-state-derivation.md) - State
-management patterns
+- [React State Derivation](../patterns/react-state-derivation.md) - State management patterns
 - [React Patterns](../patterns/react-patterns.md) - Advanced React patterns
-- [Testing React Components](../patterns/testing-react-components.md) -
-Component testing
+- [Testing React Components](../patterns/testing-react-components.md) - Component testing
 - [TypeScript Standards](./typescript-standards.md) - TypeScript with React
 - [Testing Standards](./testing-standards.md) - Testing component behavior
-- [Documentation Standards](./documentation-standards.md) - Documenting
-components
+- [Documentation Standards](./documentation-standards.md) - Documenting components
 
 ## Overview
 

@@ -1,5 +1,8 @@
 ---
-slug: monorepo-common-issues title: Common monorepo issues and solutions description: Troubleshooting guide for frequent problems in pnpm workspace monorepos. type: troubleshooting
+slug: monorepo-common-issues
+title: Common monorepo issues and solutions
+description: Troubleshooting guide for frequent problems in pnpm workspace monorepos.
+type: troubleshooting
 ---
 
 # Monorepo Common Issues

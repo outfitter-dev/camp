@@ -1,5 +1,8 @@
 ---
-slug: zustand-guide title: Modern state management with Zustand description: TypeScript-first state management patterns with Zustand. type: guide
+slug: zustand-guide
+title: Modern state management with Zustand
+description: TypeScript-first state management patterns with Zustand.
+type: guide
 ---
 
 # Zustand Guide

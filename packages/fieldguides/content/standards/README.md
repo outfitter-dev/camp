@@ -1,5 +1,8 @@
 ---
-slug: standards-index title: Standards description: Core standards that define consistent approaches across all projects type: index
+slug: standards-index
+title: Standards
+description: Core standards that define consistent approaches across all projects
+type: index
 ---
 
 # Standards

@@ -1,5 +1,8 @@
 ---
-slug: github-actions title: 'GitHub Actions Patterns' description: 'Production-ready CI/CD workflows for GitHub Actions.' type: pattern
+slug: github-actions
+title: 'GitHub Actions Patterns'
+description: 'Production-ready CI/CD workflows for GitHub Actions.'
+type: pattern
 ---
 
 # GitHub Actions Patterns
@@ -11,8 +14,7 @@ Production-ready CI/CD workflows for GitHub Actions.
 - [Git Hooks](./git-hooks.md) - Local automation
 - [Security Scanning](./security-scanning.md) - Security integration
 - [Testing Standards](../standards/testing-standards.md) - Test automation
-- [Deployment Standards](../standards/deployment-standards.md) - Deployment
-practices
+- [Deployment Standards](../standards/deployment-standards.md) - Deployment practices
 
 ## Core Workflow Structure
 

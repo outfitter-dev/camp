@@ -1,5 +1,8 @@
 ---
-slug: why-monorepo title: Why choose a monorepo architecture description: Deep dive into the reasoning and benefits of monorepo architecture for modern development teams. type: convention
+slug: why-monorepo
+title: Why choose a monorepo architecture
+description: Deep dive into the reasoning and benefits of monorepo architecture for modern development teams.
+type: convention
 ---
 
 # Why Monorepo

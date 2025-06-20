@@ -6,10 +6,8 @@ Essential security principles and practices that apply across all projects and t
 
 - [Coding Standards](./CODING.md) - Secure coding practices
 - [Testing Standards](./TESTING.md) - Security testing requirements
-- [TypeScript Standards](./standards/typescript-standards.md) - Type-safe
-security patterns
-- [Configuration Standards](./standards/configuration-standards.md) - Secure
-configuration
+- [TypeScript Standards](./standards/typescript-standards.md) - Type-safe security patterns
+- [Configuration Standards](./standards/configuration-standards.md) - Secure configuration
 
 ## Foundational Security Principles
 
@@ -111,8 +109,7 @@ configuration
 ### Storage Practices
 
 - Never commit secrets to version control (use pre-commit hooks)
-- Use dedicated secret management tools (HashiCorp Vault, AWS Secrets Manager,
-1Password)
+- Use dedicated secret management tools (HashiCorp Vault, AWS Secrets Manager, 1Password)
 - Encrypt secrets at rest and in transit
 - Separate secrets by environment and principle of least access
 - Use secret scanning tools in CI/CD (GitGuardian, TruffleHog)
@@ -402,8 +399,7 @@ Key principles for modern security:
 - **Zero trust**: Never trust, always verify at every layer
 - **Continuous monitoring**: Security is an ongoing process, not a checkpoint
 - **Automation first**: Automate security wherever possible for consistency
-- **Shared responsibility**: Security is everyone's responsibility, not just the
-security team
+- **Shared responsibility**: Security is everyone's responsibility, not just the security team
 - **Adaptive defense**: Security must evolve with threats and new attack vectors
 - **Defense in depth**: Multiple layers of security controls at every level
 

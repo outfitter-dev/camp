@@ -1,5 +1,8 @@
 ---
-slug: typescript-error-handling title: TypeScript Error Handling Patterns description: Type-safe error handling with Result and Effect patterns. type: pattern
+slug: typescript-error-handling
+title: TypeScript Error Handling Patterns
+description: Type-safe error handling with Result and Effect patterns.
+type: pattern
 ---
 
 # TypeScript Error Handling Patterns
@@ -8,13 +11,10 @@ Modern type-safe error handling patterns using Result types, Effect patterns, cu
 
 ## Related Documentation
 
-- [TypeScript Standards](../standards/typescript-standards.md) - Core TypeScript
-configuration
-- [Validation Patterns](./typescript-validation.md) - Input validation with
-error handling
+- [TypeScript Standards](../standards/typescript-standards.md) - Core TypeScript configuration
+- [Validation Patterns](./typescript-validation.md) - Input validation with error handling
 - [Unit Testing Patterns](./testing-unit.md) - Testing error scenarios
-- [React Query Guide](../guides/react-query.md) - Error handling in data
-fetching
+- [React Query Guide](../guides/react-query.md) - Error handling in data fetching
 
 ## Result Type Implementation
 
@@ -583,8 +583,7 @@ const validationError = createError('VALIDATION_EMAIL', 'Invalid email format');
 Modern TypeScript error handling combines multiple approaches:
 
 1. **Result Types**: Explicit error handling without exceptions
-2. **Effect Pattern**: Composable, type-safe error handling with dependency
-injection
+2. **Effect Pattern**: Composable, type-safe error handling with dependency injection
 3. **Type Safety**: Leverage TypeScript 5.7+ features for better inference
 4. **Error Modeling**: Rich error types with discriminated unions
 5. **Composition**: Functional utilities for combining error-prone operations

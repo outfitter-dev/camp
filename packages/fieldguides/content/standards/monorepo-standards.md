@@ -1,5 +1,8 @@
 ---
-slug: monorepo-standards title: Build scalable monorepos with shared code and caching description: Monorepo patterns for multiple packages with modern build systems. type: convention
+slug: monorepo-standards
+title: Build scalable monorepos with shared code and caching
+description: Monorepo patterns for multiple packages with modern build systems.
+type: convention
 ---
 
 # Monorepo Architecture
@@ -8,12 +11,10 @@ Scalable monorepo patterns for managing multiple packages, applications, and sha
 
 ## Related Documentation
 
-- [Monorepo Tools Reference](../references/monorepo-tools-reference.md) -
-Tool-specific configurations
+- [Monorepo Tools Reference](../references/monorepo-tools-reference.md) - Tool-specific configurations
 - [TypeScript Standards](./typescript-standards.md) - TypeScript in monorepos
 - [Testing Standards](./testing-standards.md) - Testing across packages
-- [Configuration Standards](./configuration-standards.md) - Shared
-configurations
+- [Configuration Standards](./configuration-standards.md) - Shared configurations
 
 ## Version Compatibility
 

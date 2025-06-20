@@ -6,10 +6,8 @@ Core principles and practices that apply across all languages, frameworks, and p
 
 - [Testing Standards](./TESTING.md) - Test-driven development practices
 - [Security Standards](./SECURITY.md) - Security-first development
-- [TypeScript Standards](./standards/typescript-standards.md) - Type safety
-patterns
-- [Documentation Standards](./standards/documentation-standards.md) - Clear
-documentation
+- [TypeScript Standards](./standards/typescript-standards.md) - Type safety patterns
+- [Documentation Standards](./standards/documentation-standards.md) - Clear documentation
 
 ## Foundational Design Principles
 

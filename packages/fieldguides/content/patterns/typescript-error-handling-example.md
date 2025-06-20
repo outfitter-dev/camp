@@ -1,5 +1,11 @@
 ---
-slug: typescript-error-handling-example title: Complete Result type implementation example description: Production-ready Result type implementation with utilities. type: pattern category: typescript tags: [error-handling, typescript, example] related: [typescript-error-handling]
+slug: typescript-error-handling-example
+title: Complete Result type implementation example
+description: Production-ready Result type implementation with utilities.
+type: pattern
+category: typescript
+tags: [error-handling, typescript, example]
+related: [typescript-error-handling]
 ---
 
 # TypeScript Error Handling Example

@@ -1,5 +1,8 @@
 ---
-slug: testing-react-components title: Test React components from the user's perspective description: Testing React components focusing on user behavior and accessibility. type: pattern
+slug: testing-react-components
+title: Test React components from the user's perspective
+description: Testing React components focusing on user behavior and accessibility.
+type: pattern
 ---
 
 # React Testing Library Patterns
@@ -8,12 +11,10 @@ Testing React components with @testing-library/react, focusing on user behavior 
 
 ## Related Documentation
 
-- [React Component Standards](../standards/react-component-standards.md) -
-Component architecture
+- [React Component Standards](../standards/react-component-standards.md) - Component architecture
 - [Testing Standards](../standards/testing-standards.md) - Testing fundamentals
 - [React Patterns](./react-patterns.md) - Component patterns
-- [TypeScript Standards](../standards/typescript-standards.md) - Type-safe
-testing
+- [TypeScript Standards](../standards/typescript-standards.md) - Type-safe testing
 
 ## Overview
 
@@ -882,8 +883,6 @@ describe('Optimistic Updates', () => {
 3. **Use userEvent**: Simulates real user interactions more accurately than
 fireEvent
 4. **Wait for Async**: Use waitFor and find\* queries for async operations
-5. **Test User Flows**: Write tests that mirror how users actually use the
-component
-6. **Mock at Boundaries**: Mock API calls and external dependencies, not
-internal functions
+5. **Test User Flows**: Write tests that mirror how users actually use the component
+6. **Mock at Boundaries**: Mock API calls and external dependencies, not internal functions
 7. **Maintain Test Utilities**: Create helpers for common test scenarios

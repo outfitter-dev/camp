@@ -1,5 +1,8 @@
 ---
-slug: playwright-guide title: End-to-end testing with Playwright description: E2E testing with auto-waiting and multi-browser support. type: guide
+slug: playwright-guide
+title: End-to-end testing with Playwright
+description: E2E testing with auto-waiting and multi-browser support.
+type: guide
 ---
 
 # Playwright Guide
