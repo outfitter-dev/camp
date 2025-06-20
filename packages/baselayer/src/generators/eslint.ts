@@ -70,7 +70,7 @@ function applyESLintOverrides(
   }
 
   // Handle any other ESLint config properties that might be added in the future
-  const { ignores, rules, ...otherOverrides } = eslintOverrides;
+  const { ignores: _ignores, rules: _rules, ...otherOverrides } = eslintOverrides;
   if (Object.keys(otherOverrides).length > 0) {
     result.push(otherOverrides);
   }
