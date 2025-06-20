@@ -11,8 +11,7 @@
   - Add `--filter <target>` option to install to specific workspace packages
   - Add `--workspace-root` option to explicitly install to workspace root
   - Show helpful context messages when operating in monorepo mode
-
-  This resolves the `ERR_PNPM_ADDING_TO_ROOT` error when using outfitter in monorepos.
+  - This resolves the `ERR_PNPM_ADDING_TO_ROOT` error when using outfitter in monorepos
 
 ## 1.0.4
 

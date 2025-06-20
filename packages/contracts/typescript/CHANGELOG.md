@@ -20,9 +20,12 @@
   import { makeError, success, failure } from '@outfitter/contracts';
   ```
 
-  This is a non-breaking change - all existing imports continue to work. The sub-path exports enable better tree-shaking and smaller bundles for applications that only use a subset of the utilities.
+  This is a non-breaking change - all existing imports continue to work. The sub-path
+  exports enable better tree-shaking and smaller bundles for applications that only use
+  a subset of the utilities.
 
-  Note: Sub-path exports require Node.js ≥ 18.12 or a modern bundler that supports the package.json "exports" field.
+  Note: Sub-path exports require Node.js ≥ 18.12 or a modern bundler that supports the
+  package.json "exports" field.
 
 ## 1.0.4
 

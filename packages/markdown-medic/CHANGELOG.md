@@ -4,7 +4,7 @@
 
 ### Minor Changes
 
-- 95c8838: feat: add md-medic package for opinionated markdown linting
+- 95c8838: feat: add markdown-medic package for opinionated markdown linting
 
   - New package providing advanced markdown linting and formatting
   - Includes `mdic` CLI tool (Markdown Inspect & Correct)

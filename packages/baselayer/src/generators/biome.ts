@@ -76,8 +76,8 @@ export function generateBiomeConfig(config: OutfitterConfig): BiomeConfig {
       ...(baseConfig.javascript ?? {}),
       ...(biomeOverrides.javascript ?? {}),
       formatter: {
-        ...((baseConfig.javascript as any)?.formatter ?? {}),
-        ...((biomeOverrides.javascript as any)?.formatter ?? {}),
+        ...(typeof baseConfig.javascript === 'object' && baseConfig.javascript !== null && 'formatter' in baseConfig.javascript && typeof baseConfig.javascript.formatter === 'object' ? baseConfig.javascript.formatter : {}),
+        ...(typeof biomeOverrides.javascript === 'object' && biomeOverrides.javascript !== null && 'formatter' in biomeOverrides.javascript && typeof biomeOverrides.javascript.formatter === 'object' ? biomeOverrides.javascript.formatter : {}),
       },
     },
   };
