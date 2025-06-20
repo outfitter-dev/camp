@@ -27,6 +27,7 @@
     "changeset:publish": "changeset publish",
     "check:all": "pnpm run format && pnpm run lint && pnpm run lint:md && pnpm run type-check",
     "config:mdlint": "node ./scripts/generate-mdlint-config.mjs",
+    "check:imports": "tsx ./scripts/check-contracts-imports.ts",
     "prepare": "husky && pnpm config:mdlint"
   },
   "devDependencies": {
@@ -36,13 +37,16 @@
     "@commitlint/config-conventional": "^18.4.3",
     "@eslint/js": "9.28.0",
     "@outfitter/eslint-config": "workspace:*",
+    "@types/glob": "^8.1.0",
     "@types/node": "^20.10.4",
     "eslint": "^9.2.0",
     "eslint-import-resolver-typescript": "^4.4.1",
+    "glob": "^11.0.2",
     "husky": "^8.0.3",
     "lint-staged": "^15.2.0",
     "markdownlint-cli2": "^0.15.0",
     "prettier": "^3.5.3",
+    "tsx": "^4.19.4",
     "typescript": "^5.8.3",
     "typescript-eslint": "8.33.1",
     "vitest": "^1.6.1"

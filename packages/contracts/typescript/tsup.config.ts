@@ -9,16 +9,16 @@ export default defineConfig({
     'src/types/index.ts',
     'src/types/branded.ts',
   ],
-  format: ['cjs', 'esm'],
+  format: ['esm'],
   treeshake: true, // ensure per-entry shakeability
   splitting: false, // avoid a shared chunk that defeats tree-shaking
   dts: false, // TypeScript handles this via tsc --emitDeclarationOnly
   clean: true,
   sourcemap: true,
   tsconfig: './tsconfig.json',
-  outExtension({ format }) {
+  outExtension() {
     return {
-      js: format === 'esm' ? '.mjs' : '.js',
+      js: '.js', // Since package.json has "type": "module", .js files are ESM
     };
   },
 });

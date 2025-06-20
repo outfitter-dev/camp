@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
+import { isAppError } from '../error';
 import {
   all,
   failure,
@@ -58,8 +59,8 @@ describe('Result pattern', () => {
 
     expect(isFailure(result)).toBe(true);
     if (isFailure(result)) {
-      expect(result.error).toBeInstanceOf(Error);
-      expect((result.error as Error).message).toBe('async error');
+      expect(isAppError(result.error)).toBe(true);
+      expect(result.error.message).toBe('async error');
     }
   });
 
@@ -81,8 +82,8 @@ describe('Result pattern', () => {
 
     expect(isFailure(result)).toBe(true);
     if (isFailure(result)) {
-      expect(result.error).toBeInstanceOf(Error);
-      expect((result.error as Error).message).toBe('sync error');
+      expect(isAppError(result.error)).toBe(true);
+      expect(result.error.message).toBe('sync error');
     }
   });
 
@@ -353,8 +354,8 @@ describe('Result pattern', () => {
 
       expect(isFailure(result)).toBe(true);
       if (isFailure(result)) {
-        expect(result.error).toBeInstanceOf(Error);
-        expect((result.error as Error).message).toBe('string error');
+        expect(isAppError(result.error)).toBe(true);
+        expect(result.error.message).toBe('string error');
       }
     });
 
@@ -365,8 +366,8 @@ describe('Result pattern', () => {
 
       expect(isFailure(result)).toBe(true);
       if (isFailure(result)) {
-        expect(result.error).toBeInstanceOf(Error);
-        expect((result.error as Error).message).toBe('string error');
+        expect(isAppError(result.error)).toBe(true);
+        expect(result.error.message).toBe('string error');
       }
     });
   });

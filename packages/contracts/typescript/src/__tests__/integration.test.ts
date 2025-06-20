@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { ErrorCode, makeError, toAppError } from '../error';
+import { ErrorCode, isAppError, makeError, toAppError } from '../error';
 import { failure, isFailure, isSuccess, success, tryAsync, trySync } from '../result';
 
 describe('Result Pattern Integration', () => {
@@ -52,7 +52,7 @@ describe('Result Pattern Integration', () => {
 
       expect(appError.code).toBe(ErrorCode.INTERNAL_ERROR);
       expect(appError.message).toBe('Unknown error occurred');
-      expect(appError.details?.originalError).toBe(unknownError);
+      expect(appError.details?.raw).toBe(unknownError);
     });
   });
 
@@ -115,7 +115,7 @@ describe('Result Pattern Integration', () => {
       }
 
       if (operations[2] && !operations[2].success) {
-        expect(operations[2].error).toBeInstanceOf(Error);
+        expect(isAppError(operations[2].error)).toBe(true);
         expect(operations[2].error.message).toBe('Resource not found');
       }
     });

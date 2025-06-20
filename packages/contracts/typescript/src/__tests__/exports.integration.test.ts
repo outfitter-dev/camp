@@ -8,8 +8,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 describe('Package Exports Integration', () => {
   // __dirname is <pkgRoot>/src/__tests__
-  // walk three levels up to reach the package root (where package.json lives)
-  const packageRoot = join(__dirname, '..', '..', '..');
+  // walk two levels up to reach the package root (where package.json lives)
+  const packageRoot = join(__dirname, '..', '..');
   const distDir = join(packageRoot, 'dist');
 
   beforeAll(() => {

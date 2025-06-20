@@ -14,38 +14,26 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js",
       "default": "./dist/index.js"
     },
     "./error": {
       "types": "./dist/error.d.ts",
-      "import": "./dist/error.mjs",
-      "require": "./dist/error.js",
       "default": "./dist/error.js"
     },
     "./result": {
       "types": "./dist/result.d.ts",
-      "import": "./dist/result.mjs",
-      "require": "./dist/result.js",
       "default": "./dist/result.js"
     },
     "./assert": {
       "types": "./dist/assert.d.ts",
-      "import": "./dist/assert.mjs",
-      "require": "./dist/assert.js",
       "default": "./dist/assert.js"
     },
     "./branded": {
       "types": "./dist/types/branded.d.ts",
-      "import": "./dist/types/branded.mjs",
-      "require": "./dist/types/branded.js",
       "default": "./dist/types/branded.js"
     },
     "./types": {
       "types": "./dist/types/index.d.ts",
-      "import": "./dist/types/index.mjs",
-      "require": "./dist/types/index.js",
       "default": "./dist/types/index.js"
     },
     "./package.json": "./package.json"
