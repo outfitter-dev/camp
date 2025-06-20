@@ -1,13 +1,9 @@
-import type { PackageSelection, PresetType } from '../types/index.js';
-import type { TerrainFeatures } from '../utils/detect-terrain.js';
 import type { FieldguideRecommendation } from '../config/fieldguide-mappings.js';
-import {
-  PRESET_CONFIGURATIONS,
-  CONFIG_PACKAGES,
-  UTILITY_PACKAGES,
-} from '../constants/packages.js';
 import { getRecommendedFieldguideIds } from '../config/fieldguide-mappings.js';
+import { CONFIG_PACKAGES, PRESET_CONFIGURATIONS, UTILITY_PACKAGES } from '../constants/packages.js';
+import type { PackageSelection, PresetType } from '../types/index.js';
 import * as prompts from '../ui/prompts.js';
+import type { TerrainFeatures } from '../utils/detect-terrain.js';
 
 /**
  * Retrieves the package selection associated with a given preset.
@@ -27,12 +23,10 @@ export function getPresetSelection(preset: PresetType): PackageSelection {
  * @param terrain - The terrain features used to determine recommended fieldguides.
  * @returns The default package selection for the specified terrain.
  */
-export function getDefaultSelection(
-  terrain: TerrainFeatures
-): PackageSelection {
+export function getDefaultSelection(terrain: TerrainFeatures): PackageSelection {
   return {
-    configs: CONFIG_PACKAGES.filter(p => p.selected).map(p => p.value),
-    utils: UTILITY_PACKAGES.filter(p => p.selected).map(p => p.value),
+    configs: CONFIG_PACKAGES.filter((p) => p.selected).map((p) => p.value),
+    utils: UTILITY_PACKAGES.filter((p) => p.selected).map((p) => p.value),
     fieldguides: getRecommendedFieldguideIds(terrain),
   };
 }
@@ -45,8 +39,8 @@ export function getDefaultSelection(
  * @returns A package selection object containing the user's chosen configuration and utility packages, along with recommended fieldguide IDs for the given terrain.
  */
 export async function getInteractiveSelection(
-  terrain: TerrainFeatures,
-  recommendedFieldguides: Array<FieldguideRecommendation>
+  _terrain: TerrainFeatures,
+  recommendedFieldguides: Array<FieldguideRecommendation>,
 ): Promise<PackageSelection> {
   console.log(''); // Add spacing
 
@@ -61,6 +55,6 @@ export async function getInteractiveSelection(
   return {
     configs: selectedConfigs,
     utils: selectedUtils,
-    fieldguides: recommendedFieldguides.map(fg => fg.id),
+    fieldguides: recommendedFieldguides.map((fg) => fg.id),
   };
 }

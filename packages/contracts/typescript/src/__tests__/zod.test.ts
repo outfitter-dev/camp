@@ -1,17 +1,9 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { z } from 'zod';
-
-import {
-  createEnvSchema,
-  createNextEnvSchema,
-  createNodeEnvSchema,
-  parseEnvVar,
-  validateRequiredEnvVars,
-  CommonEnvSchemas,
-} from '../zod/env';
-import { fromZod } from '../zod/error';
 import { ErrorCode } from '../error';
-import { isSuccess, isFailure, failure, success } from '../result';
+import { failure, isFailure, isSuccess, success } from '../result';
+import { CommonEnvSchemas, createEnvSchema } from '../zod/env';
+import { fromZod } from '../zod/error';
 
 describe('Zod-dependent utilities', () => {
   describe('fromZod', () => {
@@ -63,9 +55,7 @@ describe('Zod-dependent utilities', () => {
       if (result.success) {
         expect(result.data.NODE_ENV).toBe('development');
         expect(result.data.PORT).toBe(3000);
-        expect(result.data.DATABASE_URL).toBe(
-          'postgresql://localhost:5432/test'
-        );
+        expect(result.data.DATABASE_URL).toBe('postgresql://localhost:5432/test');
       }
     });
   });

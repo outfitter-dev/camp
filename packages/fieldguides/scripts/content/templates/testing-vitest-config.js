@@ -6,8 +6,9 @@ description: Complete Vitest configuration template with coverage, globals, and 
 type: template
 ---
 */
+
+import path from 'node:path';
 import { defineConfig } from 'vitest/config';
-import path from 'path';
 export default defineConfig({
   test: {
     // Enable global test APIs (describe, it, expect)

@@ -4,12 +4,12 @@
 
 ```bash
 # Build/test/lint
-pnpm ci:local          # Full CI check (format:fix, lint, lint:md, type-check, tests)
+pnpm ci:local          # Full CI check
 pnpm test              # Run tests in watch mode
 pnpm test --run        # Single test run
-pnpm test packages/contracts/typescript/src/__tests__/result.test.ts  # Single test file
+pnpm test packages/contracts/typescript/src/__tests__/result.test.ts
 pnpm test --filter @outfitter/contracts  # Test specific package
-pnpm build             # Build all packages (contracts/typescript builds first)
+pnpm build             # Build all packages
 pnpm lint              # ESLint check
 pnpm format:fix        # Auto-fix formatting
 ```

@@ -1,28 +1,28 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { ErrorCode } from '../error';
-import { isSuccess, isFailure } from '../result';
+import { isFailure, isSuccess } from '../result';
 
 import {
-  createUserId,
+  createBrandedType,
   createEmail,
   createNonEmptyString,
-  createPositiveInteger,
   createNonNegativeInteger,
-  createUrl,
-  createUuid,
   createPercentage,
+  createPositiveInteger,
   createTimestamp,
-  createBrandedType,
-  isUserId,
+  createUrl,
+  createUserId,
+  createUuid,
   isEmail,
   isNonEmptyString,
-  isPositiveInteger,
   isNonNegativeInteger,
-  isUrl,
-  isUuid,
   isPercentage,
+  isPositiveInteger,
   isTimestamp,
+  isUrl,
+  isUserId,
+  isUuid,
 } from './branded';
 
 describe('Branded Types', () => {
@@ -80,14 +80,7 @@ describe('Branded Types', () => {
     });
 
     it('should reject invalid emails', () => {
-      const invalidEmails = [
-        '',
-        '  ',
-        'not-an-email',
-        '@example.com',
-        'user@',
-        'user@.com',
-      ];
+      const invalidEmails = ['', '  ', 'not-an-email', '@example.com', 'user@', 'user@.com'];
 
       for (const email of invalidEmails) {
         const result = createEmail(email);
@@ -357,8 +350,8 @@ describe('Branded Types', () => {
     // type ProductSku = Brand<string, 'ProductSku'>; (inferred from createBrandedType)
 
     const createProductSku = createBrandedType<string, 'ProductSku'>(
-      value => /^PROD-[0-9]{4}$/.test(value),
-      'Product SKU must be in format PROD-XXXX'
+      (value) => /^PROD-[0-9]{4}$/.test(value),
+      'Product SKU must be in format PROD-XXXX',
     );
 
     it('should create custom branded types', () => {
@@ -374,9 +367,7 @@ describe('Branded Types', () => {
       expect(isFailure(result)).toBe(true);
       if (isFailure(result)) {
         expect(result.error.code).toBe(ErrorCode.VALIDATION_ERROR);
-        expect(result.error.message).toBe(
-          'Product SKU must be in format PROD-XXXX'
-        );
+        expect(result.error.message).toBe('Product SKU must be in format PROD-XXXX');
       }
     });
   });

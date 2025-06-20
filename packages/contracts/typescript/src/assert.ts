@@ -62,10 +62,7 @@ export function exhaustiveCheck<T>(_value: never, defaultValue: T): T {
  * }
  * ```
  */
-export function assert(
-  condition: unknown,
-  message?: string
-): asserts condition {
+export function assert(condition: unknown, message?: string): asserts condition {
   if (!condition) {
     throw new Error(message || 'Assertion failed');
   }
@@ -83,10 +80,7 @@ export function assert(
  * }
  * ```
  */
-export function assertDefined<T>(
-  value: T,
-  message?: string
-): asserts value is NonNullable<T> {
+export function assertDefined<T>(value: T, message?: string): asserts value is NonNullable<T> {
   if (value === null || value === undefined) {
     throw new Error(message || 'Value must be defined');
   }
@@ -164,9 +158,7 @@ export function assertIsNumber(value: unknown): asserts value is number {
 /**
  * Assert that a value is an array
  */
-export function assertIsArray<T = unknown>(
-  value: unknown
-): asserts value is Array<T> {
+export function assertIsArray<T = unknown>(value: unknown): asserts value is Array<T> {
   if (!Array.isArray(value)) {
     throw new TypeError(`Expected array, got ${typeof value}`);
   }

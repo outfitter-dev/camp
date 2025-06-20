@@ -2,10 +2,10 @@ import { Command } from 'commander';
 
 // Re-export functionality from other commands
 import { addFieldguides } from './fieldguides/add.js';
+import { manageFieldguideConfig } from './fieldguides/config.js';
+import { createFieldguideConfig } from './fieldguides/create.js';
 import { listFieldguides } from './fieldguides/list.js';
 import { updateFieldguides } from './fieldguides/update.js';
-import { createFieldguideConfig } from './fieldguides/create.js';
-import { manageFieldguideConfig } from './fieldguides/config.js';
 
 interface ExportOptions {
   output: string;
@@ -24,28 +24,28 @@ export const fieldguidesCommand = new Command('fieldguides')
       .option('-p, --preset <preset>', 'Use a preset configuration', 'minimal')
       .option('--with-claude', 'Include CLAUDE.md for AI assistance')
       .option('-f, --force', 'Force initialization even if .outfitter exists')
-      .action(createFieldguideConfig)
+      .action(createFieldguideConfig),
   )
   .addCommand(
     new Command('add')
       .description('Add fieldguides to your project')
       .argument(
         '<fieldguides...>',
-        'Fieldguides to add (e.g., react-patterns typescript-standards)'
+        'Fieldguides to add (e.g., react-patterns typescript-standards)',
       )
-      .action(addFieldguides)
+      .action(addFieldguides),
   )
   .addCommand(
     new Command('list')
       .description('List available fieldguides')
       .option('-i, --installed', 'Show only installed fieldguides')
-      .action(listFieldguides)
+      .action(listFieldguides),
   )
   .addCommand(
     new Command('update')
       .description('Update fieldguides to latest versions')
       .option('-c, --check', 'Check for updates without installing')
-      .action(updateFieldguides)
+      .action(updateFieldguides),
   )
   .addCommand(
     new Command('config')
@@ -53,14 +53,10 @@ export const fieldguidesCommand = new Command('fieldguides')
       .addCommand(
         new Command('export')
           .description('Export current configuration')
-          .option(
-            '-o, --output <file>',
-            'Output file',
-            'fieldguide-config.json'
-          )
+          .option('-o, --output <file>', 'Output file', 'fieldguide-config.json')
           .action(async (options: ExportOptions) => {
             await manageFieldguideConfig('export', options);
-          })
+          }),
       )
       .addCommand(
         new Command('import')
@@ -68,6 +64,6 @@ export const fieldguidesCommand = new Command('fieldguides')
           .argument('<file>', 'Configuration file to import')
           .action(async (file: string) => {
             await manageFieldguideConfig('import', { file } as ImportOptions);
-          })
-      )
+          }),
+      ),
   );

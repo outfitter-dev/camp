@@ -1,6 +1,6 @@
+import * as fs from 'node:fs/promises';
+import * as path from 'node:path';
 import { execa } from 'execa';
-import * as fs from 'fs/promises';
-import * as path from 'path';
 import pc from 'picocolors';
 
 interface InitOptions {
@@ -31,16 +31,14 @@ export async function init(options: InitOptions = {}): Promise<void> {
     await fs.access(packageJsonPath);
   } catch {
     console.error(
-      pc.red(
-        '❌ No package.json found. Please run this command in your project root.'
-      )
+      pc.red('❌ No package.json found. Please run this command in your project root.'),
     );
     process.exit(1);
   }
 
   // Read package.json
-  const packageJson: any = JSON.parse(
-    await fs.readFile(packageJsonPath, 'utf8')
+  const packageJson: { scripts?: Record<string, string>; [key: string]: unknown } = JSON.parse(
+    await fs.readFile(packageJsonPath, 'utf8'),
   );
 
   // Detect package manager
@@ -98,10 +96,7 @@ export async function init(options: InitOptions = {}): Promise<void> {
   }
 
   // Write updated package.json
-  await fs.writeFile(
-    packageJsonPath,
-    JSON.stringify(packageJson, null, 2) + '\\n'
-  );
+  await fs.writeFile(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\\n`);
 
   console.log(pc.green('\\n✅ Packlist initialized successfully!'));
   console.log(pc.gray('\\nRun the following commands to get started:'));
@@ -140,11 +135,7 @@ async function detectPackageManager(): Promise<string> {
   return 'npm';
 }
 
-async function installDependencies(
-  packageManager: string,
-  deps: Array<string>,
-  dev: boolean
-) {
+async function installDependencies(packageManager: string, deps: Array<string>, dev: boolean) {
   const args = dev ? ['add', '-D'] : ['add'];
 
   if (packageManager === 'npm') {
@@ -172,9 +163,7 @@ async function createEslintConfig(projectRoot: string, force?: boolean) {
   if (!force) {
     try {
       await fs.access(eslintConfigPath);
-      console.log(
-        pc.yellow('⚠️  .eslintrc.js already exists. Use --force to overwrite.')
-      );
+      console.log(pc.yellow('⚠️  .eslintrc.js already exists. Use --force to overwrite.'));
       return;
     } catch {
       // File doesn't exist, continue with creation
@@ -207,9 +196,7 @@ async function createTsConfig(projectRoot: string, force?: boolean) {
   if (!force) {
     try {
       await fs.access(tsconfigPath);
-      console.log(
-        pc.yellow('⚠️  tsconfig.json already exists. Use --force to overwrite.')
-      );
+      console.log(pc.yellow('⚠️  tsconfig.json already exists. Use --force to overwrite.'));
       return;
     } catch {
       // File doesn't exist, continue with creation

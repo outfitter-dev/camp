@@ -8,6 +8,7 @@ type: template
 */
 import { pathsToModuleNameMapper } from 'ts-jest';
 import { compilerOptions } from './tsconfig.json';
+
 const config = {
   // Use ts-jest preset for TypeScript support
   preset: 'ts-jest',
@@ -19,10 +20,7 @@ const config = {
   },
   // Test file locations
   roots: ['<rootDir>/src', '<rootDir>/tests'],
-  testMatch: [
-    '**/__tests__/**/*.(test|spec).(ts|tsx|js|jsx)',
-    '**/*.(test|spec).(ts|tsx|js|jsx)',
-  ],
+  testMatch: ['**/__tests__/**/*.(test|spec).(ts|tsx|js|jsx)', '**/*.(test|spec).(ts|tsx|js|jsx)'],
   // Module resolution
   moduleNameMapper: {
     // Handle path aliases from tsconfig
@@ -97,10 +95,7 @@ const config = {
   ],
   modulePathIgnorePatterns: ['<rootDir>/dist/', '<rootDir>/build/'],
   // Watch mode configuration
-  watchPlugins: [
-    'jest-watch-typeahead/filename',
-    'jest-watch-typeahead/testname',
-  ],
+  watchPlugins: ['jest-watch-typeahead/filename', 'jest-watch-typeahead/testname'],
   // Snapshot configuration
   snapshotSerializers: [
     '@emotion/jest/serializer', // If using Emotion

@@ -7,17 +7,12 @@ type: template
 ---
 */
 
-// Custom test utilities for React applications with dual Jest/Vitest support
-import {
-  render as rtlRender,
-  RenderOptions,
-  waitFor,
-  screen,
-} from '@testing-library/react';
-import { ReactElement, ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BrowserRouter } from 'react-router-dom';
+// Custom test utilities for React applications with dual Jest/Vitest support
+import { type RenderOptions, render as rtlRender, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import type { ReactElement, ReactNode } from 'react';
+import { BrowserRouter } from 'react-router-dom';
 
 // Detect test runner
 const isVitest = typeof (globalThis as any).vi !== 'undefined';
@@ -40,9 +35,9 @@ export const spyOn = isVitest
         throw new Error('No test runner detected');
       };
 
+import { delay, HttpResponse, http } from 'msw';
 // MSW 2.0 Setup
 import { setupServer } from 'msw/node';
-import { http, HttpResponse, delay } from 'msw';
 
 // Example MSW handlers
 export const handlers = [
@@ -98,7 +93,7 @@ function createTestQueryClient() {
   });
 }
 
-function AllTheProviders({ children, initialEntries = ['/'] }: ProvidersProps) {
+function _AllTheProviders({ children, initialEntries = ['/'] }: ProvidersProps) {
   const queryClient = createTestQueryClient();
 
   return (
@@ -145,12 +140,7 @@ interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
 
 export function render(
   ui: ReactElement,
-  {
-    initialEntries = ['/'],
-    route = '/',
-    providerProps = {},
-    ...options
-  }: CustomRenderOptions = {}
+  { initialEntries = ['/'], route = '/', providerProps = {}, ...options }: CustomRenderOptions = {},
 ) {
   // Set initial route
   window.history.pushState({}, 'Test page', route);
@@ -184,22 +174,18 @@ export function expectToHaveError(element: HTMLElement, error: string) {
 }
 
 // Enhanced wait helpers
-export async function waitForLoadingToFinish(
-  container: HTMLElement | Document = document
-) {
+export async function waitForLoadingToFinish(container: HTMLElement | Document = document) {
   await waitFor(
     () => {
-      expect(
-        container.querySelector('[aria-busy="true"]')
-      ).not.toBeInTheDocument();
+      expect(container.querySelector('[aria-busy="true"]')).not.toBeInTheDocument();
     },
-    { timeout: 3000 }
+    { timeout: 3000 },
   );
 }
 
 export async function waitForElementToBeRemoved(
   callback: () => HTMLElement | null,
-  options = { timeout: 3000 }
+  options = { timeout: 3000 },
 ) {
   await waitFor(() => {
     expect(callback()).not.toBeInTheDocument();
@@ -247,7 +233,7 @@ export function createMockPost(overrides = {}) {
 // Test utilities for forms
 export async function fillForm(
   user: ReturnType<typeof userEvent.setup>,
-  fields: Record<string, string>
+  fields: Record<string, string>,
 ) {
   for (const [name, value] of Object.entries(fields)) {
     const input = screen.getByLabelText(new RegExp(name, 'i'));
@@ -260,17 +246,17 @@ export async function fillForm(
 export function expectToBeAccessible(container: HTMLElement) {
   // Check for common accessibility issues
   const images = container.querySelectorAll('img');
-  images.forEach(img => {
+  images.forEach((img) => {
     expect(img).toHaveAttribute('alt');
   });
 
   const buttons = container.querySelectorAll('button');
-  buttons.forEach(button => {
+  buttons.forEach((button) => {
     expect(button).toHaveAccessibleName();
   });
 
   const inputs = container.querySelectorAll('input, select, textarea');
-  inputs.forEach(input => {
+  inputs.forEach((input) => {
     const label = container.querySelector(`label[for="${input.id}"]`);
     expect(label || input.getAttribute('aria-label')).toBeTruthy();
   });

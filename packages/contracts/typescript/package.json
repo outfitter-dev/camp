@@ -14,10 +14,31 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
-    }
+      "default": "./dist/index.js"
+    },
+    "./error": {
+      "types": "./dist/error.d.ts",
+      "default": "./dist/error.js"
+    },
+    "./result": {
+      "types": "./dist/result.d.ts",
+      "default": "./dist/result.js"
+    },
+    "./assert": {
+      "types": "./dist/assert.d.ts",
+      "default": "./dist/assert.js"
+    },
+    "./branded": {
+      "types": "./dist/types/branded.d.ts",
+      "default": "./dist/types/branded.js"
+    },
+    "./types": {
+      "types": "./dist/types/index.d.ts",
+      "default": "./dist/types/index.js"
+    },
+    "./package.json": "./package.json"
   },
+  "sideEffects": false,
   "files": [
     "dist/**",
     "vitest.config.ts"
@@ -48,5 +69,8 @@
   "homepage": "https://github.com/outfitter-dev/monorepo/tree/main/packages/contracts/typescript#readme",
   "publishConfig": {
     "access": "public"
+  },
+  "engines": {
+    "node": ">=18.12"
   }
 }

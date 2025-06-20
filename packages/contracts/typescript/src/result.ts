@@ -2,8 +2,8 @@
  * Result pattern for type-safe error handling without exceptions
  */
 
+import { type AppError, toAppError } from './error';
 import type { DeepReadonly } from './types/index';
-import { toAppError, type AppError } from './error';
 
 /**
  * A successful result
@@ -58,10 +58,7 @@ export function isFailure<T, E>(result: Result<T, E>): result is Failure<E> {
  * Maps a `Result<T, E>` to `Result<TNew, E>` by applying a function to a
  * contained `Success` value, leaving an `Error` value untouched.
  */
-export function map<T, E, TNew>(
-  result: Result<T, E>,
-  fn: (data: T) => TNew
-): Result<TNew, E> {
+export function map<T, E, TNew>(result: Result<T, E>, fn: (data: T) => TNew): Result<TNew, E> {
   if (isSuccess(result)) {
     return success(fn(result.data));
   }
@@ -74,7 +71,7 @@ export function map<T, E, TNew>(
  */
 export function mapError<T, E, ENew>(
   result: Result<T, E>,
-  fn: (error: DeepReadonly<E>) => ENew
+  fn: (error: DeepReadonly<E>) => ENew,
 ): Result<T, ENew> {
   if (isFailure(result)) {
     return failure(fn(result.error));
@@ -88,7 +85,7 @@ export function mapError<T, E, ENew>(
  */
 export function flatMap<T, E, TNew>(
   result: Result<T, E>,
-  fn: (data: T) => Result<TNew, E>
+  fn: (data: T) => Result<TNew, E>,
 ): Result<TNew, E> {
   if (isSuccess(result)) {
     return fn(result.data);
@@ -111,7 +108,7 @@ export function flatten<T, E>(result: Result<Result<T, E>, E>): Result<T, E> {
  * @returns Success with array of values if all succeed, or first failure
  */
 export function all<T extends ReadonlyArray<Result<unknown, unknown>>>(
-  results: T
+  results: T,
 ): Result<
   { [K in keyof T]: T[K] extends Result<infer U, unknown> ? U : never },
   T[number] extends Result<unknown, infer E> ? E : never
@@ -149,10 +146,7 @@ export function getOrElse<T, E>(result: Result<T, E>, defaultValue: T): T {
  * @param fn Function to compute the default value from the error
  * @returns The success value or the computed default
  */
-export function getOrElseWith<T, E>(
-  result: Result<T, E>,
-  fn: (error: DeepReadonly<E>) => T
-): T {
+export function getOrElseWith<T, E>(result: Result<T, E>, fn: (error: DeepReadonly<E>) => T): T {
   return result.success ? result.data : fn(result.error);
 }
 
@@ -162,10 +156,7 @@ export function getOrElseWith<T, E>(
  * @param fn The side effect to execute on success
  * @returns The original Result unchanged
  */
-export function tap<T, E>(
-  result: Result<T, E>,
-  fn: (value: T) => void
-): Result<T, E> {
+export function tap<T, E>(result: Result<T, E>, fn: (value: T) => void): Result<T, E> {
   if (result.success) {
     fn(result.data);
   }
@@ -180,7 +171,7 @@ export function tap<T, E>(
  */
 export function tapError<T, E>(
   result: Result<T, E>,
-  fn: (error: DeepReadonly<E>) => void
+  fn: (error: DeepReadonly<E>) => void,
 ): Result<T, E> {
   if (!result.success) {
     fn(result.error);
@@ -194,9 +185,7 @@ export function tapError<T, E>(
  * @returns A Promise that resolves on success or rejects on failure
  */
 export function toPromise<T, E>(result: Result<T, E>): Promise<T> {
-  return result.success
-    ? Promise.resolve(result.data)
-    : Promise.reject(result.error);
+  return result.success ? Promise.resolve(result.data) : Promise.reject(result.error);
 }
 
 /**
@@ -207,11 +196,9 @@ export function toPromise<T, E>(result: Result<T, E>): Promise<T> {
  */
 export function fromNullable<T, E>(
   value: T | null | undefined,
-  error: E
+  error: E,
 ): Result<NonNullable<T>, E> {
-  return value !== null && value !== undefined
-    ? success(value as NonNullable<T>)
-    : failure(error);
+  return value !== null && value !== undefined ? success(value as NonNullable<T>) : failure(error);
 }
 
 /**
@@ -220,7 +207,7 @@ export function fromNullable<T, E>(
 export function match<T, E, TSuccess, TFailure>(
   result: Result<T, E>,
   onSuccess: (data: T) => TSuccess,
-  onFailure: (error: DeepReadonly<E>) => TFailure
+  onFailure: (error: DeepReadonly<E>) => TFailure,
 ): TSuccess | TFailure {
   if (isSuccess(result)) {
     return onSuccess(result.data);
@@ -286,9 +273,7 @@ export function trySync<T>(fn: () => T): Result<T, AppError> {
  * @param fn The async function to wrap
  * @returns A promise that resolves to the result of the function, or a failure
  */
-export async function tryAsync<T>(
-  fn: () => Promise<T>
-): Promise<Result<T, AppError>> {
+export async function tryAsync<T>(fn: () => Promise<T>): Promise<Result<T, AppError>> {
   try {
     return success(await fn());
   } catch (error) {

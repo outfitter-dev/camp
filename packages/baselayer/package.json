@@ -1,0 +1,67 @@
+{
+  "name": "@outfitter/baselayer",
+  "version": "0.1.0",
+  "description": "Declarative development toolchain configuration orchestrator - everything you need, nothing you don't",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist/**",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest",
+    "test:run": "vitest --run",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@outfitter/contracts": "workspace:*",
+    "@outfitter/contracts-zod": "workspace:*",
+    "comment-json": "^4.2.3"
+  },
+  "devDependencies": {
+    "@outfitter/typescript-config": "workspace:*",
+    "@types/node": "^20.10.4",
+    "tsup": "^8.0.1",
+    "typescript": "^5.8.3",
+    "vitest": "^1.6.1"
+  },
+  "peerDependencies": {
+    "@biomejs/biome": "^2.0.0",
+    "eslint": "^9.2.0",
+    "prettier": "^3.5.3",
+    "markdown-medic": "workspace:*",
+    "zod": "^3.23.8"
+  },
+  "keywords": [
+    "toolchain",
+    "configuration",
+    "biome",
+    "eslint",
+    "prettier",
+    "outfitter"
+  ],
+  "author": "Outfitter",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/outfitter-dev/monorepo.git",
+    "directory": "packages/baselayer"
+  },
+  "bugs": {
+    "url": "https://github.com/outfitter-dev/monorepo/issues"
+  },
+  "homepage": "https://github.com/outfitter-dev/monorepo/tree/main/packages/baselayer#readme",
+  "publishConfig": {
+    "access": "public"
+  }
+}

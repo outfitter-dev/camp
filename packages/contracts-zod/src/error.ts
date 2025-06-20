@@ -1,6 +1,5 @@
+import { type AppError, ErrorCode, makeError } from '@outfitter/contracts';
 import type { z } from 'zod';
-
-import { ErrorCode, makeError, type AppError } from '@outfitter/contracts';
 
 /**
  * Converts a Zod validation error into a standardized application error.
@@ -12,7 +11,7 @@ import { ErrorCode, makeError, type AppError } from '@outfitter/contracts';
  */
 export function fromZod(error: z.ZodError): AppError {
   return makeError(ErrorCode.VALIDATION_ERROR, 'Validation failed', {
-    issues: error.issues.map(issue => {
+    issues: error.issues.map((issue) => {
       const baseIssue = {
         path: issue.path.join('.'),
         message: issue.message,

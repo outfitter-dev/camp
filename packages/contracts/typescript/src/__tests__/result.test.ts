@@ -1,23 +1,24 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
+import { isAppError } from '../error';
 import {
-  success,
+  all,
   failure,
-  isSuccess,
-  isFailure,
-  tryAsync,
-  trySync,
-  map,
-  mapError,
   flatMap,
   flatten,
-  all,
+  fromNullable,
   getOrElse,
   getOrElseWith,
+  isFailure,
+  isSuccess,
+  map,
+  mapError,
+  success,
   tap,
   tapError,
   toPromise,
-  fromNullable,
+  tryAsync,
+  trySync,
 } from '../result';
 
 describe('Result pattern', () => {
@@ -58,8 +59,8 @@ describe('Result pattern', () => {
 
     expect(isFailure(result)).toBe(true);
     if (isFailure(result)) {
-      expect(result.error).toBeInstanceOf(Error);
-      expect((result.error as Error).message).toBe('async error');
+      expect(isAppError(result.error)).toBe(true);
+      expect(result.error.message).toBe('async error');
     }
   });
 
@@ -81,15 +82,15 @@ describe('Result pattern', () => {
 
     expect(isFailure(result)).toBe(true);
     if (isFailure(result)) {
-      expect(result.error).toBeInstanceOf(Error);
-      expect((result.error as Error).message).toBe('sync error');
+      expect(isAppError(result.error)).toBe(true);
+      expect(result.error.message).toBe('sync error');
     }
   });
 
   describe('map', () => {
     it('should map success values', () => {
       const result = success(5);
-      const mapped = map(result, x => x * 2);
+      const mapped = map(result, (x) => x * 2);
 
       expect(isSuccess(mapped)).toBe(true);
       if (isSuccess(mapped)) {
@@ -122,10 +123,7 @@ describe('Result pattern', () => {
 
     it('should map failure values', () => {
       const result = failure(new Error('old'));
-      const mapped = mapError(
-        result,
-        err => new Error(`wrapped: ${err.message}`)
-      );
+      const mapped = mapError(result, (err) => new Error(`wrapped: ${err.message}`));
 
       expect(isFailure(mapped)).toBe(true);
       if (isFailure(mapped)) {
@@ -137,7 +135,7 @@ describe('Result pattern', () => {
   describe('flatMap', () => {
     it('should chain successful operations', () => {
       const result = success(5);
-      const chained = flatMap(result, x => success(x * 2));
+      const chained = flatMap(result, (x) => success(x * 2));
 
       expect(isSuccess(chained)).toBe(true);
       if (isSuccess(chained)) {
@@ -255,7 +253,7 @@ describe('Result pattern', () => {
 
     it('should compute default on failure', () => {
       const result = failure(new Error('fail'));
-      expect(getOrElseWith(result, err => err.message.length)).toBe(4);
+      expect(getOrElseWith(result, (err) => err.message.length)).toBe(4);
     });
   });
 
@@ -356,8 +354,8 @@ describe('Result pattern', () => {
 
       expect(isFailure(result)).toBe(true);
       if (isFailure(result)) {
-        expect(result.error).toBeInstanceOf(Error);
-        expect((result.error as Error).message).toBe('string error');
+        expect(isAppError(result.error)).toBe(true);
+        expect(result.error.message).toBe('string error');
       }
     });
 
@@ -368,8 +366,8 @@ describe('Result pattern', () => {
 
       expect(isFailure(result)).toBe(true);
       if (isFailure(result)) {
-        expect(result.error).toBeInstanceOf(Error);
-        expect((result.error as Error).message).toBe('string error');
+        expect(isAppError(result.error)).toBe(true);
+        expect(result.error.message).toBe('string error');
       }
     });
   });

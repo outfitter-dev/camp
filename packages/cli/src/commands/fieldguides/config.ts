@@ -1,7 +1,9 @@
 import chalk from 'chalk';
 import fsExtra from 'fs-extra';
+
 const { readJSON, writeJSON, pathExists } = fsExtra;
-import { join } from 'path';
+
+import { join } from 'node:path';
 
 interface ExportOptions {
   output: string;
@@ -32,7 +34,7 @@ interface OutfitterConfig {
  */
 export async function manageFieldguideConfig(
   action: 'export' | 'import',
-  options: ExportOptions | ImportOptions
+  options: ExportOptions | ImportOptions,
 ): Promise<void> {
   const cwd = process.cwd();
   const configPath = join(cwd, '.outfitter', 'config.json');
@@ -42,9 +44,7 @@ export async function manageFieldguideConfig(
 
     if (!(await pathExists(configPath))) {
       console.error(
-        chalk.red(
-          'No fieldguide configuration found. Run "outfitter fg create" first.'
-        )
+        chalk.red('No fieldguide configuration found. Run "outfitter fg create" first.'),
       );
       process.exit(1);
     }
@@ -60,11 +60,7 @@ export async function manageFieldguideConfig(
 
     await writeJSON(join(cwd, output), exportConfig, { spaces: 2 });
 
-    console.log(
-      chalk.green('✓') +
-        ' Exported fieldguide configuration to ' +
-        chalk.cyan(output)
-    );
+    console.log(`${chalk.green('✓')} Exported fieldguide configuration to ${chalk.cyan(output)}`);
   } else if (action === 'import') {
     const { file } = options as ImportOptions;
     const importPath = join(cwd, file);
@@ -90,14 +86,10 @@ export async function manageFieldguideConfig(
       // TODO: Create minimal config
     }
 
-    const fieldguideCount = (
-      importConfig.fieldguides ||
-      importConfig.supplies ||
-      []
-    ).length;
+    const fieldguideCount = (importConfig.fieldguides || importConfig.supplies || []).length;
     console.log(
       chalk.green('✓') +
-        ` Imported ${fieldguideCount} fieldguides from ${chalk.cyan(importConfig.name)}`
+        ` Imported ${fieldguideCount} fieldguides from ${chalk.cyan(importConfig.name)}`,
     );
   }
 }

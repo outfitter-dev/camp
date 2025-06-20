@@ -63,8 +63,8 @@ export const PRESET_CONFIGURATIONS: Record<PresetType, PackageSelection> = {
     fieldguides: [], // Will be auto-detected
   },
   full: {
-    configs: CONFIG_PACKAGES.map(p => p.value),
-    utils: UTILITY_PACKAGES.map(p => p.value),
+    configs: CONFIG_PACKAGES.map((p) => p.value),
+    utils: UTILITY_PACKAGES.map((p) => p.value),
     fieldguides: [], // Will be auto-detected
   },
 };

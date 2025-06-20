@@ -1,13 +1,11 @@
+import { join } from 'node:path';
 import chalk from 'chalk';
 import { execa } from 'execa';
 import fsExtra from 'fs-extra';
-import { join } from 'path';
 
 const { writeFile, pathExists, writeJSON } = fsExtra;
 
-export async function applyConfigurations(
-  configs: Array<string>
-): Promise<void> {
+export async function applyConfigurations(configs: Array<string>): Promise<void> {
   console.log(chalk.gray('Applying configurations...'));
   const cwd = process.cwd();
 
@@ -29,10 +27,7 @@ export async function applyConfigurations(
     try {
       await handler(cwd);
     } catch (error) {
-      console.error(
-        chalk.red(`  ✗ Failed to apply ${config}:`),
-        (error as Error).message
-      );
+      console.error(chalk.red(`  ✗ Failed to apply ${config}:`), (error as Error).message);
     }
   }
 }
@@ -104,9 +99,7 @@ async function initializeChangesets(cwd: string): Promise<void> {
     });
     console.log(chalk.green('  ✓ Initialized changesets'));
   } catch (error) {
-    throw new Error(
-      `Failed to initialize changesets: ${(error as Error).message}`
-    );
+    throw new Error(`Failed to initialize changesets: ${(error as Error).message}`);
   }
 }
 
