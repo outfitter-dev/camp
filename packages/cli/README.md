@@ -1,7 +1,6 @@
 # Outfitter
 
-> Command-line tool for equipping your development journey with configurations
-> and fieldguides.
+> Command-line tool for equipping your development journey with configurations and fieldguides.
 
 ## Installation
 

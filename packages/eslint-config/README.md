@@ -1,7 +1,6 @@
 # @outfitter/eslint-config
 
-> Shared ESLint configuration for consistent code quality across Outfitter
-> projects
+> Shared ESLint configuration for consistent code quality across Outfitter projects
 
 ## Installation
 

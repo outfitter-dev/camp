@@ -1,7 +1,6 @@
 # @outfitter/typescript-config
 
-> Shared TypeScript configurations for consistent, strict type safety across
-> Outfitter projects
+> Shared TypeScript configurations for consistent, strict type safety across Outfitter projects
 
 ## Installation
 
@@ -64,10 +63,8 @@ All configurations enforce maximum type safety:
 - **`strict: true`**: Enables all strict type checking options
 - **`noImplicitAny: true`**: No implicit `any` types allowed
 - **`strictNullChecks: true`**: Null and undefined must be handled explicitly
-- **`noUncheckedIndexedAccess: true`**: Array/object access returns
-  `T | undefined`
-- **`exactOptionalPropertyTypes: true`**: Optional properties can't be set to
-`undefined`
+- **`noUncheckedIndexedAccess: true`**: Array/object access returns `T | undefined`
+- **`exactOptionalPropertyTypes: true`**: Optional properties can't be set to `undefined`
 
 ### Modern JavaScript
 
@@ -139,8 +136,7 @@ Override any setting in your local `tsconfig.json`:
 1. **Don't disable strict checks**: Work with the type system, not against it
 2. **Handle all cases**: The configs force you to handle edge cases explicitly
 3. **Use path aliases**: Keep imports clean with the `@/*` alias
-4. **Enable project references**: For monorepos, use TypeScript project
-references
+4. **Enable project references**: For monorepos, use TypeScript project references
 
 ## Migration Guide
 

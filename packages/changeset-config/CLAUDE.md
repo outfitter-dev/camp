@@ -35,8 +35,7 @@ pnpm typecheck
   - Creates `.changeset` directory
   - Copies and customizes config based on options
   - Creates README for the changeset directory
-- `addChangesetScripts(packageJsonPath)` - Adds changeset-related scripts to
-package.json
+- `addChangesetScripts(packageJsonPath)` - Adds changeset-related scripts to package.json
   - Adds `changeset`, `changeset:version`, and `changeset:publish` scripts
 
 ### Configuration Options
@@ -80,8 +79,6 @@ Uses `tsup` to build:
 
 ## Important Notes
 
-- This package helps standardize Changesets configuration across Outfitter
-projects
-- The config is designed for monorepo workflows but works with single packages
-too
+- This package helps standardize Changesets configuration across Outfitter projects
+- The config is designed for monorepo workflows but works with single packages too
 - It's a development dependency that sets up release management infrastructure.

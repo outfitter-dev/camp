@@ -46,8 +46,7 @@ packlist init --force --no-eslint
 
 ### Core Functionality
 
-- **Project Initialization**: Sets up ESLint, TypeScript, and other
-configurations
+- **Project Initialization**: Sets up ESLint, TypeScript, and other configurations
 - **Package Manager Detection**: Automatically detects npm, yarn, or pnpm
 - **Configuration Generation**: Creates config files for various tools
 - **Dependency Management**: Installs required Outfitter packages

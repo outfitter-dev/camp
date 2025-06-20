@@ -1,7 +1,6 @@
 # @outfitter/packlist
 
-> Unified development configuration manager that orchestrates all Outfitter
-> development tools
+> Unified development configuration manager that orchestrates all Outfitter development tools
 
 ## Installation
 
@@ -18,8 +17,7 @@ Packlist is the central configuration manager for Outfitter projects. It brings 
 ## Features
 
 - **Unified Setup**: Single command to configure all development tools
-- **Configuration Discovery**: Automatically detects and manages config
-dependencies
+- **Configuration Discovery**: Automatically detects and manages config dependencies
 - **CLI Interface**: Command-line tool for easy project initialization
 - **Programmatic API**: Use as a library in your build scripts
 - **Result Pattern**: Built on `@outfitter/contracts` for robust error handling

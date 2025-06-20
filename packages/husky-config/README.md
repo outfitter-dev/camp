@@ -1,7 +1,6 @@
 # @outfitter/husky-config
 
-> Shared Git hooks configuration for consistent development workflows across
-> Outfitter projects
+> Shared Git hooks configuration for consistent development workflows across Outfitter projects
 
 ## Installation
 

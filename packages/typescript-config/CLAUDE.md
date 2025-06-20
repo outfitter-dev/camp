@@ -87,22 +87,15 @@ Projects extend these configs in their `tsconfig.json`:
 
 ## Important Configuration Choices
 
-- **Strictest Settings**: This config enables the strictest TypeScript settings
-for maximum type safety
-- **No Emit by Default**: Projects must override `noEmit` if they need to emit
-JavaScript
-- **Bundler Module Resolution**: Optimized for modern bundlers (Vite, webpack,
-etc.)
-- **Composite Projects**: Enables TypeScript project references for monorepo
-setups
+- **Strictest Settings**: This config enables the strictest TypeScript settings for maximum type safety
+- **No Emit by Default**: Projects must override `noEmit` if they need to emit JavaScript
+- **Bundler Module Resolution**: Optimized for modern bundlers (Vite, webpack, etc.)
+- **Composite Projects**: Enables TypeScript project references for monorepo setups
 - **Verbatim Module Syntax**: Ensures imports/exports are preserved as written
 
 ## Notes
 
 - This is a JSON-only package (no TypeScript code)
-- Projects can override any setting by specifying it in their own
-`tsconfig.json`
-- The configs are designed to catch as many potential errors as possible at
-compile time
-- All configs exclude common build directories (`node_modules`, `dist`, `build`,
-`.next`)
+- Projects can override any setting by specifying it in their own `tsconfig.json`
+- The configs are designed to catch as many potential errors as possible at compile time
+- All configs exclude common build directories (`node_modules`, `dist`, `build`, `.next`)
