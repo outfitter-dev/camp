@@ -40,7 +40,7 @@ export async function select(options: SelectOptions): Promise<string> {
 
   try {
     console.log(colors.cyan(options.message));
-    
+
     options.choices.forEach((choice, index) => {
       const marker = choice.value === options.default ? '●' : '○';
       console.log(`  ${colors.dim(`${index + 1})`)} ${marker} ${choice.name}`);
@@ -50,9 +50,7 @@ export async function select(options: SelectOptions): Promise<string> {
     });
 
     while (true) {
-      const answer = await rl.question(
-        colors.gray(`Select (1-${options.choices.length}): `)
-      );
+      const answer = await rl.question(colors.gray(`Select (1-${options.choices.length}): `));
 
       if (!answer && options.default) {
         return options.default;
@@ -80,14 +78,11 @@ export async function confirm(options: ConfirmOptions): Promise<boolean> {
   });
 
   try {
-    const defaultText = options.default !== undefined 
-      ? colors.gray(` (${options.default ? 'Y/n' : 'y/N'})`)
-      : '';
+    const defaultText =
+      options.default !== undefined ? colors.gray(` (${options.default ? 'Y/n' : 'y/N'})`) : '';
 
     while (true) {
-      const answer = await rl.question(
-        `${colors.cyan(options.message)}${defaultText}: `
-      );
+      const answer = await rl.question(`${colors.cyan(options.message)}${defaultText}: `);
 
       if (!answer && options.default !== undefined) {
         return options.default;
@@ -118,14 +113,10 @@ export async function input(options: InputOptions): Promise<string> {
   });
 
   try {
-    const defaultText = options.default 
-      ? colors.gray(` (${options.default})`)
-      : '';
+    const defaultText = options.default ? colors.gray(` (${options.default})`) : '';
 
     while (true) {
-      const answer = await rl.question(
-        `${colors.cyan(options.message)}${defaultText}: `
-      );
+      const answer = await rl.question(`${colors.cyan(options.message)}${defaultText}: `);
 
       const value = answer || options.default || '';
 

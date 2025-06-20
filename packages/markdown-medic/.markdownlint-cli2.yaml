@@ -24,7 +24,7 @@ ignores:
   - build/**
   - coverage/**
   - CHANGELOG.md
-  - "*.min.md"
+  - '*.min.md'
 terminology:
   - incorrect: NPM
     correct: npm

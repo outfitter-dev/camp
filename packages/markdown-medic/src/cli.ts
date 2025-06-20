@@ -22,22 +22,22 @@ yargs(hideBin(process.argv))
           describe: 'Files to lint',
           type: 'string',
           array: true,
-          default: ['.']
+          default: ['.'],
         })
         .option('fix', {
           describe: 'Fix issues automatically',
           type: 'boolean',
-          default: false
+          default: false,
         })
         .option('config', {
           alias: 'c',
           describe: 'Configuration file path',
-          type: 'string'
+          type: 'string',
         });
     },
-    lintCommand
+    lintCommand,
   )
-  
+
   // Init command
   .command(
     'init [preset]',
@@ -46,12 +46,12 @@ yargs(hideBin(process.argv))
       return yargs.positional('preset', {
         describe: 'Preset to use',
         type: 'string',
-        choices: ['strict', 'standard', 'relaxed']
+        choices: ['strict', 'standard', 'relaxed'],
       });
     },
-    initCommand
+    initCommand,
   )
-  
+
   // Format command
   .command(
     'format [source] [path]',
@@ -61,19 +61,19 @@ yargs(hideBin(process.argv))
         .positional('source', {
           describe: 'Source to format from',
           type: 'string',
-          choices: ['file']
+          choices: ['file'],
         })
         .positional('path', {
           describe: 'File path (when source is "file")',
-          type: 'string'
+          type: 'string',
         })
         .option('input', {
           describe: 'Read from stdin',
-          type: 'boolean'
+          type: 'boolean',
         })
         .option('text', {
           describe: 'Format inline text',
-          type: 'string'
+          type: 'string',
         })
         .check((argv) => {
           // Ensure at least one source is specified
@@ -89,123 +89,115 @@ yargs(hideBin(process.argv))
           alias: 'p',
           describe: 'Preset to use for formatting',
           type: 'string',
-          choices: ['strict', 'standard', 'relaxed']
+          choices: ['strict', 'standard', 'relaxed'],
         })
         .option('output', {
           describe: 'Output to stdout',
           type: 'boolean',
-          default: true
+          default: true,
         });
     },
-    formatCommand
+    formatCommand,
   )
-  
+
   // Rules commands
-  .command(
-    'rules',
-    'Manage markdown rules',
-    (yargs) => {
-      return yargs
-        .command(
-          'list [preset]',
-          'List rules',
-          (yargs) => {
-            return yargs.positional('preset', {
-              describe: 'Show rules for specific preset',
-              type: 'string',
-              choices: ['strict', 'standard', 'relaxed']
-            });
-          },
-          rulesListCommand
-        )
-        .command(
-          'update <rules..>',
-          'Update rule configurations',
-          (yargs) => {
-            return yargs
-              .positional('rules', {
-                describe: 'Rules to update (e.g., md003 atx md013 --line-length 80)',
-                type: 'string',
-                array: true,
-                demandOption: true
-              })
-              .strict(false); // Allow dynamic options for rules
-          },
-          rulesUpdateCommand
-        )
-        .command(
-          'forget <rules..>',
-          'Remove rule overrides',
-          (yargs) => {
-            return yargs.positional('rules', {
-              describe: 'Rules to forget',
+  .command('rules', 'Manage markdown rules', (yargs) => {
+    return yargs
+      .command(
+        'list [preset]',
+        'List rules',
+        (yargs) => {
+          return yargs.positional('preset', {
+            describe: 'Show rules for specific preset',
+            type: 'string',
+            choices: ['strict', 'standard', 'relaxed'],
+          });
+        },
+        rulesListCommand,
+      )
+      .command(
+        'update <rules..>',
+        'Update rule configurations',
+        (yargs) => {
+          return yargs
+            .positional('rules', {
+              describe: 'Rules to update (e.g., md003 atx md013 --line-length 80)',
               type: 'string',
               array: true,
-              demandOption: true
-            });
-          },
-          rulesForgetCommand
-        )
-        .demandCommand(1, 'You need to specify a rules subcommand');
-    }
-  )
-  
+              demandOption: true,
+            })
+            .strict(false); // Allow dynamic options for rules
+        },
+        rulesUpdateCommand,
+      )
+      .command(
+        'forget <rules..>',
+        'Remove rule overrides',
+        (yargs) => {
+          return yargs.positional('rules', {
+            describe: 'Rules to forget',
+            type: 'string',
+            array: true,
+            demandOption: true,
+          });
+        },
+        rulesForgetCommand,
+      )
+      .demandCommand(1, 'You need to specify a rules subcommand');
+  })
+
   // Config commands
-  .command(
-    'config',
-    'Manage configuration',
-    (yargs) => {
-      return yargs
-        .command(
-          'preset <name>',
-          'Set configuration preset',
-          (yargs) => {
-            return yargs.positional('name', {
-              describe: 'Preset name',
+  .command('config', 'Manage configuration', (yargs) => {
+    return yargs
+      .command(
+        'preset <name>',
+        'Set configuration preset',
+        (yargs) => {
+          return yargs.positional('name', {
+            describe: 'Preset name',
+            type: 'string',
+            choices: ['strict', 'standard', 'relaxed'],
+            demandOption: true,
+          });
+        },
+        configPresetCommand,
+      )
+      .command(
+        'ignore <patterns..>',
+        'Manage ignore patterns',
+        (yargs) => {
+          return yargs
+            .positional('patterns', {
+              describe: 'Patterns to add or remove',
               type: 'string',
-              choices: ['strict', 'standard', 'relaxed'],
-              demandOption: true
+              array: true,
+              demandOption: true,
+            })
+            .option('remove', {
+              describe: 'Remove patterns instead of adding',
+              type: 'boolean',
+              default: false,
             });
-          },
-          configPresetCommand
-        )
-        .command(
-          'ignore <patterns..>',
-          'Manage ignore patterns',
-          (yargs) => {
-            return yargs
-              .positional('patterns', {
-                describe: 'Patterns to add or remove',
-                type: 'string',
-                array: true,
-                demandOption: true
-              })
-              .option('remove', {
-                describe: 'Remove patterns instead of adding',
-                type: 'boolean',
-                default: false
-              });
-          },
-          configIgnoreCommand
-        )
-        .demandCommand(1, 'You need to specify a config subcommand');
-    }
-  )
-  
+        },
+        configIgnoreCommand,
+      )
+      .demandCommand(1, 'You need to specify a config subcommand');
+  })
+
   // Global options
   .option('quiet', {
     alias: 'q',
     describe: 'Suppress non-error output',
     type: 'boolean',
-    default: false
+    default: false,
   })
   .option('verbose', {
     alias: 'v',
     describe: 'Show detailed output',
     type: 'boolean',
-    default: false
+    default: false,
   })
-  
+
   // Help customization
   .help()
   .alias('help', 'h')
@@ -214,7 +206,7 @@ yargs(hideBin(process.argv))
   .strict()
   .recommendCommands()
   .showHelpOnFail(false, 'Use --help for available options')
-  
+
   // Examples
   .example('$0', 'Lint all markdown files in current directory')
   .example('$0 --fix README.md', 'Fix issues in README.md')
@@ -222,6 +214,6 @@ yargs(hideBin(process.argv))
   .example('$0 format --text "# My Title" --preset strict', 'Format text with strict preset')
   .example('$0 rules update md013 --line-length 100', 'Update line length rule')
   .example('$0 rules forget md050', 'Remove emphasis style override')
-  
+
   .epilogue('For more information, visit https://github.com/outfitter-dev/markdown-medic')
   .parse();

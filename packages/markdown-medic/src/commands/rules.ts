@@ -26,11 +26,11 @@ const CONFIG_PATH = '.markdownlint-cli2.yaml';
 
 export async function rulesListCommand(argv: ArgumentsCamelCase<RulesListArgs>): Promise<void> {
   const { preset, quiet } = argv;
-  
+
   try {
     let config: MdlintConfig;
     let source: string;
-    
+
     if (preset) {
       // Show preset rules
       config = getPresetConfig(preset);
@@ -45,27 +45,27 @@ export async function rulesListCommand(argv: ArgumentsCamelCase<RulesListArgs>):
       config = getPresetConfig('standard');
       source = 'standard preset (default)';
     }
-    
+
     if (!quiet) {
       console.log(colors.bold(`\nRules from ${source}:\n`));
     }
-    
+
     // Group rules by status
     const enabledRules: Record<string, any> = {};
     const disabledRules: string[] = [];
     const configuredRules: Record<string, any> = {};
-    
+
     Object.entries(config).forEach(([key, value]) => {
       // Only process markdown rules (MDxxx format)
       if (!key.match(/^MD\d{3}$/)) {
         return;
       }
-      
+
       // Skip null/undefined values
       if (value == null) {
         return;
       }
-      
+
       if (value === false) {
         disabledRules.push(key);
       } else if (value === true) {
@@ -74,43 +74,46 @@ export async function rulesListCommand(argv: ArgumentsCamelCase<RulesListArgs>):
         configuredRules[key] = value;
       }
     });
-    
+
     // Display enabled rules
     if (Object.keys(enabledRules).length > 0) {
       console.log(colors.green('Enabled:'));
-      Object.keys(enabledRules).sort().forEach(rule => {
-        console.log(`  ${rule}`);
-      });
+      Object.keys(enabledRules)
+        .sort()
+        .forEach((rule) => {
+          console.log(`  ${rule}`);
+        });
       console.log();
     }
-    
+
     // Display configured rules
     if (Object.keys(configuredRules).length > 0) {
       console.log(colors.blue('Configured:'));
-      Object.entries(configuredRules).sort().forEach(([rule, options]) => {
-        console.log(`  ${rule}:`);
-        if (options && typeof options === 'object') {
-          Object.entries(options).forEach(([key, value]) => {
-            console.log(`    ${key}: ${JSON.stringify(value)}`);
-          });
-        }
-      });
+      Object.entries(configuredRules)
+        .sort()
+        .forEach(([rule, options]) => {
+          console.log(`  ${rule}:`);
+          if (options && typeof options === 'object') {
+            Object.entries(options).forEach(([key, value]) => {
+              console.log(`    ${key}: ${JSON.stringify(value)}`);
+            });
+          }
+        });
       console.log();
     }
-    
+
     // Display disabled rules
     if (disabledRules.length > 0) {
       console.log(colors.red('Disabled:'));
-      disabledRules.sort().forEach(rule => {
+      disabledRules.sort().forEach((rule) => {
         console.log(`  ${rule}`);
       });
       console.log();
     }
-    
+
     if (!quiet) {
       console.log(colors.dim('Run "mdmedic rules update <rule> <value>" to modify rules'));
     }
-    
   } catch (error) {
     console.error(colors.error('Error:'), error instanceof Error ? error.message : error);
     process.exit(1);
@@ -119,10 +122,10 @@ export async function rulesListCommand(argv: ArgumentsCamelCase<RulesListArgs>):
 
 export async function rulesUpdateCommand(argv: ArgumentsCamelCase<RulesUpdateArgs>): Promise<void> {
   const { rules, quiet, _, $0, ...otherArgs } = argv;
-  
+
   // Reconstruct the full args including any dynamic options
   const fullArgs: string[] = [...rules];
-  
+
   // Add any additional args that were parsed as options
   Object.entries(otherArgs).forEach(([key, value]) => {
     // Skip known options and camelCase duplicates
@@ -130,7 +133,7 @@ export async function rulesUpdateCommand(argv: ArgumentsCamelCase<RulesUpdateArg
       return;
     }
     // Skip camelCase versions if kebab-case version exists
-    const kebabKey = key.replace(/[A-Z]/g, m => `-${m.toLowerCase()}`);
+    const kebabKey = key.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`);
     if (kebabKey !== key && otherArgs[kebabKey] !== undefined) {
       return;
     }
@@ -140,7 +143,7 @@ export async function rulesUpdateCommand(argv: ArgumentsCamelCase<RulesUpdateArg
       fullArgs.push(String(value));
     }
   });
-  
+
   try {
     // Load existing config or create new one
     let config: MdlintConfig;
@@ -150,25 +153,25 @@ export async function rulesUpdateCommand(argv: ArgumentsCamelCase<RulesUpdateArg
     } else {
       config = getPresetConfig('standard');
     }
-    
+
     // Parse rule updates from args
     const updates = parseRuleUpdates(fullArgs);
-    
+
     // Apply updates
     Object.entries(updates).forEach(([rule, value]) => {
       config[rule] = value;
     });
-    
+
     // Save config
     const yamlContent = yaml.dump(config, {
       lineWidth: -1,
       quotingType: '"',
       forceQuotes: false,
-      noRefs: true
+      noRefs: true,
     });
-    
+
     writeFileSync(CONFIG_PATH, yamlContent);
-    
+
     if (!quiet) {
       console.log(colors.success('✅'), 'Rules updated successfully:');
       Object.entries(updates).forEach(([rule, value]) => {
@@ -179,7 +182,6 @@ export async function rulesUpdateCommand(argv: ArgumentsCamelCase<RulesUpdateArg
         }
       });
     }
-    
   } catch (error) {
     console.error(colors.error('Error:'), error instanceof Error ? error.message : error);
     process.exit(1);
@@ -188,48 +190,47 @@ export async function rulesUpdateCommand(argv: ArgumentsCamelCase<RulesUpdateArg
 
 export async function rulesForgetCommand(argv: ArgumentsCamelCase<RulesForgetArgs>): Promise<void> {
   const { rules, quiet } = argv;
-  
+
   try {
     if (!existsSync(CONFIG_PATH)) {
       throw new Error('No configuration file found. Run "mdmedic init" first.');
     }
-    
+
     // Load config
     const configContent = readFileSync(CONFIG_PATH, 'utf-8');
     const config = yaml.load(configContent) as MdlintConfig;
-    
+
     // Remove specified rules
     const removed: string[] = [];
-    rules.forEach(rule => {
+    rules.forEach((rule) => {
       const ruleKey = rule.toUpperCase();
       if (config[ruleKey] !== undefined) {
         delete config[ruleKey];
         removed.push(ruleKey);
       }
     });
-    
+
     if (removed.length === 0) {
       console.log(colors.warning('No matching rules found in configuration.'));
       return;
     }
-    
+
     // Save config
     const yamlContent = yaml.dump(config, {
       lineWidth: -1,
       quotingType: '"',
       forceQuotes: false,
-      noRefs: true
+      noRefs: true,
     });
-    
+
     writeFileSync(CONFIG_PATH, yamlContent);
-    
+
     if (!quiet) {
       console.log(colors.success('✅'), 'Rules removed from configuration:');
-      removed.forEach(rule => {
+      removed.forEach((rule) => {
         console.log(`  ${rule}`);
       });
     }
-    
   } catch (error) {
     console.error(colors.error('Error:'), error instanceof Error ? error.message : error);
     process.exit(1);
@@ -246,23 +247,22 @@ function parseRuleUpdates(args: string[]): Record<string, any> {
   let currentRule: string | null = null;
   let currentOptions: Record<string, any> = {};
   let i = 0;
-  
+
   while (i < args.length) {
     const arg = args[i];
-    
+
     // Check if this is a rule name (MDxxx format)
     if (arg.match(/^MD\d{3}$/i)) {
       // Save previous rule if any
       if (currentRule) {
-        updates[currentRule.toUpperCase()] = Object.keys(currentOptions).length > 0 
-          ? currentOptions 
-          : true;
+        updates[currentRule.toUpperCase()] =
+          Object.keys(currentOptions).length > 0 ? currentOptions : true;
       }
-      
+
       currentRule = arg;
       currentOptions = {};
       i++;
-      
+
       // Check if next arg is a simple value (not an option and not another rule)
       if (i < args.length && !args[i].startsWith('--') && !args[i].match(/^MD\d{3}$/i)) {
         const value = args[i];
@@ -281,7 +281,7 @@ function parseRuleUpdates(args: string[]): Record<string, any> {
       // This is an option for the current rule
       const key = arg.slice(2).replace(/-/g, '_'); // Convert kebab-case to snake_case
       i++;
-      
+
       if (i < args.length && !args[i].startsWith('--') && !args[i].match(/^MD\d{3}$/i)) {
         const value = args[i];
         // Parse value type
@@ -303,13 +303,12 @@ function parseRuleUpdates(args: string[]): Record<string, any> {
       i++;
     }
   }
-  
+
   // Save last rule if any
   if (currentRule) {
-    updates[currentRule.toUpperCase()] = Object.keys(currentOptions).length > 0 
-      ? currentOptions 
-      : true;
+    updates[currentRule.toUpperCase()] =
+      Object.keys(currentOptions).length > 0 ? currentOptions : true;
   }
-  
+
   return updates;
 }

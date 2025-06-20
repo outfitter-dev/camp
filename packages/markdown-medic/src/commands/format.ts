@@ -22,10 +22,10 @@ const require = createRequire(import.meta.url);
 
 export async function formatCommand(argv: ArgumentsCamelCase<FormatCommandArgs>): Promise<void> {
   const { source, path, input, text, preset, output = true, quiet } = argv;
-  
+
   let content: string;
   let sourceName: string;
-  
+
   try {
     // Get content based on source
     if (text) {
@@ -44,26 +44,25 @@ export async function formatCommand(argv: ArgumentsCamelCase<FormatCommandArgs>)
     } else {
       throw new Error('No valid source specified. Use --text, --input, or specify file source.');
     }
-    
+
     if (!content.trim()) {
       throw new Error(`No content found in ${sourceName}`);
     }
-    
+
     // Format using markdownlint-cli2
     if (!quiet) {
       console.log(colors.info('Formatting...'));
     }
     const formatted = await formatMarkdown(content, preset);
-    
+
     // Handle output
     if (output) {
       console.log(formatted);
     }
-    
+
     if (!quiet) {
       console.log(colors.success('✅ Formatted successfully'));
     }
-    
   } catch (error) {
     console.error(colors.error('Error:'), error instanceof Error ? error.message : error);
     process.exit(1);
@@ -73,20 +72,20 @@ export async function formatCommand(argv: ArgumentsCamelCase<FormatCommandArgs>)
 async function readStdin(): Promise<string> {
   return new Promise((resolve, reject) => {
     let content = '';
-    
+
     process.stdin.setEncoding('utf8');
     process.stdin.on('data', (chunk) => {
       content += chunk;
     });
-    
+
     process.stdin.on('end', () => {
       resolve(content);
     });
-    
+
     process.stdin.on('error', (error) => {
       reject(error);
     });
-    
+
     // Check if stdin is a TTY (no piped input)
     if (process.stdin.isTTY) {
       reject(new Error('No input provided. Pipe content or use --text flag.'));
@@ -96,19 +95,19 @@ async function readStdin(): Promise<string> {
 
 async function formatMarkdown(content: string, preset?: PresetName): Promise<string> {
   const { main: markdownlintCli2Main } = require('markdownlint-cli2');
-  
+
   // Create a temporary directory
   const tempDir = mkdtempSync(join(tmpdir(), 'mdmedic-'));
   const tempFile = join(tempDir, 'content.md');
   let tempConfigPath: string | undefined;
-  
+
   try {
     // Write content to temp file
     writeFileSync(tempFile, content);
-    
+
     // Build args for markdownlint-cli2
     const args = [tempFile, '--fix'];
-    
+
     if (preset) {
       // Create a config file in temp directory
       tempConfigPath = join(tempDir, '.markdownlint.json');
@@ -118,19 +117,19 @@ async function formatMarkdown(content: string, preset?: PresetName): Promise<str
       writeFileSync(tempConfigPath, JSON.stringify(presetConfig, null, 2));
       args.push('--config', tempConfigPath);
     }
-    
+
     // Run markdownlint-cli2
     const params = {
       argv: args,
       logMessage: () => {}, // Suppress output
-      logError: () => {}    // Suppress errors (we'll handle them)
+      logError: () => {}, // Suppress errors (we'll handle them)
     };
-    
+
     await markdownlintCli2Main(params);
-    
+
     // Read the formatted content
     const formatted = readFileSync(tempFile, 'utf-8');
-    
+
     // Clean up temp files
     if (existsSync(tempFile)) {
       unlinkSync(tempFile);
@@ -142,9 +141,8 @@ async function formatMarkdown(content: string, preset?: PresetName): Promise<str
     if (existsSync(tempDir)) {
       require('fs').rmSync(tempDir, { recursive: true, force: true });
     }
-    
+
     return formatted;
-    
   } catch (error) {
     // Clean up on error
     if (existsSync(tempFile)) {
@@ -157,7 +155,7 @@ async function formatMarkdown(content: string, preset?: PresetName): Promise<str
     if (existsSync(tempDir)) {
       require('fs').rmSync(tempDir, { recursive: true, force: true });
     }
-    
+
     throw error;
   }
 }

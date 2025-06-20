@@ -6,7 +6,7 @@
 export const colors = {
   // Reset
   reset: '\x1b[0m',
-  
+
   // Text colors
   red: (text: string) => `\x1b[31m${text}\x1b[0m`,
   green: (text: string) => `\x1b[32m${text}\x1b[0m`,
@@ -16,13 +16,13 @@ export const colors = {
   cyan: (text: string) => `\x1b[36m${text}\x1b[0m`,
   white: (text: string) => `\x1b[37m${text}\x1b[0m`,
   gray: (text: string) => `\x1b[90m${text}\x1b[0m`,
-  
+
   // Text styles
   bold: (text: string) => `\x1b[1m${text}\x1b[0m`,
   dim: (text: string) => `\x1b[2m${text}\x1b[0m`,
   italic: (text: string) => `\x1b[3m${text}\x1b[0m`,
   underline: (text: string) => `\x1b[4m${text}\x1b[0m`,
-  
+
   // Semantic colors
   success: (text: string) => `\x1b[32m${text}\x1b[0m`,
   error: (text: string) => `\x1b[31m${text}\x1b[0m`,
@@ -43,10 +43,7 @@ export function shouldUseColors(): boolean {
 /**
  * Conditionally apply colors based on environment
  */
-export function colorize<T extends keyof typeof colors>(
-  color: T,
-  text: string
-): string {
+export function colorize<T extends keyof typeof colors>(color: T, text: string): string {
   if (!shouldUseColors()) return text;
   return colors[color](text);
 }

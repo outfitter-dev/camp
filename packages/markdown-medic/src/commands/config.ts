@@ -18,22 +18,24 @@ interface ConfigIgnoreArgs {
 
 const CONFIG_PATH = '.markdownlint-cli2.yaml';
 
-export async function configPresetCommand(argv: ArgumentsCamelCase<ConfigPresetArgs>): Promise<void> {
+export async function configPresetCommand(
+  argv: ArgumentsCamelCase<ConfigPresetArgs>,
+): Promise<void> {
   const { name, quiet } = argv;
-  
+
   try {
     // Get the preset config
     const presetConfig = getPresetConfig(name);
-    
+
     // If config exists, preserve custom rules and ignores
     let customRules: string[] = [];
     let ignores: string[] = [];
     let terminology: Array<{ incorrect: string; correct: string }> = [];
-    
+
     if (existsSync(CONFIG_PATH)) {
       const existingContent = readFileSync(CONFIG_PATH, 'utf-8');
       const existingConfig = yaml.load(existingContent) as MdlintConfig;
-      
+
       // Preserve customizations
       if (existingConfig.customRules) {
         customRules = existingConfig.customRules;
@@ -45,48 +47,49 @@ export async function configPresetCommand(argv: ArgumentsCamelCase<ConfigPresetA
         terminology = existingConfig.terminology;
       }
     }
-    
+
     // Merge preset with preserved customizations
     const newConfig: MdlintConfig = {
       ...presetConfig,
       ...(customRules.length > 0 && { customRules }),
       ...(terminology.length > 0 && { terminology }),
-      ...(ignores.length > 0 && { ignores })
+      ...(ignores.length > 0 && { ignores }),
     };
-    
+
     // Save config
     const yamlContent = yaml.dump(newConfig, {
       lineWidth: -1,
       quotingType: '"',
       forceQuotes: false,
-      noRefs: true
+      noRefs: true,
     });
-    
+
     // Add header comment
     const finalContent = `# markdown-medic configuration
 # Generated with preset: ${name}
 # Docs: https://github.com/DavidAnson/markdownlint-cli2
 
 ${yamlContent}`;
-    
+
     writeFileSync(CONFIG_PATH, finalContent);
-    
+
     if (!quiet) {
       console.log(colors.success('✅'), `Configuration updated to ${name} preset`);
       if (customRules.length > 0 || ignores.length > 0 || terminology.length > 0) {
         console.log(colors.dim('  (preserved custom rules, terminology, and ignore patterns)'));
       }
     }
-    
   } catch (error) {
     console.error(colors.error('Error:'), error instanceof Error ? error.message : error);
     process.exit(1);
   }
 }
 
-export async function configIgnoreCommand(argv: ArgumentsCamelCase<ConfigIgnoreArgs>): Promise<void> {
+export async function configIgnoreCommand(
+  argv: ArgumentsCamelCase<ConfigIgnoreArgs>,
+): Promise<void> {
   const { patterns, remove, quiet } = argv;
-  
+
   try {
     // Load existing config or create new one
     let config: MdlintConfig;
@@ -96,46 +99,45 @@ export async function configIgnoreCommand(argv: ArgumentsCamelCase<ConfigIgnoreA
     } else {
       config = getPresetConfig('standard');
     }
-    
+
     // Initialize ignores array if not present
     if (!config.ignores) {
       config.ignores = [];
     }
-    
+
     let message: string;
     if (remove) {
       // Remove patterns
       const before = config.ignores.length;
-      config.ignores = config.ignores.filter(pattern => !patterns.includes(pattern));
+      config.ignores = config.ignores.filter((pattern) => !patterns.includes(pattern));
       const removed = before - config.ignores.length;
       message = `Removed ${removed} ignore pattern(s)`;
     } else {
       // Add patterns (avoid duplicates)
-      const newPatterns = patterns.filter(pattern => !config.ignores!.includes(pattern));
+      const newPatterns = patterns.filter((pattern) => !config.ignores!.includes(pattern));
       config.ignores.push(...newPatterns);
       message = `Added ${newPatterns.length} ignore pattern(s)`;
     }
-    
+
     // Save config
     const yamlContent = yaml.dump(config, {
       lineWidth: -1,
       quotingType: '"',
       forceQuotes: false,
-      noRefs: true
+      noRefs: true,
     });
-    
+
     writeFileSync(CONFIG_PATH, yamlContent);
-    
+
     if (!quiet) {
       console.log(colors.success('✅'), message);
       if (!remove && patterns.length > 0) {
         console.log(colors.dim('\nCurrent ignore patterns:'));
-        config.ignores!.forEach(pattern => {
+        config.ignores!.forEach((pattern) => {
           console.log(colors.dim(`  - ${pattern}`));
         });
       }
     }
-    
   } catch (error) {
     console.error(colors.error('Error:'), error instanceof Error ? error.message : error);
     process.exit(1);

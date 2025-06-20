@@ -5,12 +5,7 @@ import { getPresetConfig } from './presets/index.js';
 export type { MdlintConfig, GeneratorOptions } from './types.js';
 
 export function generateConfig(options: GeneratorOptions = {}): string {
-  const {
-    preset = 'standard',
-    terminology = [],
-    customRules = [],
-    ignores = [],
-  } = options;
+  const { preset = 'standard', terminology = [], customRules = [], ignores = [] } = options;
 
   // Start with a copy of the preset object
   const config: MdlintConfig = getPresetConfig(preset);
@@ -35,13 +30,13 @@ export function generateConfig(options: GeneratorOptions = {}): string {
 
 function generateYamlConfig(config: MdlintConfig, preset: PresetName): string {
   const lines: string[] = [];
-  
+
   // Add header comments
   lines.push('# markdown-medic configuration');
   lines.push(`# Generated with preset: ${preset}`);
   lines.push('# Docs: https://github.com/DavidAnson/markdownlint-cli2');
   lines.push('');
-  
+
   // Convert config to YAML format
   Object.entries(config).forEach(([key, value]) => {
     switch (key) {
@@ -49,30 +44,30 @@ function generateYamlConfig(config: MdlintConfig, preset: PresetName): string {
         lines.push('# Custom terminology corrections');
         lines.push('# Format: [{ incorrect: "bad", correct: "good" }]');
         lines.push(`${key}:`);
-        (value as Array<{incorrect: string; correct: string}>).forEach(term => {
+        (value as Array<{ incorrect: string; correct: string }>).forEach((term) => {
           lines.push(`  - incorrect: "${term.incorrect}"`);
           lines.push(`    correct: "${term.correct}"`);
         });
         break;
-        
+
       case 'customRules':
         lines.push('# Additional custom rules to load');
         lines.push('# Paths to JavaScript files exporting markdownlint rules');
         lines.push(`${key}:`);
-        (value as string[]).forEach(rule => {
+        (value as string[]).forEach((rule) => {
           lines.push(`  - "${rule}"`);
         });
         break;
-        
+
       case 'ignores':
         lines.push('# Files and patterns to ignore');
         lines.push('# Supports glob patterns like "docs/legacy/**"');
         lines.push(`${key}:`);
-        (value as string[]).forEach(pattern => {
+        (value as string[]).forEach((pattern) => {
           lines.push(`  - "${pattern}"`);
         });
         break;
-        
+
       default:
         if (typeof value === 'boolean') {
           lines.push(`# Rule: ${key} - ${value ? 'enabled' : 'disabled'}`);
@@ -97,15 +92,14 @@ function generateYamlConfig(config: MdlintConfig, preset: PresetName): string {
     }
     lines.push('');
   });
-  
+
   // Remove trailing empty line
   if (lines[lines.length - 1] === '') {
     lines.pop();
   }
-  
+
   return lines.join('\n');
 }
-
 
 // Default terminology for technical documentation
 export const defaultTerminology = [
@@ -119,4 +113,3 @@ export const defaultTerminology = [
   { incorrect: 'nodejs', correct: 'Node.js' },
   { incorrect: 'react native', correct: 'React Native' },
 ];
-
