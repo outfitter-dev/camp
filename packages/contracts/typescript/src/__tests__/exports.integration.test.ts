@@ -1,14 +1,22 @@
 import { describe, test, expect, beforeAll } from 'vitest';
 import { existsSync } from 'node:fs';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { execSync } from 'node:child_process';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 describe('Package Exports Integration', () => {
   const packageRoot = join(__dirname, '..', '..');
   const distDir = join(packageRoot, 'dist');
 
   beforeAll(() => {
-    // Ensure the package is built
+    // Skip build in CI - rely on top-level build job
+    if (process.env.CI === 'true') {
+      return;
+    }
+    
+    // Ensure the package is built for local development
     if (!existsSync(distDir)) {
       console.log('Building package for export tests...');
       execSync('pnpm build', { cwd: packageRoot, stdio: 'inherit' });
