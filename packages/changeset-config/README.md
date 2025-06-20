@@ -46,7 +46,7 @@ Or copy the configuration directly:
 - **`access`**: Set to `public` for npm publishing
 - **`baseBranch`**: Uses `main` as the base branch
 - **`updateInternalDependencies`**: Set to `patch` for internal dependency
-  updates
+updates
 
 ### Working with Changesets
 
@@ -69,11 +69,9 @@ pnpm changeset:publish
 
 ## Development
 
-This package is part of the
-[@outfitter/monorepo](https://github.com/outfitter-dev/monorepo) monorepo.
+This package is part of the [@outfitter/monorepo](https://github.com/outfitter-dev/monorepo) monorepo.
 
-See the [Development Guide](../../docs/contributing/development.md) for
-instructions on building, testing, and contributing to this package.
+See the [Development Guide](../../docs/contributing/development.md) for instructions on building, testing, and contributing to this package.
 
 ## License
 

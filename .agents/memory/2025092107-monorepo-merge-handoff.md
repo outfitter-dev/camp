@@ -2,9 +2,7 @@
 
 ## Overview
 
-Successfully consolidated three separate repositories (packlist, cli, supplies)
-into a unified camp monorepo with 8 publishable packages, modern tooling, and
-comprehensive documentation system. This establishes camp as the core dependency
+Successfully consolidated three separate repositories (packlist, cli, supplies) into a unified camp monorepo with 8 publishable packages, modern tooling, and comprehensive documentation system. This establishes camp as the core dependency
 for all future Outfitter projects.
 
 ## Context
@@ -16,9 +14,7 @@ The original architecture had fragmented codebases:
 - `supplies/` - Documentation system with validation tools
 
 This fragmentation created maintenance overhead, version conflicts, and
-inconsistent tooling across projects. The goal was to create a single source of
-truth for Outfitter's core utilities while maintaining independent package
-publishing.
+inconsistent tooling across projects. The goal was to create a single source of truth for Outfitter's core utilities while maintaining independent package publishing.
 
 ## Key Changes
 
@@ -55,8 +51,7 @@ publishing.
 
 **Key restructuring:**
 
-- CLI now properly consumes `@outfitter/packlist` as library instead of
-  standalone
+- CLI now properly consumes `@outfitter/packlist` as library instead of standalone
 - Fieldguides reorganized with `content/` subdirectory for guidelines
 - All packages updated with consistent repository metadata
 
@@ -64,8 +59,7 @@ publishing.
 
 **What changed:**
 
-- Merged `supplies/guidebooks/` and `packlist/outfitter/fieldguides/` into
-  unified content
+- Merged `supplies/guidebooks/` and `packlist/outfitter/fieldguides/` into unified content
 - Organized as `@outfitter/fieldguides` package with validation tools
 - Preserved all validation scripts and TypeScript utilities from supplies
 - Maintained both internal (expedition-themed) and external (professional)

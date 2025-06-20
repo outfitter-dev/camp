@@ -1,20 +1,14 @@
 ---
-slug: tanstack-router-guide
-title: Type-safe routing with TanStack Router
-description: File-based routing with type safety and data loading.
-type: guide
+slug: tanstack-router-guide title: Type-safe routing with TanStack Router description: File-based routing with type safety and data loading. type: guide
 ---
 
 # TanStack Router Guide
 
-Type-safe, file-based routing for React applications with automatic code
-splitting and data loading.
+Type-safe, file-based routing for React applications with automatic code splitting and data loading.
 
 ## Overview
 
-TanStack Router provides a fully type-safe routing solution with file-based
-routing, search params validation, and seamless integration with TanStack Query
-for data fetching.
+TanStack Router provides a fully type-safe routing solution with file-based routing, search params validation, and seamless integration with TanStack Query for data fetching.
 
 ## Installation
 

@@ -15,5 +15,4 @@ Code block without language
 ## Duplicate Heading
 ## Duplicate Heading
 
-NPM should be npm.
-Javascript should be JavaScript.
+NPM should be npm. Javascript should be JavaScript.

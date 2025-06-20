@@ -1,8 +1,5 @@
 ---
-slug: monitoring-observability
-title: 'Monitoring & Observability'
-description: 'Comprehensive monitoring patterns for production systems.'
-type: guide
+slug: monitoring-observability title: 'Monitoring & Observability' description: 'Comprehensive monitoring patterns for production systems.' type: guide
 ---
 
 # Monitoring & Observability
@@ -12,12 +9,12 @@ Comprehensive monitoring patterns for production systems.
 ## Related Documentation
 
 - [Deployment Standards](../standards/deployment-standards.md) - Post-deployment
-  monitoring
+monitoring
 - [Configuration Standards](../standards/configuration-standards.md) -
-  Monitoring configuration
+Monitoring configuration
 - [Testing Standards](../standards/testing-standards.md) - Performance testing
 - [TypeScript Standards](../standards/typescript-standards.md) - Type-safe
-  metrics
+metrics
 
 ## Core Principles
 

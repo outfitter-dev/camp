@@ -1,13 +1,10 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with
-code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Overview
 
-This is the `@outfitter/typescript-config` package - shared TypeScript
-configurations for Outfitter projects. It provides strict, opinionated
-TypeScript configs optimized for different project types (base, Next.js, Vite).
+This is the `@outfitter/typescript-config` package - shared TypeScript configurations for Outfitter projects. It provides strict, opinionated TypeScript configs optimized for different project types (base, Next.js, Vite).
 
 ## Key Commands
 
@@ -91,21 +88,21 @@ Projects extend these configs in their `tsconfig.json`:
 ## Important Configuration Choices
 
 - **Strictest Settings**: This config enables the strictest TypeScript settings
-  for maximum type safety
+for maximum type safety
 - **No Emit by Default**: Projects must override `noEmit` if they need to emit
-  JavaScript
+JavaScript
 - **Bundler Module Resolution**: Optimized for modern bundlers (Vite, webpack,
-  etc.)
+etc.)
 - **Composite Projects**: Enables TypeScript project references for monorepo
-  setups
+setups
 - **Verbatim Module Syntax**: Ensures imports/exports are preserved as written
 
 ## Notes
 
 - This is a JSON-only package (no TypeScript code)
 - Projects can override any setting by specifying it in their own
-  `tsconfig.json`
+`tsconfig.json`
 - The configs are designed to catch as many potential errors as possible at
-  compile time
+compile time
 - All configs exclude common build directories (`node_modules`, `dist`, `build`,
-  `.next`)
+`.next`)

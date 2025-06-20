@@ -67,7 +67,7 @@ All configurations enforce maximum type safety:
 - **`noUncheckedIndexedAccess: true`**: Array/object access returns
   `T | undefined`
 - **`exactOptionalPropertyTypes: true`**: Optional properties can't be set to
-  `undefined`
+`undefined`
 
 ### Modern JavaScript
 
@@ -92,8 +92,7 @@ All configurations enforce maximum type safety:
 
 ### Base Configuration
 
-The strictest configuration for maximum type safety and code quality. Use this
-for:
+The strictest configuration for maximum type safety and code quality. Use this for:
 
 - Libraries
 - Node.js applications
@@ -141,21 +140,17 @@ Override any setting in your local `tsconfig.json`:
 2. **Handle all cases**: The configs force you to handle edge cases explicitly
 3. **Use path aliases**: Keep imports clean with the `@/*` alias
 4. **Enable project references**: For monorepos, use TypeScript project
-   references
+references
 
 ## Migration Guide
 
-For detailed instructions on migrating from a loose TypeScript configuration to
-strict settings, see the
-[TypeScript Migration Guide](../../docs/migration/loose-to-strict-typescript.md).
+For detailed instructions on migrating from a loose TypeScript configuration to strict settings, see the [TypeScript Migration Guide](../../docs/migration/loose-to-strict-typescript.md).
 
 ## Development
 
-This package is part of the
-[@outfitter/monorepo](https://github.com/outfitter-dev/monorepo) monorepo.
+This package is part of the [@outfitter/monorepo](https://github.com/outfitter-dev/monorepo) monorepo.
 
-See the [Development Guide](../../docs/contributing/development.md) for
-instructions on building, testing, and contributing to this package.
+See the [Development Guide](../../docs/contributing/development.md) for instructions on building, testing, and contributing to this package.
 
 ## License
 

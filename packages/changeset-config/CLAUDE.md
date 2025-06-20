@@ -1,14 +1,10 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with
-code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Overview
 
-This is the `@outfitter/changeset-config` package - a configuration and
-initialization utility for Changesets in Outfitter projects. It provides a
-default Changesets configuration and helper functions to set up Changesets in
-monorepos or single-package repos.
+This is the `@outfitter/changeset-config` package - a configuration and initialization utility for Changesets in Outfitter projects. It provides a default Changesets configuration and helper functions to set up Changesets in monorepos or single-package repos.
 
 ## Key Commands
 
@@ -40,7 +36,7 @@ pnpm typecheck
   - Copies and customizes config based on options
   - Creates README for the changeset directory
 - `addChangesetScripts(packageJsonPath)` - Adds changeset-related scripts to
-  package.json
+package.json
   - Adds `changeset`, `changeset:version`, and `changeset:publish` scripts
 
 ### Configuration Options
@@ -85,7 +81,7 @@ Uses `tsup` to build:
 ## Important Notes
 
 - This package helps standardize Changesets configuration across Outfitter
-  projects
+projects
 - The config is designed for monorepo workflows but works with single packages
-  too
+too
 - It's a development dependency that sets up release management infrastructure.

@@ -1,29 +1,22 @@
 ---
-slug: ui-toast-feedback
-title: Display toast notifications with Sonner and Result patterns
-description: Type-safe toast notifications with Sonner for consistent user feedback.
-type: pattern
+slug: ui-toast-feedback title: Display toast notifications with Sonner and Result patterns description: Type-safe toast notifications with Sonner for consistent user feedback. type: pattern
 ---
 
 # Toast Notifications with Sonner
 
-Type-safe toast notifications with Sonner and Result pattern integration for
-consistent user feedback across your application.
+Type-safe toast notifications with Sonner and Result pattern integration for consistent user feedback across your application.
 
 ## Related Documentation
 
 - [TypeScript Error Handling](./typescript-error-handling.md) - Result pattern
-  implementation
+implementation
 - [React Patterns](./react-patterns.md) - Component integration patterns
 - [TypeScript Validation](./typescript-validation.md) - Form validation with
-  toasts
+toasts
 
 ## Overview
 
-Sonner provides beautiful, accessible toast notifications for React
-applications. When integrated with the Result pattern and AppError types, it
-creates a consistent system for displaying operation outcomes to users with
-appropriate context and styling.
+Sonner provides beautiful, accessible toast notifications for React applications. When integrated with the Result pattern and AppError types, it creates a consistent system for displaying operation outcomes to users with appropriate context and styling.
 
 ## Setup
 
@@ -771,16 +764,16 @@ describe('Toast Notifications', () => {
 ## Best Practices
 
 1. **Use Semantic Toast Types**: Success for completion, error for failures,
-   loading for progress
+loading for progress
 2. **Provide Clear Messages**: Titles should be action-oriented, descriptions
-   should explain why
+should explain why
 3. **Handle All Error Types**: Map technical errors to user-friendly messages
 4. **Consider Duration**: Critical errors need longer display time
 5. **Enable User Actions**: Provide undo, retry, or navigation options when
-   relevant
+relevant
 6. **Avoid Toast Spam**: Batch similar notifications, use replace for updates
 7. **Test Accessibility**: Ensure screen readers announce toasts appropriately
 8. **Provide Fallbacks**: Use native notifications when available, fall back to
-   toasts
+toasts
 9. **Track Analytics**: Monitor which toasts users see most often
 10. **Respect Preferences**: Allow users to configure notification preferences

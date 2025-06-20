@@ -6,16 +6,14 @@
 
 ## Problem Statement
 
-Current fieldguides total ~6,938 lines across 10 files, with critical files
-exceeding 900 lines each:
+Current fieldguides total ~6,938 lines across 10 files, with critical files exceeding 900 lines each:
 
 - `typescript-conventions.md`: 1,089 lines
 - `environment-config.md`: 977 lines
 - `testing-strategy.md`: 929 lines
 - `ci-cd-pipelines.md`: 869 lines
 
-This density creates significant AI context window consumption, reducing the
-effectiveness of AI agents working with our documentation.
+This density creates significant AI context window consumption, reducing the effectiveness of AI agents working with our documentation.
 
 ## Proposed Solution
 
@@ -81,7 +79,7 @@ fieldguides/
 ## Naming Conventions
 
 1. **ALL CAPS top-level docs** for canonical standards (single word when
-   possible)
+possible)
 2. **Small scope = single file** (`name.md`)
 3. **Large scope = directory** with subdocs (`category/topic/standards.md`)
 4. **If only one thing in folder** = use `name.md` instead of directory
@@ -96,9 +94,9 @@ To ensure no content is lost during the restructure:
 1. **Work in new directories only** - Never modify existing files directly
 2. **Create parallel structure** - Build new structure alongside existing
 3. **Content extraction, not moving** - Copy content to new files, leave
-   originals intact
+originals intact
 4. **Validation before cleanup** - Only remove old files after confirming
-   migration
+migration
 
 ### Files at Risk of Override
 
@@ -207,7 +205,7 @@ For each new document:
 
 1. **Start with primary source** as indicated above
 2. **Search all fieldguides** for related content using grep/search for key
-   terms
+terms
 3. **Check these common locations** for missed content:
    - Introduction sections often contain principles
    - "Best Practices" or "Guidelines" sections

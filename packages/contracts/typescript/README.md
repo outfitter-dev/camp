@@ -31,14 +31,13 @@ import { makeError, success, failure } from '@outfitter/contracts';
 
 ## Overview
 
-This package provides essential TypeScript utilities that form the foundation of
-type-safe development:
+This package provides essential TypeScript utilities that form the foundation of type-safe development:
 
 - **Result Pattern**: Type-safe error handling without exceptions
 - **AppError**: Structured error representation with error codes and context
 - **Type Utilities**: Advanced TypeScript utility types
 - **Environment Validation**: Type-safe environment variable handling (via
-  sub-path)
+sub-path)
 - **Assertions**: Runtime validation with type narrowing
 
 ## Core Concepts
@@ -99,8 +98,7 @@ interface AppError {
 
 ### Environment Validation
 
-Type-safe environment variable handling with Zod. This is available via a
-sub-path import to keep the core package dependency-free.
+Type-safe environment variable handling with Zod. This is available via a sub-path import to keep the core package dependency-free.
 
 ```typescript
 import { validateEnv } from '@outfitter/contracts-zod';
@@ -194,8 +192,7 @@ function handleStatus(status: Status) {
 
 ### Branded Types
 
-Create nominal types from primitives to prevent accidental misuse of values like
-IDs or tokens.
+Create nominal types from primitives to prevent accidental misuse of values like IDs or tokens.
 
 ```typescript
 import type { Branded } from '@outfitter/contracts';
@@ -216,30 +213,30 @@ const userId = createUserId('user-123');
 - `success<T>(data: T): Success<T>` - Create a success result
 - `failure<E>(error: E): Failure<E>` - Create a failure result
 - `isSuccess<T, E>(result: Result<T, E>): result is Success<T>` - Type guard for
-  success
+success
 - `isFailure<T, E>(result: Result<T, E>): result is Failure<E>` - Type guard for
-  failure
+failure
 - `mapResult<T, U, E>(result: Result<T, E>, fn: (data: T) => U): Result<U, E>` -
-  Transform success value
+Transform success value
 - `flatMapResult<T, U, E>(result: Result<T, E>, fn: (data: T) => Result<U, E>): Result<U, E>` -
-  Chain results
+Chain results
 
 ### Error Functions
 
 - `makeError(code: string, message: string, details?: unknown, cause?: Error): AppError` -
-  Create structured error
+Create structured error
 - `isAppError(error: unknown): error is AppError` - Type guard for AppError
 
 ### Environment Functions (via `@outfitter/contracts-zod`)
 
 - `validateEnv<T>(env: unknown, schema: ZodSchema<T>): Result<T, AppError>` -
-  Validate environment variables
+Validate environment variables
 - `fromZod(error: ZodError): AppError` - Convert a Zod error to an AppError
 
 ### Type Guards
 
 - `isObject(value: unknown): value is Record<string, unknown>` - Check if value
-  is object
+is object
 - `isString(value: unknown): value is string` - Check if value is string
 - `isNumber(value: unknown): value is number` - Check if value is number
 - `isBoolean(value: unknown): value is boolean` - Check if value is boolean
@@ -300,8 +297,7 @@ The standalone `@outfitter/contracts-zod` package has a dependency on `zod`.
 
 ## Development
 
-This package is part of the
-[@outfitter/monorepo](https://github.com/outfitter-dev/monorepo) monorepo.
+This package is part of the [@outfitter/monorepo](https://github.com/outfitter-dev/monorepo) monorepo.
 
 ```bash
 # Install dependencies

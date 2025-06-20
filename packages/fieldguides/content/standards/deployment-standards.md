@@ -1,8 +1,5 @@
 ---
-slug: deployment-standards
-title: Deployment Standards
-description: Secure, reliable deployment practices for continuous delivery.
-type: convention
+slug: deployment-standards title: Deployment Standards description: Secure, reliable deployment practices for continuous delivery. type: convention
 ---
 
 # Deployment Standards
@@ -15,15 +12,15 @@ Secure, reliable deployment practices for continuous delivery.
 - [Security Scanning](../patterns/security-scanning.md) - Security in CI/CD
 - [Git Hooks](../patterns/git-hooks.md) - Pre-deployment checks
 - [Configuration Standards](./configuration-standards.md) - Environment
-  management
+management
 - [Monitoring Standards](../operations/monitoring-observability.md) -
-  Post-deployment monitoring
+Post-deployment monitoring
 - [Testing Standards](./testing-standards.md) - Testing in deployment pipelines
 - [Documentation Standards](./documentation-standards.md) - Deployment
-  documentation
+documentation
 - [Monorepo Standards](./monorepo-standards.md) - Deploying from monorepos
 - [TypeScript Standards](./typescript-standards.md) - TypeScript build
-  configuration
+configuration
 
 ## Version Compatibility
 

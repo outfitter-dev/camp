@@ -1,34 +1,27 @@
 ---
-slug: react-query
-title: Fetch data with TanStack Query v5 and Result patterns
-description: Type-safe data fetching with TanStack Query v5.
-type: guide
+slug: react-query title: Fetch data with TanStack Query v5 and Result patterns description: Type-safe data fetching with TanStack Query v5. type: guide
 ---
 
 # TanStack Query v5 Integration
 
-Type-safe data fetching and state management with @tanstack/react-query v5 and
-the Result pattern.
+Type-safe data fetching and state management with @tanstack/react-query v5 and the Result pattern.
 
 ## Related Documentation
 
 - [Error Handling Patterns](../patterns/typescript-error-handling.md) - Result
-  type integration
+type integration
 - [React Standards](../patterns/react-patterns.md) - React patterns and best
-  practices
+practices
 - [Testing React Components](../patterns/testing-react-components.md) - Testing
-  data fetching
+data fetching
 - [TypeScript Standards](../standards/typescript-standards.md) - Type safety
-  patterns
+patterns
 - [React Component Standards](../standards/react-component-standards.md) -
-  Component integration
+Component integration
 
 ## Overview
 
-TanStack Query v5 provides powerful asynchronous state management for React
-applications. When combined with the Result pattern, it creates a robust,
-type-safe data fetching layer that handles loading states, errors, and caching
-elegantly.
+TanStack Query v5 provides powerful asynchronous state management for React applications. When combined with the Result pattern, it creates a robust, type-safe data fetching layer that handles loading states, errors, and caching elegantly.
 
 ## Setup
 
@@ -45,12 +38,11 @@ npm install @tanstack/react-query@^5
 - Query functions now receive a single object parameter
 - `isLoading` split into `isLoading` and `isFetching`
 - `placeholderData` identity function receives `previousData` and `query` as
-  parameters
+parameters
 
 ## Query Key Factory
 
-Consistent, type-safe query keys prevent cache conflicts and enable precise
-invalidation:
+Consistent, type-safe query keys prevent cache conflicts and enable precise invalidation:
 
 ```typescript
 // Query key factory for consistency and type safety

@@ -1,14 +1,10 @@
 ---
-slug: testing-snapshots
-title: Use snapshot testing judiciously for UI consistency
-description: Snapshot testing strategies that balance value and maintenance.
-type: pattern
+slug: testing-snapshots title: Use snapshot testing judiciously for UI consistency description: Snapshot testing strategies that balance value and maintenance. type: pattern
 ---
 
 # Snapshot Testing Patterns
 
-Strategic snapshot testing that balances UI consistency checks with
-maintainability.
+Strategic snapshot testing that balances UI consistency checks with maintainability.
 
 ## Related Documentation
 

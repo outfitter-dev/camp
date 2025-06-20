@@ -2,9 +2,7 @@
 
 ## Summary
 
-This proposal examines splitting `@outfitter/cli` into a shared core library
-(`packages/cli`) and a standalone CLI application (`apps/cli`), establishing
-patterns for similar decisions across Outfitter projects.
+This proposal examines splitting `@outfitter/cli` into a shared core library (`packages/cli`) and a standalone CLI application (`apps/cli`), establishing patterns for similar decisions across Outfitter projects.
 
 ## Current State
 
@@ -27,7 +25,7 @@ Based on examining the current CLI implementation:
 3. **Contains CLI-specific logic**: Error handling, user prompts, spinners
 4. **Hardcoded supplies list**: No actual supply registry implemented yet
 5. **Good separation exists**: Core logic vs CLI presentation already somewhat
-   separated
+separated
 
 ## Decision Framework
 
@@ -43,7 +41,7 @@ A CLI belongs in `packages/` when it:
 Examples:
 
 - `@outfitter/packlist` - Core configuration logic used by CLI and potentially
-  other tools
+other tools
 - Build tool CLIs that expose JavaScript APIs (like `esbuild`, `tsup`)
 - Testing frameworks with both CLI and programmatic usage
 
@@ -53,7 +51,7 @@ A CLI belongs in `apps/` when it:
 
 - **Is purely an end-user tool** with no library consumers
 - **Has unique deployment requirements** (different Node version, special
-  builds)
+builds)
 - **Contains application-specific logic** not reusable elsewhere
 - **Needs isolated dependencies** that shouldn't affect other packages
 
@@ -290,7 +288,7 @@ When deciding on CLI architecture:
 
 - **`packages/git-hooks`** + **`apps/git-hooks-cli`**: Git hook management
 - **`packages/supply-registry`** + **`apps/supply-server`**: Supply registry
-  API + server
+API + server
 - **`packages/validation`** + **`apps/doctor`**: Project compliance checking
 
 ### Multi-Interface Support

@@ -2,17 +2,13 @@
 
 ## Overview
 
-This guide defines the writing style and tone for **internal** Agent Outfitter
-documentation - anything that's part of the outfitter system itself (README,
-CLAUDE.md, this guide, etc.). This adventurous, exploration-themed language
-should NOT be used in fieldguides that will be consumed by external projects.
+This guide defines the writing style and tone for **internal** Agent Outfitter documentation - anything that's part of the outfitter system itself (README, CLAUDE.md, this guide, etc.). This adventurous, exploration-themed language should NOT be used in fieldguides that will be consumed by external projects.
 
 ## Voice & Tone
 
 ### The Outfitter Persona
 
-You are a seasoned expedition outfitter - knowledgeable, friendly, and dedicated
-to preparing agents for successful journeys. You:
+You are a seasoned expedition outfitter - knowledgeable, friendly, and dedicated to preparing agents for successful journeys. You:
 
 - Speak with authority born from experience
 - Use exploration metaphors naturally
@@ -65,7 +61,7 @@ Use action-oriented, expedition-themed headings:
 Frame technical concepts through the expedition lens:
 
 - ✅ "Before setting out on any coding expedition, agents must study the
-  relevant fieldguides"
+relevant fieldguides"
 - ✅ "This trail has been blazed by many successful projects"
 - ❌ "Before starting development, read the documentation"
 - ❌ "This pattern has been used in many projects"
@@ -140,6 +136,4 @@ All projects must use strict TypeScript settings:
 3. **Keep themes consistent** - don't mix expedition metaphors with other themes
 4. **Stay practical** - the theme should enhance, not obscure, the content
 
-Remember: The expedition theme is our way of making the outfitter system
-memorable and engaging. The fieldguides themselves must remain clear,
-professional, and theme-neutral to serve their purpose across diverse projects.
+Remember: The expedition theme is our way of making the outfitter system memorable and engaging. The fieldguides themselves must remain clear, professional, and theme-neutral to serve their purpose across diverse projects.

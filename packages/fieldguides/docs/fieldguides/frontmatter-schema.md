@@ -1,14 +1,10 @@
 ---
-slug: frontmatter-schema
-title: Frontmatter metadata schema for fieldguides
-description: Schema and validation rules for fieldguide metadata.
-type: reference
+slug: frontmatter-schema title: Frontmatter metadata schema for fieldguides description: Schema and validation rules for fieldguide metadata. type: reference
 ---
 
 # Frontmatter Schema
 
-All fieldguide documents (except STANDARDS) must include frontmatter with the
-following fields:
+All fieldguide documents (except STANDARDS) must include frontmatter with the following fields:
 
 ## Required Fields
 
@@ -138,8 +134,7 @@ pnpm run lint
 
 ### Pre-commit Validation
 
-Frontmatter is automatically validated before commits via lint-staged. Any files
-with invalid or missing frontmatter will prevent the commit.
+Frontmatter is automatically validated before commits via lint-staged. Any files with invalid or missing frontmatter will prevent the commit.
 
 ### Validation Script
 
@@ -154,5 +149,4 @@ The validation script (`scripts/validate-frontmatter.js`) checks:
 
 ### Continuous Integration
 
-Pull requests automatically validate all documentation changes to ensure
-consistency across the codebase.
+Pull requests automatically validate all documentation changes to ensure consistency across the codebase.

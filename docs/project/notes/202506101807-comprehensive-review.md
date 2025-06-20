@@ -43,7 +43,7 @@ Severity legend
 
 - **Problem** – No GitHub Actions.
 - **Fix** – Add `.github/workflows/ci.yml` running `pnpm run ci` on matrix
-  `{ node: [20, 22], os: ubuntu-latest }`.
+`{ node: [20, 22], os: ubuntu-latest }`.
 - **Code Sketch**
   ```yaml
   name: CI
@@ -65,8 +65,7 @@ Severity legend
 
 ### 🔴 Duplicate Source Files
 
-`init.ts` vs `init-refactored.ts` inside `packlist`. Keep **one**; RFC/ADR
-required.
+`init.ts` vs `init-refactored.ts` inside `packlist`. Keep **one**; RFC/ADR required.
 
 ### 🟡 Release Automation
 
@@ -74,13 +73,11 @@ Wire Changesets into CI → `publish.yml` gating on successful build.
 
 ### 🟡 Security Posture
 
-Wrap all `execa` calls with allow-lists & argument escaping; add
-`npm audit --audit-level=high` in CI.
+Wrap all `execa` calls with allow-lists & argument escaping; add `npm audit --audit-level=high` in CI.
 
 ### 🟡 TypeScript Strictness
 
-`allowJs` is `true` in root `tsconfig.json`. Tighten to `false`; move legacy JS
-elsewhere.
+`allowJs` is `true` in root `tsconfig.json`. Tighten to `false`; move legacy JS elsewhere.
 
 ### 🟢 Project Meta & DX
 
@@ -88,10 +85,7 @@ Add `CODEOWNERS`, contribution templates, `.devcontainer`.
 
 ### 🟢 Related Analysis
 
-See **docs/project/handoffs/202506101749-monorepo-build-system-analysis.md** for
-a deep dive into TypeScript project-reference problems and build-system
-modernization options (Paths A–E). Decisions here **must** align with whichever
-path (A or B) is selected and formalized in an upcoming ADR-0004.
+See **docs/project/handoffs/202506101749-monorepo-build-system-analysis.md** for a deep dive into TypeScript project-reference problems and build-system modernization options (Paths A–E). Decisions here **must** align with whichever path (A or B) is selected and formalized in an upcoming ADR-0004.
 
 ---
 
@@ -114,8 +108,7 @@ export function map<A, B, E>(r: Result<A, E>, fn: (a: A) => B): Result<B, E> {
 
 ### 3.2 @outfitter/packlist
 
-🔴 _Side-effectful install_ – `execa(packageManager, ['add', …])` w/o `--exact`.
-Pin versions.
+🔴 _Side-effectful install_ – `execa(packageManager, ['add', …])` w/o `--exact`. Pin versions.
 
 🟡 _Idempotency_ – detect if deps already satisfy required semver.
 

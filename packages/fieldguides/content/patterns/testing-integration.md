@@ -1,8 +1,5 @@
 ---
-slug: testing-integration
-title: Test component interactions with external dependencies
-description: Testing how multiple components work together with dependencies.
-type: pattern
+slug: testing-integration title: Test component interactions with external dependencies description: Testing how multiple components work together with dependencies. type: pattern
 ---
 
 # Integration Testing Patterns
@@ -11,8 +8,7 @@ Testing how multiple components work together, including external dependencies.
 
 ## Framework Choice
 
-Integration tests work with both Jest and Vitest. The main differences are in
-setup and mock handling.
+Integration tests work with both Jest and Vitest. The main differences are in setup and mock handling.
 
 ### Jest Setup
 

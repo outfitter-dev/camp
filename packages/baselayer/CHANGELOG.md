@@ -6,9 +6,9 @@
 
 - 2f9d3b4: feat: initial release of @outfitter/baselayer
 
-  Introduces a declarative development toolchain configuration orchestrator that follows the principle "everything you need, nothing you don't".
+Introduces a declarative development toolchain configuration orchestrator that follows the principle "everything you need, nothing you don't".
 
-  Features:
+Features:
 
   - Unified configuration system for modern development toolchains
   - Define preferences once in `.outfitter/config.jsonc`

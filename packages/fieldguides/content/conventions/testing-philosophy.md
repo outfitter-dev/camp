@@ -1,14 +1,10 @@
 ---
-slug: testing-philosophy
-title: Follow TDD and FIRST principles for reliable tests
-description: Core testing philosophy with TDD cycle and FIRST principles.
-type: convention
+slug: testing-philosophy title: Follow TDD and FIRST principles for reliable tests description: Core testing philosophy with TDD cycle and FIRST principles. type: convention
 ---
 
 # Testing Philosophy
 
-Modern testing principles for JavaScript/TypeScript applications in 2025,
-emphasizing speed, isolation, and developer experience.
+Modern testing principles for JavaScript/TypeScript applications in 2025, emphasizing speed, isolation, and developer experience.
 
 ## Test-Driven Development (TDD) - Modern Workflow
 
@@ -356,9 +352,9 @@ it('handles API response', async () => {
 
 - [Test Organization](./testing-organization.md) - Modern file structure
 - [Testing Standards](../standards/testing-standards.md) - Comprehensive
-  methodology
+methodology
 - [Testing React Components](../patterns/testing-react-components.md) -
-  Component testing
+Component testing
 - [Testing Unit](../patterns/testing-unit.md) - Unit testing patterns
 - [Framework-Agnostic Testing](../patterns/framework-agnostic-testing.md) -
-  Portable patterns
+Portable patterns

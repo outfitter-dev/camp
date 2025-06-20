@@ -1,8 +1,5 @@
 ---
-slug: testing-mocking
-title: Mock APIs and modules effectively with MSW and Vitest
-description: Strategies for mocking dependencies, APIs, and modules in tests.
-type: pattern
+slug: testing-mocking title: Mock APIs and modules effectively with MSW and Vitest description: Strategies for mocking dependencies, APIs, and modules in tests. type: pattern
 ---
 
 # Testing Mocking Patterns
@@ -11,8 +8,7 @@ Effective strategies for mocking dependencies in JavaScript/TypeScript tests.
 
 ## Framework Choice
 
-Both Jest and Vitest provide comprehensive mocking capabilities with similar
-APIs.
+Both Jest and Vitest provide comprehensive mocking capabilities with similar APIs.
 
 ### Mock API Comparison
 
@@ -449,5 +445,5 @@ const mockLogger = {
 
 - [Unit Testing Patterns](./testing-unit.md) - Writing isolated tests
 - [Integration Testing](./testing-integration.md) - Testing with real
-  dependencies
+dependencies
 - [Test Organization](../conventions/testing-organization.md) - Organizing mocks

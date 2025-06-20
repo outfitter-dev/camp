@@ -6,19 +6,15 @@ Accepted
 
 ## Context
 
-Agent Outfitter uses an exploration/expedition theme throughout its internal
-documentation to create an engaging and memorable experience. However, the
-fieldguides produced by this system are consumed by external projects where
-professional, theme-neutral documentation is expected.
+Agent Outfitter uses an exploration/expedition theme throughout its internal documentation to create an engaging and memorable experience. However, the fieldguides produced by this system are consumed by external projects where professional, theme-neutral documentation is expected.
 
-Initially, the expedition metaphors were used throughout all documentation,
-creating potential issues:
+Initially, the expedition metaphors were used throughout all documentation, creating potential issues:
 
 - External projects would inherit playful language inappropriate for
-  professional codebases
+professional codebases
 - AI agents might propagate themed language into serious technical documentation
 - Developers might find the metaphors distracting or unprofessional in their
-  projects
+projects
 
 ## Decision
 

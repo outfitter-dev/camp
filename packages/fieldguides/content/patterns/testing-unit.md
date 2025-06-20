@@ -1,24 +1,20 @@
 ---
-slug: testing-unit
-title: Write fast, isolated unit tests with AAA pattern
-description: Best practices for unit tests that are fast, isolated, and maintainable.
-type: pattern
+slug: testing-unit title: Write fast, isolated unit tests with AAA pattern description: Best practices for unit tests that are fast, isolated, and maintainable. type: pattern
 ---
 
 # Unit Testing Patterns
 
-Best practices for writing effective unit tests that are fast, isolated, and
-maintainable.
+Best practices for writing effective unit tests that are fast, isolated, and maintainable.
 
 ## Related Documentation
 
 - [Testing Standards](../standards/testing-standards.md) - Testing fundamentals
 - [TypeScript Standards](../standards/typescript-standards.md) - Type-safe
-  testing
+testing
 - [TypeScript Error Handling](./typescript-error-handling.md) - Testing error
-  scenarios
+scenarios
 - [Integration Testing](./testing-integration.md) - Testing component
-  interactions
+interactions
 
 ## Framework Choice
 

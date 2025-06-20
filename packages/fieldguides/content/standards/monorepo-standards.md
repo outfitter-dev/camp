@@ -1,23 +1,19 @@
 ---
-slug: monorepo-standards
-title: Build scalable monorepos with shared code and caching
-description: Monorepo patterns for multiple packages with modern build systems.
-type: convention
+slug: monorepo-standards title: Build scalable monorepos with shared code and caching description: Monorepo patterns for multiple packages with modern build systems. type: convention
 ---
 
 # Monorepo Architecture
 
-Scalable monorepo patterns for managing multiple packages, applications, and
-shared libraries with efficient build systems and dependency management.
+Scalable monorepo patterns for managing multiple packages, applications, and shared libraries with efficient build systems and dependency management.
 
 ## Related Documentation
 
 - [Monorepo Tools Reference](../references/monorepo-tools-reference.md) -
-  Tool-specific configurations
+Tool-specific configurations
 - [TypeScript Standards](./typescript-standards.md) - TypeScript in monorepos
 - [Testing Standards](./testing-standards.md) - Testing across packages
 - [Configuration Standards](./configuration-standards.md) - Shared
-  configurations
+configurations
 
 ## Version Compatibility
 
@@ -69,8 +65,7 @@ Place code in `packages/` when it:
 
 ### Mixed-Language Monorepos
 
-For projects combining multiple languages (e.g., Go backend + TypeScript
-frontend):
+For projects combining multiple languages (e.g., Go backend + TypeScript frontend):
 
 ```text
 monorepo/
@@ -589,7 +584,7 @@ export interface ApiError {
 ## Best Practices
 
 1. **Clear Package Boundaries**: Each package should have a single, clear
-   purpose
+purpose
 2. **Minimize Circular Dependencies**: Use dependency-cruiser to detect cycles
 3. **Consistent Versioning**: Use fixed versioning for tightly coupled packages
 4. **Optimize CI Times**: Use remote caching and parallelization
@@ -599,5 +594,4 @@ export interface ApiError {
 
 ## Troubleshooting
 
-See [Monorepo Tools Reference](../references/monorepo-tools-reference.md) for
-tool-specific debugging commands and common issues.
+See [Monorepo Tools Reference](../references/monorepo-tools-reference.md) for tool-specific debugging commands and common issues.
