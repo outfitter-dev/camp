@@ -14,8 +14,8 @@ export function generateESLintConfig(config: OutfitterConfig): Array<ESLintConfi
       ignores: generateIgnorePatterns(config),
     },
 
-    // Use eslint-config-biome to disable rules already handled by Biome
-    'eslint-config-biome',
+    // TODO: Add eslint-config-biome preset support
+    // This would require extending the type system to support preset strings
 
     // Rules that Biome doesn't support yet
     {

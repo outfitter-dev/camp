@@ -73,11 +73,11 @@ export function generateBiomeConfig(config: OutfitterConfig): BiomeConfig {
       },
     },
     javascript: {
-      ...baseConfig.javascript,
-      ...biomeOverrides.javascript,
+      ...(baseConfig.javascript ?? {}),
+      ...(biomeOverrides.javascript ?? {}),
       formatter: {
-        ...(baseConfig.javascript?.formatter ?? {}),
-        ...(biomeOverrides.javascript?.formatter ?? {}),
+        ...((baseConfig.javascript as any)?.formatter ?? {}),
+        ...((biomeOverrides.javascript as any)?.formatter ?? {}),
       },
     },
   };
