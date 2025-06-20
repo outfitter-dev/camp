@@ -34,11 +34,11 @@ function checkImports(): void {
   for (const file of files) {
     const content = readFileSync(file, 'utf-8');
     const matches = content.match(IMPORT_PATTERN);
-    
+
     if (matches) {
       const lines = content.split('\n');
-      matches.forEach(match => {
-        const lineNum = lines.findIndex(line => line.includes(match)) + 1;
+      matches.forEach((match) => {
+        const lineNum = lines.findIndex((line) => line.includes(match)) + 1;
         issues.push({
           file,
           line: lineNum,
