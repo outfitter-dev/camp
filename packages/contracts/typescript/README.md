@@ -227,7 +227,7 @@ const userId = createUserId('user-123');
 
 ### Type Guards
 
-- `isObject(value: unknown): value is Record<string, unknown>` - Check if value is object
+- `isObject(value: unknown): value is Record<string, unknown>` - Check if value is an object
 - `isString(value: unknown): value is string` - Check if value is string
 - `isNumber(value: unknown): value is number` - Check if value is number
 - `isBoolean(value: unknown): value is boolean` - Check if value is boolean

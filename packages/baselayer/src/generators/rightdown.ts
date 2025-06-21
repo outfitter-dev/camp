@@ -67,7 +67,7 @@ export function generateRightdownConfig(config: OutfitterConfig): RightdownConfi
 export function generateRightdownConfigContent(config: OutfitterConfig): string {
   const mdConfig = generateRightdownConfig(config);
 
-  const lines: string[] = [];
+  const lines: Array<string> = [];
 
   lines.push('{');
   lines.push('  // rightdown configuration');

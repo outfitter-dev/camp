@@ -2,7 +2,7 @@
 
 ## Overview
 
-Successfully consolidated three separate repositories (packlist, cli, supplies) into a unified camp monorepo with 8 publishable packages, modern tooling, and comprehensive documentation system. This establishes camp as the core dependency for all future Outfitter projects.
+Successfully consolidated three separate repositories (packlist, cli, supplies) into a unified camp monorepo with 8 publishable packages, modern tooling, and a comprehensive documentation system. This establishes camp as the core dependency for all future Outfitter projects.
 
 ## Context
 
@@ -47,7 +47,7 @@ This fragmentation created maintenance overhead, version conflicts, and inconsis
 
 **Key restructuring:**
 
-- CLI now properly consumes `@outfitter/packlist` as library instead of standalone
+- CLI now properly consumes `@outfitter/packlist` as a library instead of standalone
 - Fieldguides reorganized with `content/` subdirectory for guidelines
 - All packages updated with consistent repository metadata
 
