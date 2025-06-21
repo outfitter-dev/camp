@@ -22,6 +22,8 @@ Each application currently rolls its own logic to read `.env` files, local `conf
 
 ```ts
 // packages/config/src/schema.ts
+import { z } from 'zod';
+
 export const ConfigSchema = z.object({
   apiUrl: z.string().url(),
   cacheTtl: z.number().int().positive().default(3600),
