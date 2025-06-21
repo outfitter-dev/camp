@@ -25,5 +25,5 @@ Features:
 - Updated dependencies [95c8838]
 - Updated dependencies [2f9d3b4]
   - @outfitter/contracts@1.1.0
-  - markdown-medic@1.1.0
+  - @outfitter/rightdown@1.1.0
   - @outfitter/contracts-zod@1.1.0

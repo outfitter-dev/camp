@@ -34,6 +34,7 @@ export async function lintCommand(argv: ArgumentsCamelCase<LintCommandArgs>): Pr
     // Check if we have a config file
     const hasConfig =
       config ||
+      existsSync('.rightdown.config.yaml') ||
       existsSync('.markdownlint-cli2.yaml') ||
       existsSync('.markdownlint-cli2.jsonc') ||
       existsSync('.markdownlint-cli2.json') ||
@@ -41,7 +42,9 @@ export async function lintCommand(argv: ArgumentsCamelCase<LintCommandArgs>): Pr
       existsSync('.markdownlint.json');
 
     if (!hasConfig && !quiet) {
-      console.log(colors.warning('No configuration file found. Run "mdmedic init" to create one.'));
+      console.log(
+        colors.warning('No configuration file found. Run "rightdown init" to create one.'),
+      );
     }
 
     // Call markdownlint-cli2

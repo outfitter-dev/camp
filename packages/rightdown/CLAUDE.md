@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-This is the `markdown-medic` package - an opinionated wrapper around `markdownlint-cli2` that provides presets and custom rules for markdown linting and formatting. The CLI commands are `mdmedic` (short alias) or `markdown-medic` (full name).
+This is the `rightdown` package - an opinionated wrapper around `markdownlint-cli2` that provides presets and custom rules for markdown linting and formatting. The CLI command is `rightdown`.
 
 ## Key Commands
 
@@ -27,8 +27,8 @@ pnpm type-check
 # Build first
 pnpm build
 
-# Test commands (or use 'mdmedic' after global install)
-node dist/cli.js --init                    # Create config (.mdmedic.config.yaml)
+# Test commands (or use 'rightdown' after global install)
+node dist/cli.js --init                    # Create config (.rightdown.config.yaml)
 node dist/cli.js README.md                 # Check a file
 node dist/cli.js --fix "**/*.md"          # Fix all markdown
 node dist/cli.js --preset strict          # Use strict preset
@@ -82,10 +82,10 @@ The primary use case - provides immediate value with zero config:
 
 ```bash
 # Just works
-npx markdown-medic
+npx @outfitter/rightdown
 
 # With options
-npx markdown-medic --fix --preset strict
+npx @outfitter/rightdown --fix --preset strict
 ```
 
 ### As a Library
@@ -93,8 +93,8 @@ npx markdown-medic --fix --preset strict
 For programmatic usage:
 
 ```typescript
-import { markdownlintCli2 } from 'markdown-medic';
-import { generateConfig } from 'markdown-medic';
+import { markdownlintCli2 } from '@outfitter/rightdown';
+import { generateConfig } from '@outfitter/rightdown';
 
 // Generate a config
 const config = generateConfig({

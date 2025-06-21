@@ -112,7 +112,7 @@ export async function rulesListCommand(argv: ArgumentsCamelCase<RulesListArgs>):
     }
 
     if (!quiet) {
-      console.log(colors.dim('Run "mdmedic rules update <rule> <value>" to modify rules'));
+      console.log(colors.dim('Run "rightdown rules update <rule> <value>" to modify rules'));
     }
   } catch (error) {
     console.error(colors.error('Error:'), error instanceof Error ? error.message : error);
@@ -193,7 +193,7 @@ export async function rulesForgetCommand(argv: ArgumentsCamelCase<RulesForgetArg
 
   try {
     if (!existsSync(CONFIG_PATH)) {
-      throw new Error('No configuration file found. Run "mdmedic init" first.');
+      throw new Error('No configuration file found. Run "rightdown init" first.');
     }
 
     // Load config

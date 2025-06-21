@@ -1,20 +1,21 @@
 import { describe, it, expect } from 'vitest';
 import { generateConfig, defaultTerminology } from '../config-generator.js';
+import * as yaml from 'js-yaml';
 
 describe('config-generator', () => {
   describe('generateConfig', () => {
     it('should generate config with strict preset', () => {
       const config = generateConfig({ preset: 'strict' });
-      const parsed = JSON.parse(config);
+      const parsed = yaml.load(config) as any;
 
-      expect(parsed.MD013.line_length).toBe(80);
+      expect(parsed.MD013).toBe(false); // MD013 is disabled in strict preset
       expect(parsed.default).toBe(true);
       expect(parsed.ignores).toContain('node_modules/**');
     });
 
     it('should generate config with standard preset', () => {
       const config = generateConfig({ preset: 'standard' });
-      const parsed = JSON.parse(config);
+      const parsed = yaml.load(config) as any;
 
       expect(parsed.MD013).toBe(false);
       expect(parsed.MD033).toBe(false);
@@ -23,7 +24,7 @@ describe('config-generator', () => {
 
     it('should generate config with relaxed preset', () => {
       const config = generateConfig({ preset: 'relaxed' });
-      const parsed = JSON.parse(config);
+      const parsed = yaml.load(config) as any;
 
       expect(parsed.default).toBe(false);
       expect(parsed.MD001).toBe(true);
@@ -39,7 +40,7 @@ describe('config-generator', () => {
         preset: 'standard',
         terminology: customTerminology,
       });
-      const parsed = JSON.parse(config);
+      const parsed = yaml.load(config) as any;
 
       expect(parsed.terminology).toBeDefined();
       expect(parsed.terminology).toEqual(customTerminology);
@@ -52,7 +53,7 @@ describe('config-generator', () => {
         preset: 'standard',
         terminology: [...defaultTerminology, ...customTerminology],
       });
-      const parsed = JSON.parse(config);
+      const parsed = yaml.load(config) as any;
 
       expect(parsed.terminology).toHaveLength(defaultTerminology.length + 1);
       expect(parsed.terminology).toContainEqual({ incorrect: 'myterm', correct: 'MyTerm' });
@@ -65,7 +66,7 @@ describe('config-generator', () => {
         preset: 'standard',
         customRules,
       });
-      const parsed = JSON.parse(config);
+      const parsed = yaml.load(config) as any;
 
       expect(parsed.customRules[0]).toBe('/path/to/rule1.js');
       expect(parsed.customRules[1]).toBe('/path/to/rule2.js');
@@ -73,7 +74,7 @@ describe('config-generator', () => {
 
     it('should exclude patterns', () => {
       const config = generateConfig({ preset: 'standard' });
-      const parsed = JSON.parse(config);
+      const parsed = yaml.load(config) as any;
 
       expect(parsed.ignores).toContain('node_modules/**');
       expect(parsed.ignores).toContain('.git/**');

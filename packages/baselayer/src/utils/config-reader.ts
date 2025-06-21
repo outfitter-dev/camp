@@ -93,9 +93,9 @@ function mergeConfigs(
         ...(defaultConfig.overrides?.prettier ?? {}),
         ...(userConfig.overrides?.prettier ?? {}),
       },
-      'markdown-medic': {
-        ...(defaultConfig.overrides?.['markdown-medic'] ?? {}),
-        ...(userConfig.overrides?.['markdown-medic'] ?? {}),
+      rightdown: {
+        ...(defaultConfig.overrides?.rightdown ?? {}),
+        ...(userConfig.overrides?.rightdown ?? {}),
       },
     },
   };

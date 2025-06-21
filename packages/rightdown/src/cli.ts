@@ -41,7 +41,7 @@ yargs(hideBin(process.argv))
   // Init command
   .command(
     'init [preset]',
-    'Initialize markdown-medic configuration',
+    'Initialize rightdown configuration',
     (yargs) => {
       return yargs.positional('preset', {
         describe: 'Preset to use',
@@ -215,5 +215,5 @@ yargs(hideBin(process.argv))
   .example('$0 rules update md013 --line-length 100', 'Update line length rule')
   .example('$0 rules forget md050', 'Remove emphasis style override')
 
-  .epilogue('For more information, visit https://github.com/outfitter-dev/markdown-medic')
+  .epilogue('For more information, visit https://github.com/outfitter-dev/rightdown')
   .parse();

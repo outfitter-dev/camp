@@ -1,4 +1,4 @@
-# ADR-0007: Refocus mdmedic on markdownlint-cli2 and its Plugin Ecosystem
+# ADR-0007: Refocus rightdown on markdownlint-cli2 and its Plugin Ecosystem
 
 - **Status**: Proposed
 - **Date**: 2025-06-19
@@ -8,7 +8,7 @@
 
 ## Context and Problem Statement
 
-`markdown-medic` (formerly `@outfitter/md-medic`) currently provides a thin wrapper around `markdownlint-cli2` with custom presets and a terminology enforcement rule. While functional, it could deliver significantly more value by:
+`rightdown` currently provides a thin wrapper around `markdownlint-cli2` with custom presets and a terminology enforcement rule. While functional, it could deliver significantly more value by:
 
 1. Being a true drop-in replacement for `markdownlint-cli2` - any existing usage should work unchanged
 2. Adding valuable features on top (dry-run, watch mode, better presets)
@@ -17,7 +17,7 @@
 
 A core engineering principle is to favor simplicity and leverage battle-tested, standard tools wherever possible. The `markdownlint-cli2` ecosystem is robust and extensible, with community plugins that provide advanced formatting capabilities without requiring us to build custom solutions.
 
-This proposal outlines a focused direction: enhance mdmedic to be a **superset** of markdownlint-cli2, maintaining 100% compatibility while adding developer-friendly features and type-safe rules.
+This proposal outlines a focused direction: enhance rightdown to be a **superset** of markdownlint-cli2, maintaining 100% compatibility while adding developer-friendly features and type-safe rules.
 
 ## Decision Drivers
 

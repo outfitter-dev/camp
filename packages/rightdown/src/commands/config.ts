@@ -65,7 +65,7 @@ export async function configPresetCommand(
     });
 
     // Add header comment
-    const finalContent = `# markdown-medic configuration
+    const finalContent = `# rightdown configuration
 # Generated with preset: ${name}
 # Docs: https://github.com/DavidAnson/markdownlint-cli2
 

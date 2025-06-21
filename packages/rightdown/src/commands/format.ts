@@ -97,7 +97,7 @@ async function formatMarkdown(content: string, preset?: PresetName): Promise<str
   const { main: markdownlintCli2Main } = require('markdownlint-cli2');
 
   // Create a temporary directory
-  const tempDir = mkdtempSync(join(tmpdir(), 'mdmedic-'));
+  const tempDir = mkdtempSync(join(tmpdir(), 'rightdown-'));
   const tempFile = join(tempDir, 'content.md');
   let tempConfigPath: string | undefined;
 

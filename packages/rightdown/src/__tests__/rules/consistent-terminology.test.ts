@@ -1,7 +1,5 @@
 import { describe, it, expect } from 'vitest';
-
-// Since the rule is a CommonJS module, we need to require it
-const rule = require('../../rules/consistent-terminology.js');
+import rule from '../../rules/consistent-terminology.js';
 
 describe('consistent-terminology rule', () => {
   it('should export required properties', () => {
