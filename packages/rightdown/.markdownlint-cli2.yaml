@@ -45,4 +45,4 @@ terminology:
   - incorrect: react native
     correct: React Native
 customRules:
-  - ./node_modules/markdown-medic/dist/rules/consistent-terminology.js
+  - ./node_modules/@outfitter/rightdown/dist/rules/consistent-terminology.js

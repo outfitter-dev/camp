@@ -1,4 +1,4 @@
-// Shared types for markdown-medic
+// Shared types for rightdown
 
 export type RuleValue = boolean | string | number | { [key: string]: RuleValue };
 

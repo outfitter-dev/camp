@@ -1,4 +1,4 @@
-# Tree-sitter Future: Mixdown as the Biome of Markdown
+# Tree-sitter Future: Rightdown as the Biome of Markdown
 
 **Status**: Proposal  
 **Author**: Development Team  
@@ -7,7 +7,7 @@
 
 ## Executive Summary
 
-Transform Mixdown (markdown-medic) from a streamlined markdown linter into the **"Biome of Markdown"** - a comprehensive, opinionated, zero-config toolchain that provides semantic understanding, intelligent refactoring, and document architecture enforcement through tree-sitter integration.
+Transform Rightdown from a streamlined markdown linter into the **"Biome of Markdown"** - a comprehensive, opinionated, zero-config toolchain that provides semantic understanding, intelligent refactoring, and document architecture enforcement through tree-sitter integration.
 
 ## Current State Analysis
 
@@ -89,7 +89,7 @@ export async function createStructuralLinter(): Promise<StructuralLinter> {
 
 #### 2.1 Document Structure Validation
 ```yaml
-# .mixdown.yaml
+# .rightdown.yaml
 rules:
   document-structure:
     enabled: true
@@ -195,9 +195,9 @@ MD013: false
 MD033: false
 ```
 
-### Future: .mixdown.yaml
+### Future: .rightdown.yaml
 ```yaml
-extends: ['@mixdown/strict', './custom-rules.yaml']
+extends: ['@rightdown/strict', './custom-rules.yaml']
 
 # Glob-scoped overrides (biome-style)
 overrides:
@@ -233,11 +233,11 @@ traditional:
 ```json
 // package.json
 {
-  "mixdown": {
+  "rightdown": {
     "plugins": [
       "@company/md-standards",
       "./local-rules",
-      "@mixdown/docs-as-code"
+      "@rightdown/docs-as-code"
     ]
   }
 }
@@ -246,7 +246,7 @@ traditional:
 ### 3.2 Plugin Development Kit
 ```bash
 # Scaffold new plugin
-npx mixdown create-plugin my-org-rules
+npx rightdown create-plugin my-org-rules
 
 # Generated structure:
 my-org-rules/
@@ -257,12 +257,12 @@ my-org-rules/
 │   └── index.ts
 ├── test/
 ├── package.json
-└── mixdown.config.ts
+└── rightdown.config.ts
 ```
 
 ### 3.3 Community Plugins
 ```typescript
-// @mixdown/docs-as-code plugin
+// @rightdown/docs-as-code plugin
 export const docsAsCodeRules = [
   'api-documentation-sync',
   'code-example-validation',
@@ -270,7 +270,7 @@ export const docsAsCodeRules = [
   'contributor-attribution'
 ];
 
-// @mixdown/technical-writing plugin  
+// @rightdown/technical-writing plugin  
 export const technicalWritingRules = [
   'inclusive-language',
   'reading-level-analysis',
@@ -283,7 +283,7 @@ export const technicalWritingRules = [
 
 ### 4.1 Caching Strategy
 ```typescript
-// .mixdown/cache.json
+// .rightdown/cache.json
 {
   "version": "2.0.0",
   "files": {
@@ -336,24 +336,24 @@ export class IncrementalLinter {
 
 ### Current Commands
 ```bash
-mdmedic [files...]           # Lint files
-mdmedic init [preset]        # Initialize config
-mdmedic format [source]      # Format markdown
-mdmedic rules list|update    # Manage rules
-mdmedic config preset|ignore # Manage config
+rightdown [files...]           # Lint files
+rightdown init [preset]        # Initialize config
+rightdown format [source]      # Format markdown
+rightdown rules list|update    # Manage rules
+rightdown config preset|ignore # Manage config
 ```
 
 ### Future Commands (Post Tree-sitter)
 ```bash
-mixdown [files...]                    # Intelligent lint with structure analysis
-mixdown init [preset]                 # Initialize with schema validation
-mixdown format [source] --structural  # Format with document architecture fixes
-mixdown rules list|update|create      # Enhanced rule management
-mixdown config preset|ignore|schema   # Schema-aware configuration
-mixdown doctor                        # Diagnose environment and performance
-mixdown migrate                       # Convert from other markdown linters
-mixdown dev                          # Live preview server with structural hints
-mixdown generate toc|index|summary   # Auto-generate document components
+rightdown [files...]                    # Intelligent lint with structure analysis
+rightdown init [preset]                 # Initialize with schema validation
+rightdown format [source] --structural  # Format with document architecture fixes
+rightdown rules list|update|create      # Enhanced rule management
+rightdown config preset|ignore|schema   # Schema-aware configuration
+rightdown doctor                        # Diagnose environment and performance
+rightdown migrate                       # Convert from other markdown linters
+rightdown dev                          # Live preview server with structural hints
+rightdown generate toc|index|summary   # Auto-generate document components
 ```
 
 ## Implementation Timeline
@@ -409,7 +409,7 @@ mixdown generate toc|index|summary   # Auto-generate document components
 
 ## Conclusion
 
-This tree-sitter integration transforms Mixdown from a markdown linter into a comprehensive document intelligence platform. The semantic understanding enables:
+This tree-sitter integration transforms Rightdown from a markdown linter into a comprehensive document intelligence platform. The semantic understanding enables:
 
 1. **Document architecture enforcement**
 2. **Intelligent auto-fixes and generation**
@@ -417,6 +417,6 @@ This tree-sitter integration transforms Mixdown from a markdown linter into a co
 4. **Schema-driven configuration**
 5. **Plugin ecosystem for specialized domains**
 
-The result: **Mixdown becomes to Markdown what Biome is to JavaScript** - a single, fast, opinionated tool that handles all markdown development needs with zero configuration and maximum intelligence.
+The result: **Rightdown becomes to Markdown what Biome is to JavaScript** - a single, fast, opinionated tool that handles all markdown development needs with zero configuration and maximum intelligence.
 
-This positions Mixdown as the definitive solution for markdown tooling in the AI-driven development era, where documentation quality and automation are critical competitive advantages.
+This positions Rightdown as the definitive solution for markdown tooling in the AI-driven development era, where documentation quality and automation are critical competitive advantages.

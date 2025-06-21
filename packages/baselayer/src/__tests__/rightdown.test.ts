@@ -5,25 +5,25 @@ import { tmpdir } from 'node:os';
 import { setup } from '../index.js';
 import type { OutfitterConfig } from '../types/index.js';
 
-describe('markdown-medic integration', () => {
+describe('rightdown integration', () => {
   let tempDir: string;
 
   beforeEach(async () => {
-    tempDir = await mkdtemp(join(tmpdir(), 'baselayer-mdmedic-test-'));
+    tempDir = await mkdtemp(join(tmpdir(), 'baselayer-rightdown-test-'));
   });
 
   afterEach(async () => {
     await rm(tempDir, { recursive: true, force: true });
   });
 
-  it('should generate markdown-medic config when markdown tool is markdown-medic', async () => {
+  it('should generate rightdown config when markdown tool is rightdown', async () => {
     // Create .outfitter directory and config
     await mkdir(join(tempDir, '.outfitter'), { recursive: true });
 
     const customConfig: Partial<OutfitterConfig> = {
       baselayer: {
         tools: {
-          markdown: 'markdown-medic',
+          markdown: 'rightdown',
         },
       },
       strictness: 'strict',
@@ -39,11 +39,11 @@ describe('markdown-medic integration', () => {
 
     expect(result.success).toBe(true);
     if (result.success) {
-      expect(result.data.generatedFiles).toContain('.mdmedic.config.jsonc');
+      expect(result.data.generatedFiles).toContain('.rightdown.config.jsonc');
 
       // Check that the config file was actually created
-      const configContent = await readFile(join(tempDir, '.mdmedic.config.jsonc'), 'utf-8');
-      expect(configContent).toContain('markdown-medic configuration');
+      const configContent = await readFile(join(tempDir, '.rightdown.config.jsonc'), 'utf-8');
+      expect(configContent).toContain('rightdown configuration');
       expect(configContent).toContain('strictness: strict');
       expect(configContent).toContain('terminology');
       expect(configContent).toContain('JavaScript');
@@ -51,7 +51,7 @@ describe('markdown-medic integration', () => {
     }
   });
 
-  it('should not generate markdown-medic config when markdown tool is prettier', async () => {
+  it('should not generate rightdown config when markdown tool is prettier', async () => {
     // Create .outfitter directory and config
     await mkdir(join(tempDir, '.outfitter'), { recursive: true });
 
@@ -73,7 +73,7 @@ describe('markdown-medic integration', () => {
 
     expect(result.success).toBe(true);
     if (result.success) {
-      expect(result.data.generatedFiles).not.toContain('.mdmedic.config.jsonc');
+      expect(result.data.generatedFiles).not.toContain('.rightdown.config.jsonc');
     }
   });
 
@@ -83,7 +83,7 @@ describe('markdown-medic integration', () => {
     const customConfig: Partial<OutfitterConfig> = {
       baselayer: {
         tools: {
-          markdown: 'markdown-medic',
+          markdown: 'rightdown',
         },
       },
       strictness: 'relaxed',
@@ -99,7 +99,7 @@ describe('markdown-medic integration', () => {
 
     expect(result.success).toBe(true);
     if (result.success) {
-      const configContent = await readFile(join(tempDir, '.mdmedic.config.jsonc'), 'utf-8');
+      const configContent = await readFile(join(tempDir, '.rightdown.config.jsonc'), 'utf-8');
       expect(configContent).toContain('strictness: relaxed');
       expect(configContent).toContain('"preset": "relaxed"');
     }
@@ -111,7 +111,7 @@ describe('markdown-medic integration', () => {
     const customConfig: Partial<OutfitterConfig> = {
       baselayer: {
         tools: {
-          markdown: 'markdown-medic',
+          markdown: 'rightdown',
         },
       },
       strictness: 'pedantic',
@@ -127,7 +127,7 @@ describe('markdown-medic integration', () => {
 
     expect(result.success).toBe(true);
     if (result.success) {
-      const configContent = await readFile(join(tempDir, '.mdmedic.config.jsonc'), 'utf-8');
+      const configContent = await readFile(join(tempDir, '.rightdown.config.jsonc'), 'utf-8');
       expect(configContent).toContain('strictness: pedantic');
       expect(configContent).toContain('"preset": "strict"');
     }
@@ -139,11 +139,11 @@ describe('markdown-medic integration', () => {
     const customConfig: Partial<OutfitterConfig> = {
       baselayer: {
         tools: {
-          markdown: 'markdown-medic',
+          markdown: 'rightdown',
         },
       },
       overrides: {
-        'markdown-medic': {
+        rightdown: {
           customRules: ['./custom-rule.js'],
           ignores: ['docs/special/**'],
           terminology: [{ incorrect: 'Docker', correct: 'docker' }],
@@ -161,7 +161,7 @@ describe('markdown-medic integration', () => {
 
     expect(result.success).toBe(true);
     if (result.success) {
-      const configContent = await readFile(join(tempDir, '.mdmedic.config.jsonc'), 'utf-8');
+      const configContent = await readFile(join(tempDir, '.rightdown.config.jsonc'), 'utf-8');
       expect(configContent).toContain('./custom-rule.js');
       expect(configContent).toContain('docs/special/**');
       expect(configContent).toContain('"incorrect": "Docker"');

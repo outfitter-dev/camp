@@ -32,7 +32,7 @@ function generateYamlConfig(config: MdlintConfig, preset: PresetName): string {
   const lines: string[] = [];
 
   // Add header comments
-  lines.push('# markdown-medic configuration');
+  lines.push('# rightdown configuration');
   lines.push(`# Generated with preset: ${preset}`);
   lines.push('# Docs: https://github.com/DavidAnson/markdownlint-cli2');
   lines.push('');

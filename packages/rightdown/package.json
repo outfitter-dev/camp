@@ -1,7 +1,7 @@
 {
-  "name": "markdown-medic",
+  "name": "@outfitter/rightdown",
   "version": "1.1.0",
-  "description": "Opinionated markdown linting and formatting for healthy documentation",
+  "description": "Opinionated markdown linting and formatting for correct documentation",
   "keywords": [
     "markdown",
     "linting",
@@ -9,15 +9,13 @@
     "documentation",
     "markdownlint",
     "md",
-    "mdmedic",
-    "markdown-medic"
+    "rightdown"
   ],
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "bin": {
-    "markdown-medic": "./dist/cli.js",
-    "mdmedic": "./dist/cli.js"
+    "rightdown": "./dist/cli.js"
   },
   "files": [
     "dist",
@@ -49,7 +47,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/outfitter-dev/monorepo.git",
-    "directory": "packages/markdown-medic"
+    "directory": "packages/rightdown"
   },
   "bugs": {
     "url": "https://github.com/outfitter-dev/monorepo/issues"

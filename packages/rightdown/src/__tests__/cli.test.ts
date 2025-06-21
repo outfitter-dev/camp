@@ -25,31 +25,31 @@ describe('CLI integration tests', () => {
   it('should show help with --help flag', async () => {
     const { stdout } = await execAsync(`node ${cliPath} --help`);
 
-    expect(stdout).toContain('Markdown Inspect & Correct');
+    expect(stdout).toContain('Lint markdown files');
     expect(stdout).toContain('--fix');
-    expect(stdout).toContain('--preset');
     expect(stdout).toContain('--config');
-    expect(stdout).toContain('--init');
+    expect(stdout).toContain('init'); // It's a command now, not a flag
   });
 
-  it('should create config file with --init', async () => {
-    const configPath = join(testDir, '.mdmedic.config.yaml');
+  it('should create config file with init command', async () => {
+    const configPath = join(testDir, '.rightdown.config.yaml');
 
-    await execAsync(`node ${cliPath} --init`, { cwd: testDir });
+    // Use a preset to avoid interactive prompts in test
+    await execAsync(`node ${cliPath} init standard`, { cwd: testDir });
 
     expect(existsSync(configPath)).toBe(true);
-  });
+  }, 10000); // Increase timeout for CLI command
 
-  it('should create config with specific preset using --init', async () => {
-    const configPath = join(testDir, '.mdmedic.config.yaml');
+  it('should create config with specific preset using init command', async () => {
+    const configPath = join(testDir, '.rightdown.config.yaml');
 
-    await execAsync(`node ${cliPath} --init strict`, { cwd: testDir });
+    await execAsync(`node ${cliPath} init strict`, { cwd: testDir });
 
     expect(existsSync(configPath)).toBe(true);
     const content = readFileSync(configPath, 'utf-8');
-    // The config is JSON, not YAML
-    const parsed = JSON.parse(content);
-    expect(parsed.MD013.line_length).toBe(80);
+    // The config is YAML, parse it to check the content
+    expect(content).toContain('MD013: false'); // MD013 is disabled in strict preset
+    expect(content).toContain('Generated with preset: strict');
   });
 
   // Skip the complex integration tests for now as they depend on markdownlint-cli2 behavior

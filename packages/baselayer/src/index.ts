@@ -7,7 +7,7 @@ import { parse } from 'comment-json';
 import {
   generateBiomeConfig,
   generateESLintConfig,
-  generateMarkdownMedicConfigContent,
+  generateRightdownConfigContent,
   generatePrettierConfig,
   generateVSCodeSettings,
 } from './generators/index.js';
@@ -82,18 +82,18 @@ export async function setup(options: SetupOptions = {}): Promise<Result<SetupRes
     generatedFiles.push('.prettierrc');
   }
 
-  // Generate markdown-medic config if needed
-  if (shouldGenerateMarkdownMedicConfig(config)) {
-    const markdownMedicConfig = generateMarkdownMedicConfigContent(config);
-    const markdownMedicResult = await writeConfigFile(
-      join(cwd, '.mdmedic.config.jsonc'),
-      markdownMedicConfig,
+  // Generate rightdown config if needed
+  if (shouldGenerateRightdownConfig(config)) {
+    const rightdownConfig = generateRightdownConfigContent(config);
+    const rightdownResult = await writeConfigFile(
+      join(cwd, '.rightdown.config.jsonc'),
+      rightdownConfig,
       dryRun,
     );
-    if (isFailure(markdownMedicResult)) {
-      return failure(markdownMedicResult.error);
+    if (isFailure(rightdownResult)) {
+      return failure(rightdownResult.error);
     }
-    generatedFiles.push('.mdmedic.config.jsonc');
+    generatedFiles.push('.rightdown.config.jsonc');
   }
 
   // Generate VS Code settings if enabled
@@ -142,11 +142,11 @@ function shouldGeneratePrettierConfig(config: OutfitterConfig): boolean {
 }
 
 /**
- * Determines if markdown-medic config should be generated
+ * Determines if rightdown config should be generated
  */
-function shouldGenerateMarkdownMedicConfig(config: OutfitterConfig): boolean {
+function shouldGenerateRightdownConfig(config: OutfitterConfig): boolean {
   const { tools } = config.baselayer;
-  return tools.markdown === 'markdown-medic';
+  return tools.markdown === 'rightdown';
 }
 
 /**
@@ -212,10 +212,10 @@ async function generatePackageScripts(
 
     if (tools.typescript === 'biome' || tools.javascript === 'biome') {
       if (!scripts.lint || !scripts.lint.includes('biome')) {
-        const markdownLint = tools.markdown === 'markdown-medic' ? ' && mdmedic "**/*.md"' : '';
+        const markdownLint = tools.markdown === 'rightdown' ? ' && rightdown "**/*.md"' : '';
         scripts.lint = `biome lint . && eslint . --config=./eslint.config.js --max-warnings 0${markdownLint}`;
         scripts['lint:fix'] =
-          `biome lint . --write && eslint . --fix --config=./eslint.config.js${tools.markdown === 'markdown-medic' ? ' && mdmedic --fix "**/*.md"' : ''}`;
+          `biome lint . --write && eslint . --fix --config=./eslint.config.js${tools.markdown === 'rightdown' ? ' && rightdown --fix "**/*.md"' : ''}`;
         updated = true;
       }
 
@@ -232,10 +232,10 @@ async function generatePackageScripts(
       }
     } else if (tools.typescript === 'eslint' || tools.javascript === 'eslint') {
       if (!scripts.lint || !scripts.lint.includes('eslint')) {
-        const markdownLint = tools.markdown === 'markdown-medic' ? ' && mdmedic "**/*.md"' : '';
+        const markdownLint = tools.markdown === 'rightdown' ? ' && rightdown "**/*.md"' : '';
         scripts.lint = `eslint . --max-warnings 0${markdownLint}`;
         scripts['lint:fix'] =
-          `eslint . --fix${tools.markdown === 'markdown-medic' ? ' && mdmedic --fix "**/*.md"' : ''}`;
+          `eslint . --fix${tools.markdown === 'rightdown' ? ' && rightdown --fix "**/*.md"' : ''}`;
         updated = true;
       }
       if (!scripts.format || !scripts.format.includes('prettier')) {

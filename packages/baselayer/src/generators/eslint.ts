@@ -36,7 +36,7 @@ export function generateESLintConfig(config: OutfitterConfig): Array<ESLintConfi
  */
 function applyESLintOverrides(
   baseConfig: Array<ESLintConfig>,
-  eslintOverrides: NonNullable<OutfitterConfig['overrides']>['eslint']
+  eslintOverrides: NonNullable<OutfitterConfig['overrides']>['eslint'],
 ): Array<ESLintConfig> {
   if (!eslintOverrides) {
     return baseConfig;
@@ -52,7 +52,7 @@ function applyESLintOverrides(
   }
 
   // Safely merge rules into the last config object that has rules
-  const rulesConfigIndex = result.findIndex(config => 'rules' in config);
+  const rulesConfigIndex = result.findIndex((config) => 'rules' in config);
   if (rulesConfigIndex !== -1 && eslintOverrides.rules) {
     const existingRulesConfig = result[rulesConfigIndex];
     result[rulesConfigIndex] = {
@@ -118,8 +118,8 @@ function generateIgnorePatterns(config: OutfitterConfig): Array<string> {
     patternSet.add('**/*.{css,scss,sass,less}');
   }
 
-  // Ignore Markdown files handled by markdown-medic
-  if (tools.markdown === 'markdown-medic') {
+  // Ignore Markdown files handled by rightdown
+  if (tools.markdown === 'rightdown') {
     patternSet.add('**/*.{md,mdx}');
   }
 

@@ -1,62 +1,61 @@
-# markdown-medic
+# rightdown
 
 > Opinionated markdown linting and formatting powered by markdownlint-cli2
 
 ## Overview
 
-Markdown Medic is a thin wrapper around the excellent `markdownlint-cli2` that provides:
+Rightdown is a thin wrapper around the excellent `markdownlint-cli2` that provides:
 
 - 🎯 **Opinionated presets** - Strict, standard, and relaxed configurations
 - 📝 **Smart defaults** - Sensible rules for technical documentation
 - 🔧 **Custom rules** - Extended functionality like terminology enforcement
 - ⚡ **Zero config** - Works out of the box with built-in presets
-- 🏥 **Auto-healing** - Fix issues automatically with `--fix`
+- ✅ **Auto-correction** - Fix issues automatically with `--fix`
 
 ## Installation
 
 ```bash
 # Install globally
-npm install -g markdown-medic
+npm install -g @outfitter/rightdown
 
 # Or as a dev dependency
-npm install -D markdown-medic
+npm install -D @outfitter/rightdown
 ```
 
 ## Usage
 
 ### CLI
 
-Both `mdmedic` and `markdown-medic` commands are available:
+The `rightdown` command is available:
 
 ```bash
 # Check all markdown files (uses standard preset by default)
-mdmedic                # Short alias
-markdown-medic         # Full command
+rightdown
 
 # Fix auto-fixable issues
-mdmedic --fix
+rightdown --fix
 
 # Check specific files or patterns
-mdmedic "docs/**/*.md" README.md
+rightdown "docs/**/*.md" README.md
 
 # Use a specific preset
-mdmedic --preset strict
-mdmedic --preset relaxed
+rightdown --preset strict
+rightdown --preset relaxed
 
 # Create a config file
-mdmedic --init
-mdmedic --init strict  # Initialize with strict preset
+rightdown --init
+rightdown --init strict  # Initialize with strict preset
 
 # Use custom config
-mdmedic --config .mdmedic.config.yaml
+rightdown --config .rightdown.config.yaml
 ```
 
 ### Configuration
 
-When you run `mdmedic --init`, it creates a `.mdmedic.config.yaml` file:
+When you run `rightdown --init`, it creates a `.rightdown.config.yaml` file:
 
 ```yaml
-# Markdown Medic - Standard Preset
+# Rightdown - Standard Preset
 # Balanced rules for technical documentation
 
 # Extend base markdownlint rules
@@ -81,7 +80,7 @@ terminology:
 
 # Custom rules
 customRules:
-  - ./node_modules/markdown-medic/dist/rules/consistent-terminology.js
+  - ./node_modules/@outfitter/rightdown/dist/rules/consistent-terminology.js
 
 # Ignore patterns
 ignores:
@@ -145,8 +144,8 @@ Automatically fixes common terminology issues:
 ```json
 {
   "scripts": {
-    "lint:md": "mdmedic",
-    "lint:md:fix": "mdmedic --fix"
+    "lint:md": "rightdown",
+    "lint:md:fix": "rightdown --fix"
   }
 }
 ```
@@ -160,8 +159,8 @@ The config files work seamlessly with the [markdownlint VS Code extension](https
 ```yaml
 - name: Lint Markdown
   run: |
-    npm install -g markdown-medic
-    mdmedic
+    npm install -g @outfitter/rightdown
+    rightdown
 ```
 
 ### Pre-commit Hook
@@ -170,9 +169,9 @@ The config files work seamlessly with the [markdownlint VS Code extension](https
 repos:
   - repo: local
     hooks:
-      - id: mdmedic
+      - id: rightdown
         name: Lint Markdown
-        entry: mdmedic
+        entry: rightdown
         language: system
         types: [markdown]
 ```
@@ -185,7 +184,7 @@ repos:
 2. **No built-in presets** - You need to build your config from scratch
 3. **Missing common rules** - Like terminology enforcement
 
-Markdown Medic provides:
+Rightdown provides:
 
 - **Immediate value** - Sensible presets that just work
 - **Easy adoption** - One command to get started
@@ -198,13 +197,13 @@ Since this is built on `markdownlint-cli2`, you can use all its features:
 
 ```bash
 # Use markdownlint-cli2 options
-mdmedic --no-globs docs/api.md
+rightdown --no-globs docs/api.md
 
 # Multiple config files
-mdmedic --config .markdownlint.yaml --config .markdownlint.local.yaml
+rightdown --config .markdownlint.yaml --config .markdownlint.local.yaml
 
 # Output formats
-mdmedic --output results.json
+rightdown --output results.json
 ```
 
 See the [markdownlint-cli2 documentation](https://github.com/DavidAnson/markdownlint-cli2) for all available options.

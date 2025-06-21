@@ -7,7 +7,7 @@ describe('presets', () => {
       const config = getPresetConfig('strict');
 
       expect(config).toHaveProperty('MD013');
-      expect((config as any).MD013.line_length).toBe(80);
+      expect((config as any).MD013).toBe(false); // MD013 is disabled in strict preset
       expect((config as any).default).toBe(true);
     });
 

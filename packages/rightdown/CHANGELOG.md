@@ -1,18 +1,18 @@
-# markdown-medic
+# rightdown
 
 ## 1.1.0
 
 ### Minor Changes
 
-- 95c8838: feat: add markdown-medic package for opinionated markdown linting
+- 95c8838: feat: add rightdown package for opinionated markdown linting
 
   - New package providing advanced markdown linting and formatting
-  - Includes `mdic` CLI tool (Markdown Inspect & Correct)
+  - Includes `rightdown` CLI tool
   - Three presets: strict, standard (default), and relaxed
   - Custom rules beyond markdownlint:
     - consistent-terminology: Enforce correct spelling/capitalization
   - Auto-fix support for many issues
-  - Configurable via `.mdic.config.yaml` files
+  - Configurable via `.rightdown.config.yaml` files
   - Can be installed globally or as a dev dependency
 
 ### Patch Changes

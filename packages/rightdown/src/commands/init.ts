@@ -16,7 +16,7 @@ export async function initCommand(argv: ArgumentsCamelCase<InitCommandArgs>): Pr
   let { preset } = argv;
 
   // Check if config already exists
-  const configPath = '.markdownlint-cli2.yaml';
+  const configPath = '.rightdown.config.yaml';
   if (existsSync(configPath)) {
     const overwrite = await confirm({
       message: `${configPath} already exists. Overwrite?`,
@@ -68,7 +68,7 @@ export async function initCommand(argv: ArgumentsCamelCase<InitCommandArgs>): Pr
       preset,
       terminology: enableTerminology ? defaultTerminology : [],
       customRules: enableTerminology
-        ? ['./node_modules/markdown-medic/dist/rules/consistent-terminology.js']
+        ? ['./node_modules/@outfitter/rightdown/dist/rules/consistent-terminology.js']
         : [],
       ignores,
     });
@@ -79,7 +79,7 @@ export async function initCommand(argv: ArgumentsCamelCase<InitCommandArgs>): Pr
     const config = generateConfig({
       preset,
       terminology: defaultTerminology,
-      customRules: ['./node_modules/markdown-medic/dist/rules/consistent-terminology.js'],
+      customRules: ['./node_modules/@outfitter/rightdown/dist/rules/consistent-terminology.js'],
     });
 
     writeFileSync(configPath, config);
@@ -88,8 +88,8 @@ export async function initCommand(argv: ArgumentsCamelCase<InitCommandArgs>): Pr
   if (!quiet) {
     console.log(colors.success('✅'), `Created ${configPath} with ${preset} preset`);
     console.log(colors.dim('\nNext steps:'));
-    console.log(colors.dim('  • Run "mdmedic" to lint your markdown files'));
-    console.log(colors.dim('  • Run "mdmedic --fix" to automatically fix issues'));
-    console.log(colors.dim('  • Run "mdmedic rules list" to see available rules'));
+    console.log(colors.dim('  • Run "rightdown" to lint your markdown files'));
+    console.log(colors.dim('  • Run "rightdown --fix" to automatically fix issues'));
+    console.log(colors.dim('  • Run "rightdown rules list" to see available rules'));
   }
 }
