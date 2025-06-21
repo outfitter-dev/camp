@@ -12,9 +12,9 @@ Ensure all IDs (ULID, UUID, Snowflake) share validation, parsing and brand types
 
 ## Scope
 
-* `Ulid` brand, `createUlid()` (uses `ulid` package) and `parseUlid()`.
-* `Uuid` already present in contracts; will re-export here.
-* `ShortId` (7-char base62) for URLs.
+- `Ulid` brand, `createUlid()` (uses `ulid` package) and `parseUlid()`.
+- `Uuid` already present in contracts; will re-export here.
+- `ShortId` (7-char base62) for URLs.
 
 ## API
 

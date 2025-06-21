@@ -12,9 +12,9 @@ Ensure every service and tool emits distributed traces and metrics with minimal 
 
 ## Approach
 
-* Wrap OpenTelemetry SDK.
-* Autoinstrumentations: HTTP, Fetch, Pg, Redis.
-* Provide `withSpan` helper compatible with `AsyncResult`:
+- Wrap OpenTelemetry SDK.
+- Autoinstrumentations: HTTP, Fetch, Pg, Redis.
+- Provide `withSpan` helper compatible with `AsyncResult`:
 
 ```ts
 export async function withSpan<T, E>(
@@ -23,7 +23,7 @@ export async function withSpan<T, E>(
 ): AsyncResult<T,E>;
 ```
 
-* Integrates with `@outfitter/logger` (traceId field).
+- Integrates with `@outfitter/logger` (traceId field).
 
 ## Configuration
 
