@@ -24,6 +24,11 @@ interface RulesForgetArgs {
 
 const CONFIG_PATH = '.markdownlint-cli2.yaml';
 
+/**
+ * Displays the list of markdownlint rules from a specified preset, the current configuration file, or the default preset.
+ *
+ * Groups rules by their status (enabled, configured, or disabled) and prints them to the console. If not in quiet mode, also prints instructions for updating rules.
+ */
 export async function rulesListCommand(argv: ArgumentsCamelCase<RulesListArgs>): Promise<void> {
   const { preset, quiet } = argv;
 
@@ -188,6 +193,11 @@ export async function rulesUpdateCommand(argv: ArgumentsCamelCase<RulesUpdateArg
   }
 }
 
+/**
+ * Removes specified markdownlint rules from the configuration file.
+ *
+ * Deletes the given rules from `.markdownlint-cli2.yaml`. If no matching rules are found, prints a warning and makes no changes. Exits with an error if the configuration file does not exist.
+ */
 export async function rulesForgetCommand(argv: ArgumentsCamelCase<RulesForgetArgs>): Promise<void> {
   const { rules, quiet } = argv;
 

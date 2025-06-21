@@ -4,12 +4,9 @@ import { readFile, writeFile } from 'fs/promises';
 import { glob } from 'glob';
 
 /**
- * Unwraps hard-wrapped prose in markdown files while preserving:
- * - Code blocks
- * - Lists
- * - Headers
- * - Tables
- * - Intentional line breaks (double spaces or empty lines)
+ * Removes hard line wraps from prose paragraphs in markdown content, preserving markdown structural elements such as code blocks, lists, headers, tables, block quotes, horizontal rules, and intentional line breaks.
+ * @param {string} content - The markdown content to process.
+ * @return {string} The markdown content with prose paragraphs unwrapped and markdown structure intact.
  */
 function unwrapMarkdownProse(content) {
   const lines = content.split('\n');
@@ -139,6 +136,11 @@ function unwrapMarkdownProse(content) {
   return result.join('\n');
 }
 
+/**
+ * Unwraps hard-wrapped prose in a markdown file and writes changes if needed.
+ * @param {string} filePath - Path to the markdown file to process.
+ * @return {Promise<boolean>} Resolves to true if the file was modified, false otherwise or on error.
+ */
 async function processFile(filePath) {
   try {
     const content = await readFile(filePath, 'utf-8');
@@ -159,6 +161,11 @@ async function processFile(filePath) {
   }
 }
 
+/**
+ * Entry point for the command-line tool to unwrap hard-wrapped prose in markdown files.
+ *
+ * Parses command-line arguments to determine which markdown files to process and which options to apply, such as dry-run or processing all files in the repository. Displays usage instructions if requested. Processes each file by unwrapping prose paragraphs while preserving markdown structure, either previewing changes or applying them. Logs a summary of results and provides guidance for applying changes if run in dry-run mode.
+ */
 async function main() {
   const args = process.argv.slice(2);
 

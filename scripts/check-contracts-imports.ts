@@ -22,6 +22,11 @@ interface ImportIssue {
   import: string;
 }
 
+/**
+ * Scans source files for barrel imports from `@outfitter/contracts` and reports any occurrences.
+ *
+ * If barrel imports are found, logs detailed error messages with file locations and suggests using sub-path imports instead. Exits the process with a non-zero status code if issues are detected.
+ */
 function checkImports(): void {
   const files = globSync('**/*.{ts,tsx,js,jsx,mjs,cjs}', {
     ignore: IGNORE_PATTERNS,

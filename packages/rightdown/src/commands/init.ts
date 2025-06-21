@@ -11,6 +11,13 @@ interface InitCommandArgs {
   quiet?: boolean;
 }
 
+/**
+ * Initializes a `.rightdown.config.yaml` configuration file for the markdown linting tool, either interactively or using a specified preset.
+ *
+ * If a configuration file already exists, prompts the user to confirm overwriting. In interactive mode, allows selection of a preset, enabling custom terminology checking, and adding custom ignore patterns. In direct mode, generates the configuration using the provided preset. Writes the generated configuration to disk and displays next steps unless quiet mode is enabled.
+ *
+ * @param argv - Command-line arguments including optional `preset` and `quiet` flags
+ */
 export async function initCommand(argv: ArgumentsCamelCase<InitCommandArgs>): Promise<void> {
   const { quiet } = argv;
   let { preset } = argv;

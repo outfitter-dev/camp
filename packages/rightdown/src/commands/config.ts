@@ -18,6 +18,13 @@ interface ConfigIgnoreArgs {
 
 const CONFIG_PATH = '.markdownlint-cli2.yaml';
 
+/**
+ * Updates the markdownlint CLI configuration file to use the specified preset, preserving any existing custom rules, terminology, and ignore patterns.
+ *
+ * If a configuration file already exists, customizations such as `customRules`, `terminology`, and `ignores` are retained and merged with the selected preset. The updated configuration is saved to `.markdownlint-cli2.yaml` with a header comment indicating the preset used.
+ *
+ * @param argv - Command-line arguments specifying the preset name and optional quiet mode
+ */
 export async function configPresetCommand(
   argv: ArgumentsCamelCase<ConfigPresetArgs>,
 ): Promise<void> {

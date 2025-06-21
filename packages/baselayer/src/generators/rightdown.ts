@@ -1,7 +1,11 @@
 import type { OutfitterConfig, RightdownConfig } from '../types/index.js';
 
 /**
- * Generates rightdown configuration from OutfitterConfig
+ * Generates a RightdownConfig object based on the provided OutfitterConfig.
+ *
+ * Selects a preset according to the strictness level, applies default terminology corrections, custom rules, and ignore patterns, and merges in any rightdown-specific overrides from the input configuration.
+ *
+ * @returns The resulting RightdownConfig object for use with the rightdown linter.
  */
 export function generateRightdownConfig(config: OutfitterConfig): RightdownConfig {
   const { strictness, overrides } = config;
@@ -62,7 +66,11 @@ export function generateRightdownConfig(config: OutfitterConfig): RightdownConfi
 }
 
 /**
- * Generates a well-documented JSONC configuration file content
+ * Generates a JSONC (JSON with comments) string representing the rightdown configuration for a given OutfitterConfig.
+ *
+ * The output includes inline documentation for each configuration key, describing its purpose and usage, and is suitable for use as a rightdown config file.
+ *
+ * @returns The rightdown configuration as a JSONC-formatted string with explanatory comments
  */
 export function generateRightdownConfigContent(config: OutfitterConfig): string {
   const mdConfig = generateRightdownConfig(config);

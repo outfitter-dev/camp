@@ -93,6 +93,15 @@ async function readStdin(): Promise<string> {
   });
 }
 
+/**
+ * Formats Markdown content using markdownlint-cli2, optionally applying a preset configuration.
+ *
+ * Writes the input content to a temporary file, runs markdownlint-cli2 with the `--fix` flag, and returns the formatted Markdown as a string. If a preset is provided, its configuration is used for formatting.
+ *
+ * @param content - The Markdown content to format
+ * @param preset - Optional preset configuration to apply during formatting
+ * @returns The formatted Markdown content
+ */
 async function formatMarkdown(content: string, preset?: PresetName): Promise<string> {
   const { main: markdownlintCli2Main } = require('markdownlint-cli2');
 

@@ -34,8 +34,11 @@ export interface SetupResult {
 }
 
 /**
- * Main entry point for baselayer setup
- * Reads configuration and generates all tool configs
+ * Sets up the development baselayer by reading configuration and generating tool config files and package.json scripts.
+ *
+ * Reads the configuration from the specified working directory, conditionally generates configuration files for supported tools (Biome, ESLint, Prettier, Rightdown, VS Code), and updates package.json scripts as needed. Supports dry run mode to simulate changes without writing files.
+ *
+ * @returns A result containing the used configuration and a list of generated files, or an error if setup fails.
  */
 export async function setup(options: SetupOptions = {}): Promise<Result<SetupResult, Error>> {
   const { cwd = process.cwd(), dryRun = false } = options;
@@ -134,7 +137,10 @@ function shouldGenerateBiomeConfig(config: OutfitterConfig): boolean {
 }
 
 /**
- * Determines if Prettier config should be generated
+ * Returns true if a Prettier configuration file should be generated based on the baselayer tool settings.
+ *
+ * @param config - The Outfitter configuration object to evaluate
+ * @returns True if Prettier is selected for CSS, YAML, or Markdown tools
  */
 function shouldGeneratePrettierConfig(config: OutfitterConfig): boolean {
   const { tools } = config.baselayer;
@@ -142,7 +148,9 @@ function shouldGeneratePrettierConfig(config: OutfitterConfig): boolean {
 }
 
 /**
- * Determines if rightdown config should be generated
+ * Returns true if the configuration specifies 'rightdown' as the markdown tool.
+ *
+ * @returns Whether a rightdown configuration file should be generated
  */
 function shouldGenerateRightdownConfig(config: OutfitterConfig): boolean {
   const { tools } = config.baselayer;
@@ -186,7 +194,14 @@ async function writeConfigFile(
 }
 
 /**
- * Generates package.json scripts based on tool configuration
+ * Updates or adds lint and format scripts in package.json based on the provided tool configuration.
+ *
+ * Modifies scripts to use Biome, ESLint, Prettier, and Rightdown commands as appropriate for the configured tools. If dry run is enabled, simulates changes without writing to disk.
+ *
+ * @param config - The baselayer tool configuration
+ * @param cwd - The working directory containing package.json
+ * @param dryRun - If true, no files are written and changes are only simulated
+ * @returns A result indicating whether scripts were updated
  */
 async function generatePackageScripts(
   config: OutfitterConfig,

@@ -1,8 +1,11 @@
 import type { OutfitterConfig, ESLintConfig } from '../types/index.js';
 
 /**
- * Generates ESLint bridge configuration from OutfitterConfig
- * This handles rules that Biome doesn't support yet
+ * Generates an ESLint configuration array based on the provided OutfitterConfig, including ignore patterns and placeholders for rules unsupported by Biome.
+ *
+ * If ESLint-specific overrides are present in the configuration, they are safely merged into the resulting configuration array.
+ *
+ * @returns An array of ESLint configuration objects tailored to the input configuration.
  */
 export function generateESLintConfig(config: OutfitterConfig): Array<ESLintConfig> {
   const { overrides } = config;
@@ -32,7 +35,11 @@ export function generateESLintConfig(config: OutfitterConfig): Array<ESLintConfi
 }
 
 /**
- * Apply ESLint overrides to base configuration safely
+ * Applies ESLint-specific override settings to a base configuration array, merging ignore patterns, rules, and any additional properties.
+ *
+ * @param baseConfig - The initial array of ESLint configuration objects to modify.
+ * @param eslintOverrides - An object containing override properties such as `ignores`, `rules`, or other ESLint config fields.
+ * @returns A new array of ESLint configuration objects with overrides applied.
  */
 function applyESLintOverrides(
   baseConfig: Array<ESLintConfig>,
@@ -79,8 +86,11 @@ function applyESLintOverrides(
 }
 
 /**
- * Generate ignore patterns based on tool assignments
- * Patterns are deduplicated to avoid redundancy
+ * Generates a sorted array of file and directory patterns to be ignored by ESLint, based on the tool assignments in the provided configuration.
+ *
+ * Patterns include common build artifacts, dependencies, and files managed by other tools, with deduplication to prevent redundancy.
+ *
+ * @returns An array of glob patterns to be used as ESLint ignore patterns.
  */
 function generateIgnorePatterns(config: OutfitterConfig): Array<string> {
   const patternSet = new Set<string>([

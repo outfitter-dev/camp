@@ -28,6 +28,15 @@ export function generateConfig(options: GeneratorOptions = {}): string {
   return generateYamlConfig(config, preset);
 }
 
+/**
+ * Converts a markdownlint configuration object into a YAML-formatted string with descriptive comments.
+ *
+ * The output includes a header indicating the preset used, documentation links, and detailed comments for terminology corrections, custom rules, ignore patterns, and rule configurations.
+ *
+ * @param config - The markdownlint configuration object to convert
+ * @param preset - The name of the preset used to generate the configuration
+ * @returns The YAML-formatted configuration string with comments
+ */
 function generateYamlConfig(config: MdlintConfig, preset: PresetName): string {
   const lines: string[] = [];
 
