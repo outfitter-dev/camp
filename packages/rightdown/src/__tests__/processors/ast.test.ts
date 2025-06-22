@@ -1,8 +1,15 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'fs';
 import { join } from 'path';
-import { Result } from '@outfitter/contracts';
-import type { AppError } from '@outfitter/contracts';
+import { 
+  Result, 
+  success, 
+  failure, 
+  makeError,
+  isSuccess,
+  isFailure,
+  type AppError 
+} from '@outfitter/contracts';
 
 // Types for the AST processor (to be implemented)
 interface CodeBlock {
@@ -63,7 +70,7 @@ describe('AstProcessor', () => {
       
       expect(result.success).toBe(true);
       if (result.success) {
-        const { codeBlocks } = result.value;
+        const { codeBlocks } = result.data;
         expect(codeBlocks).toHaveLength(4);
         
         // Check first code block (JavaScript)
@@ -88,7 +95,7 @@ describe('AstProcessor', () => {
       
       expect(result.success).toBe(true);
       if (result.success) {
-        const { codeBlocks } = result.value;
+        const { codeBlocks } = result.data;
         // Should extract all code blocks, including nested ones
         expect(codeBlocks.length).toBeGreaterThan(0);
         
@@ -115,7 +122,7 @@ const y: number = 2;
       
       expect(result.success).toBe(true);
       if (result.success) {
-        const { codeBlocks } = result.value;
+        const { codeBlocks } = result.data;
         expect(codeBlocks).toHaveLength(2);
         
         // Check position info exists
@@ -146,7 +153,7 @@ no language
       
       expect(result.success).toBe(true);
       if (result.success) {
-        const { codeBlocks } = result.value;
+        const { codeBlocks } = result.data;
         expect(codeBlocks).toHaveLength(2);
         expect(codeBlocks[0].lang).toBe('javascript');
         expect(codeBlocks[1].lang).toBe(null);
@@ -164,7 +171,7 @@ const z = 3;
       
       expect(result.success).toBe(true);
       if (result.success) {
-        const { codeBlocks } = result.value;
+        const { codeBlocks } = result.data;
         expect(codeBlocks[0].meta).toBe('{highlight: [1, 3]}');
       }
     });
@@ -175,7 +182,7 @@ const z = 3;
       
       expect(result.success).toBe(true);
       if (result.success) {
-        const { codeBlocks } = result.value;
+        const { codeBlocks } = result.data;
         expect(codeBlocks.length).toBeGreaterThan(0);
         
         // Should handle various edge cases without throwing
@@ -207,9 +214,9 @@ const y:number=2;
       
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.value).toContain('const x = 1;');
-        expect(result.value).toContain('const y: number = 2;');
-        expect(result.value).toContain('Some text'); // Preserve non-code content
+        expect(result.data).toContain('const x = 1;');
+        expect(result.data).toContain('const y: number = 2;');
+        expect(result.data).toContain('Some text'); // Preserve non-code content
       }
     });
 
@@ -226,8 +233,8 @@ const x=1;
       
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.value).toContain('~~~javascript');
-        expect(result.value).toContain('~~~');
+        expect(result.data).toContain('~~~javascript');
+        expect(result.data).toContain('~~~');
       }
     });
 
@@ -244,7 +251,7 @@ const x = 1;
       expect(result.success).toBe(true);
       if (result.success) {
         // Should return original markdown unchanged
-        expect(result.value).toBe(markdown);
+        expect(result.data).toBe(markdown);
       }
     });
 
@@ -266,8 +273,8 @@ const y:number=2;
       
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.value).toContain('const x = 1;');
-        expect(result.value).toContain('const y:number=2;'); // Unchanged
+        expect(result.data).toContain('const x = 1;');
+        expect(result.data).toContain('const y:number=2;'); // Unchanged
       }
     });
   });

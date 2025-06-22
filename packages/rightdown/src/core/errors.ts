@@ -1,0 +1,25 @@
+/**
+ * Error codes specific to Rightdown v2.1 functionality
+ */
+export const RIGHTDOWN_ERROR_CODES = {
+  // Config errors
+  FILE_NOT_FOUND: 'FILE_NOT_FOUND',
+  INVALID_YAML: 'INVALID_YAML',
+  INVALID_CONFIG: 'INVALID_CONFIG',
+  UNSUPPORTED_VERSION: 'UNSUPPORTED_VERSION',
+  
+  // Formatter errors
+  FORMATTER_NOT_FOUND: 'FORMATTER_NOT_FOUND',
+  FORMATTER_FAILED: 'FORMATTER_FAILED',
+  FORMATTER_TIMEOUT: 'FORMATTER_TIMEOUT',
+  
+  // AST processing errors
+  PARSE_ERROR: 'PARSE_ERROR',
+  INVALID_MARKDOWN: 'INVALID_MARKDOWN',
+  
+  // General errors
+  VALIDATION_ERROR: 'VALIDATION_ERROR',
+  IO_ERROR: 'IO_ERROR',
+} as const;
+
+export type RightdownErrorCode = typeof RIGHTDOWN_ERROR_CODES[keyof typeof RIGHTDOWN_ERROR_CODES];

@@ -1,7 +1,14 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { join } from 'path';
-import { Result } from '@outfitter/contracts';
-import type { AppError } from '@outfitter/contracts';
+import { 
+  Result, 
+  success, 
+  failure, 
+  makeError,
+  isSuccess,
+  isFailure,
+  type AppError 
+} from '@outfitter/contracts';
 
 // Types for the config reader (to be implemented)
 interface RightdownConfigV2 {
@@ -71,7 +78,7 @@ describe('ConfigReader', () => {
       
       expect(result.success).toBe(true);
       if (result.success) {
-        const config = result.value;
+        const config = result.data;
         expect(configReader.isV2Config(config)).toBe(false);
         expect(config.preset).toBe('standard');
         expect(config.rules).toBeDefined();
@@ -85,7 +92,7 @@ describe('ConfigReader', () => {
       
       expect(result.success).toBe(true);
       if (result.success) {
-        const config = result.value;
+        const config = result.data;
         expect(configReader.isV2Config(config)).toBe(true);
         if (configReader.isV2Config(config)) {
           expect(config.version).toBe(2);
@@ -102,7 +109,7 @@ describe('ConfigReader', () => {
       
       expect(result.success).toBe(true);
       if (result.success) {
-        const config = result.value;
+        const config = result.data;
         expect(configReader.isV2Config(config)).toBe(true);
         if (configReader.isV2Config(config)) {
           expect(config.version).toBe(2);
@@ -195,7 +202,7 @@ describe('ConfigReader', () => {
       const result = configReader.validateConfig(config);
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(configReader.isV2Config(result.value)).toBe(false);
+        expect(configReader.isV2Config(result.data)).toBe(false);
       }
     });
 
