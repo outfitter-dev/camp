@@ -74,8 +74,14 @@ async function hasPackage(packageName: string, cwd: string = process.cwd()): Pro
       };
       return packageName in deps;
     }
-  } catch {
-    // Ignore errors
+  } catch (error) {
+    // File read errors are expected in many cases
+    if (error instanceof Error && 'code' in error) {
+      // Only log unexpected errors (not ENOENT)
+      if (error.code !== 'ENOENT') {
+        console.debug(`Warning: Error reading package.json: ${error.message}`);
+      }
+    }
   }
   return false;
 }

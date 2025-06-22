@@ -96,7 +96,7 @@ describe('configuration generators', () => {
 
       // Should include ignore patterns for files handled by Biome
       const ignoreConfig = config.find((c) => c.ignores);
-      expect(ignoreConfig?.ignores).toContain('**/*.{js,jsx,ts,tsx}');
+      expect(ignoreConfig?.ignores).toContain('**/*.{js,jsx,ts,tsx,mjs,cjs}');
     });
   });
 });

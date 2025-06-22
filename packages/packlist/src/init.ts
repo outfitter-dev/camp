@@ -36,10 +36,16 @@ export async function init(options: InitOptions = {}): Promise<void> {
     process.exit(1);
   }
 
-  // Read package.json
-  const packageJson: { scripts?: Record<string, string>; [key: string]: unknown } = JSON.parse(
-    await fs.readFile(packageJsonPath, 'utf8'),
-  );
+  // Read and validate package.json
+  const { readPackageJson } = await import('./schemas/package-json.js');
+  const packageJsonResult = readPackageJson(packageJsonPath);
+
+  if (!packageJsonResult.success) {
+    console.error(pc.red('❌ Error reading package.json:'), packageJsonResult.error.message);
+    process.exit(1);
+  }
+
+  const packageJson = packageJsonResult.data;
 
   // Detect package manager
   const packageManager = await detectPackageManager();
@@ -114,22 +120,31 @@ async function detectPackageManager(): Promise<string> {
   try {
     await fs.access('pnpm-lock.yaml');
     return 'pnpm';
-  } catch {
-    // File doesn't exist, continue to next package manager check
+  } catch (error) {
+    // File doesn't exist is expected, other errors should be logged
+    if (error instanceof Error && 'code' in error && error.code !== 'ENOENT') {
+      console.warn(`Warning: Error checking for pnpm-lock.yaml: ${error.message}`);
+    }
   }
 
   try {
     await fs.access('yarn.lock');
     return 'yarn';
-  } catch {
-    // File doesn't exist, continue to next package manager check
+  } catch (error) {
+    // File doesn't exist is expected, other errors should be logged
+    if (error instanceof Error && 'code' in error && error.code !== 'ENOENT') {
+      console.warn(`Warning: Error checking for yarn.lock: ${error.message}`);
+    }
   }
 
   try {
     await fs.access('bun.lockb');
     return 'bun';
-  } catch {
-    // File doesn't exist, fallback to npm
+  } catch (error) {
+    // File doesn't exist is expected, other errors should be logged
+    if (error instanceof Error && 'code' in error && error.code !== 'ENOENT') {
+      console.warn(`Warning: Error checking for bun.lockb: ${error.message}`);
+    }
   }
 
   return 'npm';
@@ -143,10 +158,18 @@ async function installDependencies(packageManager: string, deps: Array<string>, 
     if (dev) args[1] = '--save-dev';
   }
 
-  await execa(packageManager, [...args, ...deps], {
-    stdout: 'inherit',
-    stderr: 'inherit',
-  });
+  try {
+    await execa(packageManager, [...args, ...deps], {
+      stdout: 'inherit',
+      stderr: 'inherit',
+      timeout: 120_000, // 2 minute timeout
+    });
+  } catch (error: unknown) {
+    if (error instanceof Error && 'timedOut' in error && error.timedOut) {
+      throw new Error(`Package installation timed out after 2 minutes`);
+    }
+    throw error;
+  }
 }
 
 /**
