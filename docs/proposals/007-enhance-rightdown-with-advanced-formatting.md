@@ -90,9 +90,9 @@ Key rules to implement (with TypeScript):
   
   // Include additional custom rules
   "customRules": [
-    "./node_modules/markdown-medic/dist/rules/consistent-terminology.js",
-    "./node_modules/markdown-medic/dist/rules/code-block-language.js",
-    "./node_modules/markdown-medic/dist/rules/typography.js"
+    "./node_modules/rightdown/dist/rules/consistent-terminology.js",
+    "./node_modules/rightdown/dist/rules/code-block-language.js",
+    "./node_modules/rightdown/dist/rules/typography.js"
   ]
 }
 ```
@@ -103,7 +103,7 @@ We'll support three tiers of rules, allowing users to leverage the ecosystem whi
 
 **Tier 1: Community Rules (JavaScript)**
 - Users can install any markdownlint rule package
-- md-medic loads them dynamically with defensive error handling
+- rightdown loads them dynamically with defensive error handling
 - Configuration validated at runtime
 
 **Tier 2: Verified Rules (Bundled)**
@@ -119,7 +119,7 @@ We'll support three tiers of rules, allowing users to leverage the ecosystem whi
 **Example `package.json` - progressive approach:**
 
 ```json
-// packages/markdown-medic/package.json
+// packages/rightdown/package.json
 "dependencies": {
   // ... existing dependencies
   "diff": "^5.2.0"  // For dry-run mode
@@ -208,7 +208,7 @@ We'll provide a `.pre-commit-hooks.yaml` in the package:
 
 ### 3b. Granular Strictness Control (Beyond Simple Ignoring)
 
-Instead of just ignoring files, md-medic could support different strictness levels for different contexts:
+Instead of just ignoring files, rightdown could support different strictness levels for different contexts:
 
 **Inline Mode Control:**
 ```markdown
@@ -535,7 +535,7 @@ Since markdownlint custom rules must be CommonJS modules, we need a strategy for
 5. **Easier debugging**: Full source maps and type information
 
 ### ESM/CommonJS Interop
-Since md-medic is ESM but markdownlint rules must be CommonJS:
+Since rightdown is ESM but markdownlint rules must be CommonJS:
 1. Use `createRequire` from `node:module` to load CommonJS rules from ESM code
 2. Build our custom rules as CommonJS but keep the rest of the package as ESM
 3. Handle dynamic imports carefully to maintain compatibility
@@ -576,7 +576,7 @@ Since md-medic is ESM but markdownlint rules must be CommonJS:
 - **Zero Migration Cost**: Existing markdownlint-cli2 commands work unchanged
 - **Ecosystem Compatibility**: Users can leverage any markdownlint rule, not just ours
 - **Progressive Enhancement**: Start with community rules, upgrade to type-safe versions over time
-- **Lower Barrier to Entry**: Users familiar with markdownlint can adopt md-medic easily
+- **Lower Barrier to Entry**: Users familiar with markdownlint can adopt rightdown easily
 - **Best of Both Worlds**: Type safety for our code, flexibility for user extensions
 - **Clear Value Proposition**: "markdownlint-cli2 + batteries included + progressive type safety"
 

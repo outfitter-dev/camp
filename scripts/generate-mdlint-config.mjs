@@ -2,7 +2,7 @@
 import { writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-// Inlined from @outfitter/md-medic to avoid circular dependency during install
+// Inlined from @outfitter/rightdown to avoid circular dependency during install
 
 // --- START Inlined from presets.ts ---
 const strictConfig = {

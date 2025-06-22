@@ -6,7 +6,7 @@
 *.json
 *.jsonc
 
-# Ignore files handled by md-medic
+# Ignore files handled by rightdown
 *.md
 
 # Standard ignores
