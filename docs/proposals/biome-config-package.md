@@ -59,7 +59,7 @@ The core of the package will be its `biome.json` file. This file will define our
 
 ```json
 {
-  "$schema": "https://biomejs.dev/schemas/latest/schema.json",
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "root": true,
   "organizeImports": {
     "enabled": true

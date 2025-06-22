@@ -13,7 +13,7 @@ export function generateBiomeConfig(config: OutfitterConfig): BiomeConfig {
 
   // Base configuration from declarative preferences
   const baseConfig: BiomeConfig = {
-    $schema: 'https://biomejs.dev/schemas/latest/schema.json',
+    $schema: './node_modules/@biomejs/biome/configuration_schema.json',
     root: true,
     vcs: {
       enabled: true,
