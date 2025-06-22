@@ -25,7 +25,7 @@ describe('CLI integration tests', () => {
   it('should show help with --help flag', async () => {
     const { stdout } = await execAsync(`node ${cliPath} --help`);
 
-    expect(stdout).toContain('Lint markdown files');
+    expect(stdout).toContain('Lint Markdown files');
     expect(stdout).toContain('--fix');
     expect(stdout).toContain('--config');
     expect(stdout).toContain('init'); // It's a command now, not a flag

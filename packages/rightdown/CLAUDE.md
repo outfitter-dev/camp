@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-This is the `rightdown` package - an opinionated wrapper around `markdownlint-cli2` that provides presets and custom rules for markdown linting and formatting. The CLI command is `rightdown`.
+This is the `rightdown` package - an opinionated wrapper around `markdownlint-cli2` that provides presets and custom rules for Markdown linting and formatting. The CLI command is `rightdown`.
 
 ## Key Commands
 

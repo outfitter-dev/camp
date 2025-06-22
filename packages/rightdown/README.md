@@ -1,6 +1,6 @@
 # rightdown
 
-> Opinionated markdown linting and formatting powered by markdownlint-cli2
+> Opinionated Markdown linting and formatting powered by markdownlint-cli2
 
 ## Overview
 
@@ -29,7 +29,7 @@ npm install -D @outfitter/rightdown
 The `rightdown` command is available:
 
 ```bash
-# Check all markdown files (uses standard preset by default)
+# Check all Markdown files (uses standard preset by default)
 rightdown
 
 # Fix auto-fixable issues

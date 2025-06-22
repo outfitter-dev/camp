@@ -15,7 +15,7 @@ interface LintCommandArgs {
 const require = createRequire(import.meta.url);
 
 /**
- * Runs markdown linting on specified files using markdownlint-cli2.
+ * Runs Markdown linting on specified files using markdownlint-cli2.
  *
  * Executes the markdownlint-cli2 tool with options for file selection, fixing issues, custom configuration, and verbosity. If no configuration file is found and quiet mode is not enabled, a warning is displayed suggesting initialization.
  */

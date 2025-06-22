@@ -15,7 +15,7 @@ yargs(hideBin(process.argv))
   // Default command: lint files
   .command(
     '$0 [files..]',
-    'Lint markdown files',
+    'Lint Markdown files',
     (yargs) => {
       return yargs
         .positional('files', {
@@ -41,7 +41,7 @@ yargs(hideBin(process.argv))
   // Init command
   .command(
     'init [preset]',
-    'Initialize rightdown configuration',
+    'Initialize Rightdown configuration',
     (yargs) => {
       return yargs.positional('preset', {
         describe: 'Preset to use',
@@ -55,7 +55,7 @@ yargs(hideBin(process.argv))
   // Format command
   .command(
     'format [source] [path]',
-    'Format markdown from various sources',
+    'Format Markdown from various sources',
     (yargs) => {
       return yargs
         .positional('source', {
@@ -101,7 +101,7 @@ yargs(hideBin(process.argv))
   )
 
   // Rules commands
-  .command('rules', 'Manage markdown rules', (yargs) => {
+  .command('rules', 'Manage Markdown rules', (yargs) => {
     return yargs
       .command(
         'list [preset]',
@@ -208,7 +208,7 @@ yargs(hideBin(process.argv))
   .showHelpOnFail(false, 'Use --help for available options')
 
   // Examples
-  .example('$0', 'Lint all markdown files in current directory')
+  .example('$0', 'Lint all Markdown files in current directory')
   .example('$0 --fix README.md', 'Fix issues in README.md')
   .example('$0 init standard', 'Initialize with standard preset')
   .example('$0 format --text "# My Title" --preset strict', 'Format text with strict preset')

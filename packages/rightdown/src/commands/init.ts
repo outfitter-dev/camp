@@ -13,7 +13,7 @@ interface InitCommandArgs {
 }
 
 /**
- * Initializes a `.rightdown.config.yaml` configuration file for the markdown linting tool, either interactively or using a specified preset.
+ * Initializes a `.rightdown.config.yaml` configuration file for the Markdown linting tool, either interactively or using a specified preset.
  *
  * If a configuration file already exists, prompts the user to confirm overwriting. In interactive mode, allows selection of a preset, enabling custom terminology checking, and adding custom ignore patterns. In direct mode, generates the configuration using the provided preset. Writes the generated configuration to disk and displays next steps unless quiet mode is enabled.
  *
@@ -96,7 +96,7 @@ export async function initCommand(argv: ArgumentsCamelCase<InitCommandArgs>): Pr
   if (!quiet) {
     console.log(colors.success('✅'), `Created ${configPath} with ${preset} preset`);
     console.log(colors.dim('\nNext steps:'));
-    console.log(colors.dim('  • Run "rightdown" to lint your markdown files'));
+    console.log(colors.dim('  • Run "rightdown" to lint your Markdown files'));
     console.log(colors.dim('  • Run "rightdown --fix" to automatically fix issues'));
     console.log(colors.dim('  • Run "rightdown rules list" to see available rules'));
   }
