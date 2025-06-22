@@ -1,57 +1,28 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { isSuccess, isFailure } from '@outfitter/contracts';
-import type { IFormatter } from './base.test.js';
+import { BiomeFormatter } from '../../formatters/biome.js';
 
 // Mock Biome module
-vi.mock('@biomejs/biome', () => ({
-  Biome: {
-    create: vi.fn(() => ({
-      applyConfiguration: vi.fn(),
-      formatContent: vi.fn(),
-      shutdown: vi.fn(),
-    })),
-  },
-}));
+const mockFormatContent = vi.fn();
+const mockApplyConfiguration = vi.fn();
+const mockShutdown = vi.fn();
 
-// Biome formatter implementation (to be implemented)
-class BiomeFormatter implements IFormatter {
-  readonly name = 'biome';
-  private biome: any = null;
-  
-  async isAvailable() {
-    // Will be implemented
-    throw new Error('Not implemented');
-  }
+const mockBiomeInstance = {
+  applyConfiguration: mockApplyConfiguration,
+  formatContent: mockFormatContent,
+  shutdown: mockShutdown,
+};
 
-  async getVersion() {
-    // Will be implemented
-    throw new Error('Not implemented');
-  }
-
-  async format(code: string, language: string, options?: Record<string, unknown>) {
-    // Will be implemented
-    throw new Error('Not implemented');
-  }
-
-  getSupportedLanguages() {
-    return [
-      'javascript',
-      'typescript',
-      'jsx',
-      'tsx',
-      'json',
-      'jsonc',
-    ];
-  }
-
-  async shutdown() {
-    // Clean up Biome instance
-    if (this.biome) {
-      await this.biome.shutdown();
-      this.biome = null;
-    }
-  }
-}
+vi.mock('@biomejs/biome', () => {
+  return {
+    Biome: {
+      create: vi.fn(() => Promise.resolve(mockBiomeInstance)),
+    },
+    Distribution: {
+      NODE: 'node',
+    },
+  };
+});
 
 describe('BiomeFormatter', () => {
   let formatter: BiomeFormatter;
@@ -77,40 +48,57 @@ describe('BiomeFormatter', () => {
     });
 
     it('should return false when @biomejs/biome is not installed', async () => {
+      const testFormatter = new BiomeFormatter();
+      
       vi.doMock('@biomejs/biome', () => {
-        throw new Error('Cannot find module');
+        const error = new Error('Cannot find module');
+        (error as any).code = 'MODULE_NOT_FOUND';
+        throw error;
       });
 
-      const result = await formatter.isAvailable();
+      const result = await testFormatter.isAvailable();
       
       expect(isSuccess(result)).toBe(true);
       if (result.success) {
         expect(result.data).toBe(false);
       }
+      
+      vi.doUnmock('@biomejs/biome');
     });
   });
 
   describe('getVersion', () => {
     it('should return biome version', async () => {
+      // Mock the package.json import
+      vi.doMock('@biomejs/biome/package.json', () => ({
+        default: { version: '1.5.0' }
+      }));
+      
       const result = await formatter.getVersion();
       
       expect(isSuccess(result)).toBe(true);
       if (result.success) {
-        expect(result.data).toMatch(/^\d+\.\d+\.\d+/);
+        expect(result.data).toBe('1.5.0');
       }
     });
 
     it('should handle missing biome gracefully', async () => {
+      const testFormatter = new BiomeFormatter();
+      
       vi.doMock('@biomejs/biome', () => {
-        throw new Error('Cannot find module');
+        const error = new Error('Cannot find module');
+        (error as any).code = 'MODULE_NOT_FOUND';
+        throw error;
       });
 
-      const result = await formatter.getVersion();
+      const result = await testFormatter.getVersion();
       
       expect(isFailure(result)).toBe(true);
       if (!result.success) {
-        expect(result.error.code).toBe('FORMATTER_NOT_FOUND');
+        expect(result.error.code).toBe('NOT_FOUND');
       }
+      
+      vi.doUnmock('@biomejs/biome');
     });
   });
 
@@ -169,7 +157,7 @@ describe('BiomeFormatter', () => {
       
       expect(isFailure(result)).toBe(true);
       if (!result.success) {
-        expect(result.error.code).toBe('FORMATTER_FAILED');
+        expect(result.error.code).toBe('INTERNAL_ERROR');
         expect(result.error.message).toContain('Syntax error');
       }
     });
@@ -180,7 +168,7 @@ describe('BiomeFormatter', () => {
       
       expect(isFailure(result)).toBe(true);
       if (!result.success) {
-        expect(result.error.code).toBe('FORMATTER_FAILED');
+        expect(result.error.code).toBe('INTERNAL_ERROR');
         expect(result.error.message).toContain('Unsupported language');
       }
     });
@@ -237,6 +225,11 @@ describe('BiomeFormatter', () => {
       const largeCode = Array(1000)
         .fill('const x = 1;')
         .join('\n');
+      
+      mockFormatContent.mockResolvedValueOnce({
+        content: largeCode, // Just return the same for the test
+        diagnostics: [],
+      });
       
       const start = Date.now();
       const result = await formatter.format(largeCode, 'javascript');
