@@ -1,25 +1,27 @@
+import { ErrorCode } from '@outfitter/contracts';
+
 /**
- * Error codes specific to Rightdown v2.1 functionality
+ * Map Rightdown-specific error scenarios to contracts error codes
  */
 export const RIGHTDOWN_ERROR_CODES = {
   // Config errors
-  FILE_NOT_FOUND: 'FILE_NOT_FOUND',
-  INVALID_YAML: 'INVALID_YAML',
-  INVALID_CONFIG: 'INVALID_CONFIG',
-  UNSUPPORTED_VERSION: 'UNSUPPORTED_VERSION',
+  FILE_NOT_FOUND: ErrorCode.NOT_FOUND,
+  INVALID_YAML: ErrorCode.VALIDATION_ERROR,
+  INVALID_CONFIG: ErrorCode.VALIDATION_ERROR,
+  UNSUPPORTED_VERSION: ErrorCode.VALIDATION_ERROR,
   
   // Formatter errors
-  FORMATTER_NOT_FOUND: 'FORMATTER_NOT_FOUND',
-  FORMATTER_FAILED: 'FORMATTER_FAILED',
-  FORMATTER_TIMEOUT: 'FORMATTER_TIMEOUT',
+  FORMATTER_NOT_FOUND: ErrorCode.NOT_FOUND,
+  FORMATTER_FAILED: ErrorCode.INTERNAL_ERROR,
+  FORMATTER_TIMEOUT: ErrorCode.INTERNAL_ERROR,
   
   // AST processing errors
-  PARSE_ERROR: 'PARSE_ERROR',
-  INVALID_MARKDOWN: 'INVALID_MARKDOWN',
+  PARSE_ERROR: ErrorCode.VALIDATION_ERROR,
+  INVALID_MARKDOWN: ErrorCode.VALIDATION_ERROR,
   
   // General errors
-  VALIDATION_ERROR: 'VALIDATION_ERROR',
-  IO_ERROR: 'IO_ERROR',
+  VALIDATION_ERROR: ErrorCode.VALIDATION_ERROR,
+  IO_ERROR: ErrorCode.INTERNAL_ERROR,
 } as const;
 
 export type RightdownErrorCode = typeof RIGHTDOWN_ERROR_CODES[keyof typeof RIGHTDOWN_ERROR_CODES];

@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { join } from 'path';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 import { 
   Result, 
   success, 
@@ -9,6 +10,10 @@ import {
   isFailure,
   type AppError 
 } from '@outfitter/contracts';
+
+// ESM equivalent of __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // Types for the config reader (to be implemented)
 interface RightdownConfigV2 {
@@ -46,22 +51,8 @@ interface RightdownConfigV1 {
 
 type RightdownConfig = RightdownConfigV1 | RightdownConfigV2;
 
-// Mock implementation for tests (to be replaced with real implementation)
-class ConfigReader {
-  async read(path: string): Promise<Result<RightdownConfig, AppError>> {
-    // This will be implemented
-    throw new Error('Not implemented');
-  }
-
-  isV2Config(config: RightdownConfig): config is RightdownConfigV2 {
-    return 'version' in config && config.version === 2;
-  }
-
-  validateConfig(config: unknown): Result<RightdownConfig, AppError> {
-    // This will be implemented
-    throw new Error('Not implemented');
-  }
-}
+// Import the real implementation
+import { ConfigReader } from '../../core/config-reader.js';
 
 describe('ConfigReader', () => {
   let configReader: ConfigReader;
@@ -75,6 +66,10 @@ describe('ConfigReader', () => {
     it('should read and parse v1 legacy config', async () => {
       const configPath = join(fixturesPath, 'v1-legacy.yaml');
       const result = await configReader.read(configPath);
+      
+      if (!result.success) {
+        console.error('Failed to read v1 config:', result.error);
+      }
       
       expect(result.success).toBe(true);
       if (result.success) {
@@ -128,7 +123,7 @@ describe('ConfigReader', () => {
       
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.code).toBe('FILE_NOT_FOUND');
+        expect(result.error.code).toBe('NOT_FOUND');
       }
     });
 
@@ -139,7 +134,7 @@ describe('ConfigReader', () => {
       
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.code).toBe('INVALID_YAML');
+        expect(result.error.code).toBe('VALIDATION_ERROR');
       }
     });
   });
@@ -173,7 +168,7 @@ describe('ConfigReader', () => {
       const result = configReader.validateConfig(config);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.code).toBe('INVALID_CONFIG');
+        expect(result.error.code).toBe('VALIDATION_ERROR');
       }
     });
 
@@ -215,7 +210,7 @@ describe('ConfigReader', () => {
       const result = configReader.validateConfig(config);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.code).toBe('UNSUPPORTED_VERSION');
+        expect(result.error.code).toBe('VALIDATION_ERROR');
       }
     });
   });
