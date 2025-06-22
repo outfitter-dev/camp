@@ -4,6 +4,7 @@ import type { ArgumentsCamelCase } from 'yargs';
 import { select, confirm, input } from '../utils/prompts.js';
 import { colors } from '../utils/colors.js';
 import { generateConfig, defaultTerminology } from '../config-generator.js';
+import { getConfigPath } from '../utils/config-path.js';
 import type { PresetName } from '../types.js';
 
 interface InitCommandArgs {
@@ -23,7 +24,7 @@ export async function initCommand(argv: ArgumentsCamelCase<InitCommandArgs>): Pr
   let { preset } = argv;
 
   // Check if config already exists
-  const configPath = '.rightdown.config.yaml';
+  const configPath = getConfigPath();
   if (existsSync(configPath)) {
     const overwrite = await confirm({
       message: `${configPath} already exists. Overwrite?`,
