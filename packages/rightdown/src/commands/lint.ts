@@ -1,7 +1,7 @@
 import { createRequire } from 'node:module';
-import { existsSync } from 'node:fs';
 import type { ArgumentsCamelCase } from 'yargs';
 import { colors } from '../utils/colors.js';
+import { hasAnyConfigFile } from '../utils/config-path.js';
 
 interface LintCommandArgs {
   files?: string[];
@@ -37,14 +37,7 @@ export async function lintCommand(argv: ArgumentsCamelCase<LintCommandArgs>): Pr
     if (config) args.push('--config', config);
 
     // Check if we have a config file
-    const hasConfig =
-      config ||
-      existsSync('.rightdown.config.yaml') ||
-      existsSync('.markdownlint-cli2.yaml') ||
-      existsSync('.markdownlint-cli2.jsonc') ||
-      existsSync('.markdownlint-cli2.json') ||
-      existsSync('.markdownlint.yaml') ||
-      existsSync('.markdownlint.json');
+    const hasConfig = config || hasAnyConfigFile();
 
     if (!hasConfig && !quiet) {
       console.log(

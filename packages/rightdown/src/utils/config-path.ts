@@ -37,3 +37,27 @@ export function getConfigPath(): string {
 export function getConfigNames(): string[] {
   return DEFAULT_CONFIG_NAMES;
 }
+
+// All config file names that markdownlint-cli2 supports
+const ALL_SUPPORTED_CONFIGS = [
+  '.rightdown.config.yaml',
+  '.markdownlint-cli2.yaml',
+  '.markdownlint-cli2.jsonc',
+  '.markdownlint-cli2.json',
+  '.markdownlint.yaml',
+  '.markdownlint.json',
+];
+
+/**
+ * Check if any supported configuration file exists.
+ * This includes all formats that markdownlint-cli2 can read.
+ */
+export function hasAnyConfigFile(): boolean {
+  // Check environment variable first
+  if (process.env.RIGHTDOWN_CONFIG) {
+    return true;
+  }
+
+  // Check for any supported config file
+  return ALL_SUPPORTED_CONFIGS.some(configName => existsSync(configName));
+}
