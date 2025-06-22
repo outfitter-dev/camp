@@ -44,7 +44,10 @@ class MockFormatter implements IFormatter {
 
     // Simple mock formatting: add spaces around operators
     const formatted = code.replace(/=/g, ' = ').replace(/\s+/g, ' ').trim();
-    return success(formatted);
+    return success({
+      formatted,
+      didChange: formatted !== code.trim(),
+    });
   }
 
   getSupportedLanguages() {
@@ -159,9 +162,8 @@ describe('Orchestrator', () => {
         expect(content).toContain('const user: User = {');
 
         // Check stats
-        expect(stats.totalBlocks).toBe(4);
-        expect(stats.formattedBlocks).toBe(3); // 3 formatted, 1 plain text skipped
-        expect(stats.errors).toBe(1); // 1 error for unsupported "text" language
+        expect(stats.blocksProcessed).toBe(4);
+        expect(stats.blocksFormatted).toBe(3); // 3 formatted, 1 plain text skipped
       }
     });
 
@@ -172,11 +174,9 @@ describe('Orchestrator', () => {
       expect(isSuccess(result)).toBe(true);
       if (result.success) {
         const { stats } = result.data;
-        expect(stats.totalBlocks).toBeGreaterThan(10);
-        // Will have errors for unsupported languages
-        expect(stats.errors).toBeGreaterThan(0);
+        expect(stats.blocksProcessed).toBeGreaterThan(10);
         // But should format supported languages
-        expect(stats.formattedBlocks).toBeGreaterThan(0);
+        expect(stats.blocksFormatted).toBeGreaterThan(0);
       }
     });
 
@@ -209,7 +209,7 @@ fn main() {
       if (result.success) {
         const { content, stats } = result.data;
         expect(content).toContain('fn main()'); // Unchanged
-        expect(stats.skippedBlocks).toBe(1);
+        expect(stats.blocksFormatted).toBe(0);
       }
     });
 
@@ -225,8 +225,7 @@ const x = { // Invalid syntax
       expect(isSuccess(result)).toBe(true); // Overall success
       if (result.success) {
         const { stats } = result.data;
-        expect(stats.errors).toBe(1);
-        expect(stats.formattedBlocks).toBe(0);
+        expect(stats.blocksFormatted).toBe(0);
       }
     });
 
@@ -287,7 +286,7 @@ const x = "test";
       expect(isSuccess(result)).toBe(true);
       if (result.success) {
         const { stats } = result.data;
-        expect(stats.totalBlocks).toBe(4);
+        expect(stats.blocksProcessed).toBe(4);
       }
     });
 
@@ -309,8 +308,8 @@ const x = "test";
       expect(isSuccess(result)).toBe(true);
       if (result.success) {
         const { stats } = result.data;
-        expect(stats.duration).toBeGreaterThan(0);
-        expect(stats.duration).toBeLessThan(1000); // Should be fast
+        expect(stats.formattingDuration).toBeGreaterThan(0);
+        expect(stats.formattingDuration).toBeLessThan(1000); // Should be fast
       }
     });
 

@@ -13,11 +13,9 @@ export interface OrchestratorOptions {
 export interface FormatResult {
   content: string;
   stats: {
-    totalBlocks: number;
-    formattedBlocks: number;
-    skippedBlocks: number;
-    errors: number;
-    duration: number;
+    blocksProcessed: number;
+    blocksFormatted: number;
+    formattingDuration: number;
   };
 }
 
@@ -35,7 +33,7 @@ export class Orchestrator {
    * Format markdown content
    */
   async format(markdown: string): Promise<Result<FormatResult, AppError>> {
-    const startTime = Date.now();
+    const startTime = performance.now();
 
     try {
       // Extract code blocks
@@ -46,11 +44,9 @@ export class Orchestrator {
 
       const { codeBlocks } = extractResult.data;
       const stats = {
-        totalBlocks: codeBlocks.length,
-        formattedBlocks: 0,
-        skippedBlocks: 0,
-        errors: 0,
-        duration: 0,
+        blocksProcessed: codeBlocks.length,
+        blocksFormatted: 0,
+        formattingDuration: 0,
       };
 
       // Format each code block
@@ -61,12 +57,12 @@ export class Orchestrator {
         const formatter = this.getFormatter(block.lang || 'text');
 
         if (!formatter) {
-          stats.skippedBlocks++;
           continue;
         }
 
-        // Get formatter options
-        const formatterOptions = this.getFormatterOptions(formatter.name);
+        // Get formatter name for options lookup
+        const formatterName = this.getFormatterName(block.lang || 'text');
+        const formatterOptions = formatterName ? this.getFormatterOptions(formatterName) : undefined;
 
         // Format the code
         const formatResult = await formatter.format(
@@ -76,10 +72,11 @@ export class Orchestrator {
         );
 
         if (formatResult.success) {
-          replacements.set(i, formatResult.data);
-          stats.formattedBlocks++;
+          if (formatResult.data.didChange) {
+            replacements.set(i, formatResult.data.formatted);
+            stats.blocksFormatted++;
+          }
         } else {
-          stats.errors++;
           // Keep original content on error
           console.warn(
             `Failed to format ${block.lang} block at line ${block.position.start.line}: ${formatResult.error.message}`,
@@ -93,7 +90,7 @@ export class Orchestrator {
         return replaceResult;
       }
 
-      stats.duration = Date.now() - startTime;
+      stats.formattingDuration = Math.round(performance.now() - startTime);
 
       return success({
         content: replaceResult.data,
@@ -162,6 +159,22 @@ export class Orchestrator {
 
     // No formatter available
     return null;
+  }
+
+  /**
+   * Get formatter name for a specific language
+   */
+  private getFormatterName(language: string): string | null {
+    const { config } = this.options;
+    const normalizedLang = this.normalizeLanguage(language);
+
+    // Check language-specific formatter
+    if (config.formatters?.languages?.[normalizedLang]) {
+      return config.formatters.languages[normalizedLang];
+    }
+
+    // Return default formatter name
+    return config.formatters?.default || null;
   }
 
   /**
