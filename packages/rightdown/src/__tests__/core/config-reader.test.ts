@@ -1,55 +1,22 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { 
-  Result, 
-  success, 
-  failure, 
+import {
+  Result,
+  success,
+  failure,
   makeError,
   isSuccess,
   isFailure,
-  type AppError 
+  type AppError,
 } from '@outfitter/contracts';
 
 // ESM equivalent of __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Types for the config reader (to be implemented)
-interface RightdownConfigV2 {
-  version: 2;
-  preset?: 'strict' | 'standard' | 'relaxed';
-  rules?: Record<string, unknown>;
-  formatters?: {
-    default?: string;
-    languages?: Record<string, string>;
-  };
-  formatterOptions?: Record<string, Record<string, unknown>>;
-  ignores?: Array<string>;
-  terminology?: Array<{
-    incorrect: string;
-    correct: string;
-    caseSensitive?: boolean;
-  }>;
-  output?: {
-    diagnostics?: boolean;
-    progress?: boolean;
-    color?: boolean;
-  };
-}
-
-interface RightdownConfigV1 {
-  preset?: string;
-  rules?: Record<string, unknown>;
-  ignores?: Array<string>;
-  terminology?: Array<{
-    incorrect: string;
-    correct: string;
-    caseSensitive?: boolean;
-  }>;
-}
-
-type RightdownConfig = RightdownConfigV1 | RightdownConfigV2;
+// Import the config type from the main types file
+import type { RightdownConfig } from '../../core/types.js';
 
 // Import the real implementation
 import { ConfigReader } from '../../core/config-reader.js';
@@ -63,64 +30,51 @@ describe('ConfigReader', () => {
   });
 
   describe('read', () => {
-    it('should read and parse v1 legacy config', async () => {
-      const configPath = join(fixturesPath, 'v1-legacy.yaml');
+    it('should fail to read legacy config without version field', async () => {
+      const configPath = join(fixturesPath, 'legacy.yaml');
       const result = await configReader.read(configPath);
-      
+
+      expect(result.success).toBe(false);
       if (!result.success) {
-        console.error('Failed to read v1 config:', result.error);
+        expect(result.error.code).toBe('VALIDATION_ERROR');
+        expect(result.error.message).toContain('Configuration must have version: 2');
       }
-      
+    });
+
+    it('should read and parse basic config', async () => {
+      const configPath = join(fixturesPath, 'basic.yaml');
+      const result = await configReader.read(configPath);
+
       expect(result.success).toBe(true);
       if (result.success) {
         const config = result.data;
-        expect(configReader.isV2Config(config)).toBe(false);
+        expect(config.version).toBe(2);
         expect(config.preset).toBe('standard');
-        expect(config.rules).toBeDefined();
-        expect(config.ignores).toHaveLength(3);
+        expect(config.formatters?.default).toBe('prettier');
+        expect(config.formatters?.languages?.javascript).toBe('biome');
       }
     });
 
-    it('should read and parse v2 basic config', async () => {
-      const configPath = join(fixturesPath, 'v2-basic.yaml');
+    it('should read and parse full config', async () => {
+      const configPath = join(fixturesPath, 'full.yaml');
       const result = await configReader.read(configPath);
-      
-      expect(result.success).toBe(true);
-      if (result.success) {
-        const config = result.data;
-        expect(configReader.isV2Config(config)).toBe(true);
-        if (configReader.isV2Config(config)) {
-          expect(config.version).toBe(2);
-          expect(config.preset).toBe('standard');
-          expect(config.formatters?.default).toBe('prettier');
-          expect(config.formatters?.languages?.javascript).toBe('biome');
-        }
-      }
-    });
 
-    it('should read and parse v2 full config', async () => {
-      const configPath = join(fixturesPath, 'v2-full.yaml');
-      const result = await configReader.read(configPath);
-      
       expect(result.success).toBe(true);
       if (result.success) {
         const config = result.data;
-        expect(configReader.isV2Config(config)).toBe(true);
-        if (configReader.isV2Config(config)) {
-          expect(config.version).toBe(2);
-          expect(config.preset).toBe('strict');
-          expect(config.formatters?.languages?.javascript).toBe('biome');
-          expect(config.formatters?.languages?.html).toBe('prettier');
-          expect(config.formatterOptions?.prettier?.printWidth).toBe(80);
-          expect(config.formatterOptions?.biome?.indentWidth).toBe(2);
-        }
+        expect(config.version).toBe(2);
+        expect(config.preset).toBe('strict');
+        expect(config.formatters?.languages?.javascript).toBe('biome');
+        expect(config.formatters?.languages?.html).toBe('prettier');
+        expect(config.formatterOptions?.prettier?.printWidth).toBe(80);
+        expect(config.formatterOptions?.biome?.indentWidth).toBe(2);
       }
     });
 
     it('should fail on non-existent file', async () => {
       const configPath = join(fixturesPath, 'does-not-exist.yaml');
       const result = await configReader.read(configPath);
-      
+
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error.code).toBe('NOT_FOUND');
@@ -131,7 +85,7 @@ describe('ConfigReader', () => {
       // We'll need to create a fixture with invalid YAML
       const configPath = join(fixturesPath, 'invalid-yaml.yaml');
       const result = await configReader.read(configPath);
-      
+
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error.code).toBe('VALIDATION_ERROR');
@@ -140,7 +94,7 @@ describe('ConfigReader', () => {
   });
 
   describe('validateConfig', () => {
-    it('should validate v2 config with all required fields', () => {
+    it('should validate config with all required fields', () => {
       const config = {
         version: 2,
         preset: 'standard',
@@ -151,12 +105,12 @@ describe('ConfigReader', () => {
           },
         },
       };
-      
+
       const result = configReader.validateConfig(config);
       expect(result.success).toBe(true);
     });
 
-    it('should fail on invalid v2 config', () => {
+    it('should fail on invalid config', () => {
       const config = {
         version: 2,
         preset: 'not-a-valid-preset',
@@ -164,7 +118,7 @@ describe('ConfigReader', () => {
           default: 123, // Should be string
         },
       };
-      
+
       const result = configReader.validateConfig(config);
       expect(result.success).toBe(false);
       if (!result.success) {
@@ -172,7 +126,7 @@ describe('ConfigReader', () => {
       }
     });
 
-    it('should fail on v2 config with invalid formatter options', () => {
+    it('should fail on config with invalid formatter options', () => {
       const config = {
         version: 2,
         formatters: {
@@ -181,23 +135,23 @@ describe('ConfigReader', () => {
           },
         },
       };
-      
+
       const result = configReader.validateConfig(config);
       expect(result.success).toBe(false);
     });
 
-    it('should handle v1 config without version field', () => {
+    it('should fail on config without version field', () => {
       const config = {
         preset: 'standard',
         rules: {
           'line-length': false,
         },
       };
-      
+
       const result = configReader.validateConfig(config);
-      expect(result.success).toBe(true);
-      if (result.success) {
-        expect(configReader.isV2Config(result.data)).toBe(false);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.code).toBe('VALIDATION_ERROR');
       }
     });
 
@@ -206,7 +160,7 @@ describe('ConfigReader', () => {
         version: 3, // Not supported yet
         preset: 'standard',
       };
-      
+
       const result = configReader.validateConfig(config);
       expect(result.success).toBe(false);
       if (!result.success) {
@@ -215,23 +169,25 @@ describe('ConfigReader', () => {
     });
   });
 
-  describe('type guards', () => {
-    it('should correctly identify v2 config', () => {
-      const v2Config: RightdownConfig = {
+  describe('config version', () => {
+    it('should only accept configs with version 2', () => {
+      const config = {
         version: 2,
         preset: 'standard',
       };
-      
-      expect(configReader.isV2Config(v2Config)).toBe(true);
+
+      const result = configReader.validateConfig(config);
+      expect(result.success).toBe(true);
     });
 
-    it('should correctly identify v1 config', () => {
-      const v1Config: RightdownConfig = {
+    it('should reject configs without version field', () => {
+      const config = {
         preset: 'standard',
         rules: {},
       };
-      
-      expect(configReader.isV2Config(v1Config)).toBe(false);
+
+      const result = configReader.validateConfig(config);
+      expect(result.success).toBe(false);
     });
   });
 });

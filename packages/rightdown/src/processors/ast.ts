@@ -1,13 +1,7 @@
 import { remark } from 'remark';
 import { visit } from 'unist-util-visit';
 import type { Root, Code } from '../types/mdast.js';
-import { 
-  Result, 
-  success, 
-  failure, 
-  makeError,
-  type AppError 
-} from '@outfitter/contracts';
+import { Result, success, failure, makeError, type AppError } from '@outfitter/contracts';
 import { RIGHTDOWN_ERROR_CODES } from '../core/errors.js';
 
 export interface CodeBlock {
@@ -35,10 +29,10 @@ export class AstProcessor {
   async extractCodeBlocks(markdown: string): Promise<Result<ProcessedDocument, AppError>> {
     try {
       const codeBlocks: Array<CodeBlock> = [];
-      
+
       // Parse the markdown into an AST
       const tree = this.processor.parse(markdown);
-      
+
       // Visit all code nodes
       visit(tree, 'code', (node: Code) => {
         if (!node.position) {
@@ -74,8 +68,8 @@ export class AstProcessor {
           RIGHTDOWN_ERROR_CODES.PARSE_ERROR,
           'Failed to parse markdown document',
           undefined,
-          error as Error
-        )
+          error as Error,
+        ),
       );
     }
   }
@@ -85,7 +79,7 @@ export class AstProcessor {
    */
   async replaceCodeBlocks(
     markdown: string,
-    replacements: Map<number, string>
+    replacements: Map<number, string>,
   ): Promise<Result<string, AppError>> {
     try {
       // If no replacements, return original
@@ -101,34 +95,34 @@ export class AstProcessor {
       }
 
       const { codeBlocks } = extractResult.data;
-      
+
       // Sort replacements by position (reverse order to maintain offsets)
       const sortedBlocks = codeBlocks
         .map((block, index) => ({ block, index, replacement: replacements.get(index) }))
-        .filter(item => item.replacement !== undefined)
+        .filter((item) => item.replacement !== undefined)
         .sort((a, b) => b.block.position.start.offset - a.block.position.start.offset);
 
       // Apply replacements to original markdown
       let result = markdown;
-      
+
       for (const { block, replacement } of sortedBlocks) {
         if (replacement === undefined) continue;
-        
+
         // Find the actual fence in the original text
         const startOffset = block.position.start.offset;
         const endOffset = block.position.end.offset;
         const blockText = markdown.substring(startOffset, endOffset);
-        
+
         // Extract fence info from original block
         const fenceMatch = blockText.match(/^(`{3,}|~{3,})([^\n]*)\n/);
         if (!fenceMatch) continue;
-        
+
         const fence = fenceMatch[1];
         const langAndMeta = fenceMatch[2].trim();
-        
+
         // Reconstruct the block with same fence style
         const newBlock = `${fence}${langAndMeta}\n${replacement}\n${fence}`;
-        
+
         // Replace in result string
         result = result.substring(0, startOffset) + newBlock + result.substring(endOffset);
       }
@@ -140,8 +134,8 @@ export class AstProcessor {
           RIGHTDOWN_ERROR_CODES.PARSE_ERROR,
           'Failed to replace code blocks',
           undefined,
-          error as Error
-        )
+          error as Error,
+        ),
       );
     }
   }
@@ -151,7 +145,7 @@ export class AstProcessor {
    */
   normalizeLanguage(lang: string | null): string | null {
     if (!lang) return null;
-    
+
     const aliases: Record<string, string> = {
       js: 'javascript',
       ts: 'typescript',
@@ -160,7 +154,7 @@ export class AstProcessor {
       yml: 'yaml',
       md: 'markdown',
     };
-    
+
     return aliases[lang.toLowerCase()] || lang.toLowerCase();
   }
 }

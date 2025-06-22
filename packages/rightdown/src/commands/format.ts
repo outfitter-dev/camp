@@ -1,170 +1,168 @@
-import { readFileSync, writeFileSync, existsSync, unlinkSync, mkdtempSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { createRequire } from 'node:module';
-import { resolve, join } from 'node:path';
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { resolve } from 'node:path';
 import type { ArgumentsCamelCase } from 'yargs';
 import { colors } from '../utils/colors.js';
-import { getPresetConfig } from '../presets/index.js';
-import type { PresetName } from '../types.js';
+import { ConfigReader } from '../core/config-reader.js';
+import { Orchestrator } from '../core/orchestrator.js';
+import { PrettierFormatter } from '../formatters/prettier.js';
+import { BiomeFormatter } from '../formatters/biome.js';
+import type { IFormatter } from '../formatters/base.js';
 
 interface FormatCommandArgs {
-  source?: string;
-  path?: string;
-  input?: boolean;
-  text?: string;
-  preset?: PresetName;
-  output?: boolean;
+  files?: string[];
+  write?: boolean;
+  check?: boolean;
+  config?: string;
   quiet?: boolean;
+  verbose?: boolean;
 }
 
-// Create require for markdownlint-cli2
-const require = createRequire(import.meta.url);
-
 export async function formatCommand(argv: ArgumentsCamelCase<FormatCommandArgs>): Promise<void> {
-  const { source, path, input, text, preset, output = true, quiet } = argv;
-
-  let content: string;
-  let sourceName: string;
+  const {
+    files = ['.'],
+    write = false,
+    check = false,
+    config: configPath,
+    quiet = false,
+    verbose = false,
+  } = argv;
 
   try {
-    // Get content based on source
-    if (text) {
-      content = text;
-      sourceName = 'inline text';
-    } else if (input) {
-      // Read from stdin
-      content = await readStdin();
-      sourceName = 'stdin';
-    } else if (source === 'file' && path) {
-      if (!existsSync(path)) {
-        throw new Error(`File not found: ${path}`);
+    // Read configuration
+    const configReader = new ConfigReader();
+    const configResult = await configReader.read(
+      configPath || resolve(process.cwd(), '.rightdown.config.yaml'),
+    );
+
+    if (!configResult.success) {
+      throw new Error(`Failed to read config: ${configResult.error.message}`);
+    }
+
+    const config = configResult.data;
+
+    // Initialize formatters
+    const formatters = new Map<string, IFormatter>();
+
+    // Check and add Prettier
+    const prettierFormatter = new PrettierFormatter();
+    const prettierAvailable = await prettierFormatter.isAvailable();
+    if (prettierAvailable.success && prettierAvailable.data) {
+      formatters.set('prettier', prettierFormatter);
+      if (verbose) {
+        const version = await prettierFormatter.getVersion();
+        if (version.success) {
+          console.log(colors.info(`Using Prettier v${version.data}`));
+        }
       }
-      content = readFileSync(path, 'utf-8');
-      sourceName = path;
-    } else {
-      throw new Error('No valid source specified. Use --text, --input, or specify file source.');
     }
 
-    if (!content.trim()) {
-      throw new Error(`No content found in ${sourceName}`);
+    // Check and add Biome
+    const biomeFormatter = new BiomeFormatter();
+    const biomeAvailable = await biomeFormatter.isAvailable();
+    if (biomeAvailable.success && biomeAvailable.data) {
+      formatters.set('biome', biomeFormatter);
+      if (verbose) {
+        const version = await biomeFormatter.getVersion();
+        if (version.success) {
+          console.log(colors.info(`Using Biome v${version.data}`));
+        }
+      }
     }
 
-    // Format using markdownlint-cli2
-    if (!quiet) {
-      console.log(colors.info('Formatting...'));
-    }
-    const formatted = await formatMarkdown(content, preset);
+    // Create orchestrator
+    const orchestrator = new Orchestrator({ config, formatters });
 
-    // Handle output
-    if (output) {
-      console.log(formatted);
+    // Process files
+    let totalFiles = 0;
+    let filesChanged = 0;
+    let hasErrors = false;
+
+    for (const filePattern of files) {
+      // For now, just handle single files
+      // TODO: Add glob support
+      if (!existsSync(filePattern)) {
+        console.error(colors.error(`File not found: ${filePattern}`));
+        hasErrors = true;
+        continue;
+      }
+
+      totalFiles++;
+      const filePath = resolve(filePattern);
+
+      if (!quiet) {
+        console.log(colors.info(`Processing ${filePath}...`));
+      }
+
+      // Format the file
+      const result = await orchestrator.formatFile(filePath);
+
+      if (!result.success) {
+        console.error(colors.error(`Failed to format ${filePath}: ${result.error.message}`));
+        hasErrors = true;
+        continue;
+      }
+
+      const { content, stats } = result.data;
+      const originalContent = readFileSync(filePath, 'utf-8');
+      const hasChanges = content !== originalContent;
+
+      if (check) {
+        // Check mode: report if file would change
+        if (hasChanges) {
+          filesChanged++;
+          if (!quiet) {
+            console.log(colors.warning(`${filePath} would be reformatted`));
+          }
+        }
+      } else if (write && hasChanges) {
+        // Write mode: update the file
+        writeFileSync(filePath, content);
+        filesChanged++;
+        if (!quiet) {
+          console.log(colors.success(`✅ Formatted ${filePath}`));
+        }
+      } else if (!write) {
+        // Default: output to stdout
+        console.log(content);
+      }
+
+      if (verbose) {
+        console.log(colors.info(`  Total blocks: ${stats.totalBlocks}`));
+        console.log(colors.info(`  Formatted: ${stats.formattedBlocks}`));
+        console.log(colors.info(`  Skipped: ${stats.skippedBlocks}`));
+        if (stats.errors > 0) {
+          console.log(colors.warning(`  Errors: ${stats.errors}`));
+        }
+        console.log(colors.info(`  Duration: ${stats.duration}ms`));
+      }
     }
 
-    if (!quiet) {
-      console.log(colors.success('✅ Formatted successfully'));
+    // Clean up formatters
+    if (formatters.has('biome')) {
+      await (formatters.get('biome') as BiomeFormatter).shutdown();
+    }
+
+    // Summary
+    if (!quiet && totalFiles > 0) {
+      console.log();
+      if (check) {
+        if (filesChanged === 0) {
+          console.log(colors.success('✅ All files are properly formatted'));
+          process.exit(0);
+        } else {
+          console.log(colors.error(`❌ ${filesChanged} file(s) need formatting`));
+          process.exit(1);
+        }
+      } else if (write) {
+        console.log(colors.success(`✅ Formatted ${filesChanged} of ${totalFiles} file(s)`));
+      }
+    }
+
+    if (hasErrors) {
+      process.exit(1);
     }
   } catch (error) {
     console.error(colors.error('Error:'), error instanceof Error ? error.message : error);
     process.exit(1);
-  }
-}
-
-async function readStdin(): Promise<string> {
-  return new Promise((resolve, reject) => {
-    let content = '';
-
-    process.stdin.setEncoding('utf8');
-    process.stdin.on('data', (chunk) => {
-      content += chunk;
-    });
-
-    process.stdin.on('end', () => {
-      resolve(content);
-    });
-
-    process.stdin.on('error', (error) => {
-      reject(error);
-    });
-
-    // Check if stdin is a TTY (no piped input)
-    if (process.stdin.isTTY) {
-      reject(new Error('No input provided. Pipe content or use --text flag.'));
-    }
-  });
-}
-
-/**
- * Formats Markdown content using markdownlint-cli2, optionally applying a preset configuration.
- *
- * Writes the input content to a temporary file, runs markdownlint-cli2 with the `--fix` flag, and returns the formatted Markdown as a string. If a preset is provided, its configuration is used for formatting.
- *
- * @param content - The Markdown content to format
- * @param preset - Optional preset configuration to apply during formatting
- * @returns The formatted Markdown content
- */
-async function formatMarkdown(content: string, preset?: PresetName): Promise<string> {
-  const { main: markdownlintCli2Main } = require('markdownlint-cli2');
-
-  // Create a temporary directory
-  const tempDir = mkdtempSync(join(tmpdir(), 'rightdown-'));
-  const tempFile = join(tempDir, 'content.md');
-  let tempConfigPath: string | undefined;
-
-  try {
-    // Write content to temp file
-    writeFileSync(tempFile, content);
-
-    // Build args for markdownlint-cli2
-    const args = [tempFile, '--fix'];
-
-    if (preset) {
-      // Create a config file in temp directory
-      tempConfigPath = join(tempDir, '.markdownlint.json');
-      const presetConfig = getPresetConfig(preset);
-      // Remove customRules for formatting (they may not exist in the expected path)
-      delete presetConfig.customRules;
-      writeFileSync(tempConfigPath, JSON.stringify(presetConfig, null, 2));
-      args.push('--config', tempConfigPath);
-    }
-
-    // Run markdownlint-cli2
-    const params = {
-      argv: args,
-      logMessage: () => {}, // Suppress output
-      logError: () => {}, // Suppress errors (we'll handle them)
-    };
-
-    await markdownlintCli2Main(params);
-
-    // Read the formatted content
-    const formatted = readFileSync(tempFile, 'utf-8');
-
-    // Clean up temp files
-    if (existsSync(tempFile)) {
-      unlinkSync(tempFile);
-    }
-    if (tempConfigPath && existsSync(tempConfigPath)) {
-      unlinkSync(tempConfigPath);
-    }
-    // Remove temp directory
-    if (existsSync(tempDir)) {
-      require('fs').rmSync(tempDir, { recursive: true, force: true });
-    }
-
-    return formatted;
-  } catch (error) {
-    // Clean up on error
-    if (existsSync(tempFile)) {
-      unlinkSync(tempFile);
-    }
-    if (tempConfigPath && existsSync(tempConfigPath)) {
-      unlinkSync(tempConfigPath);
-    }
-    // Remove temp directory
-    if (existsSync(tempDir)) {
-      require('fs').rmSync(tempDir, { recursive: true, force: true });
-    }
-
-    throw error;
   }
 }

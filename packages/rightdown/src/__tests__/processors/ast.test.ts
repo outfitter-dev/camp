@@ -2,14 +2,14 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { 
-  Result, 
-  success, 
-  failure, 
+import {
+  Result,
+  success,
+  failure,
   makeError,
   isSuccess,
   isFailure,
-  type AppError 
+  type AppError,
 } from '@outfitter/contracts';
 
 // Import the real implementation
@@ -27,23 +27,23 @@ describe('AstProcessor', () => {
     it('should extract code blocks from basic markdown', async () => {
       const markdown = readFileSync(join(fixturesPath, 'basic.md'), 'utf-8');
       const result = await processor.extractCodeBlocks(markdown);
-      
+
       expect(result.success).toBe(true);
       if (result.success) {
         const { codeBlocks } = result.data;
         expect(codeBlocks).toHaveLength(4);
-        
+
         // Check first code block (JavaScript)
         expect(codeBlocks[0].lang).toBe('javascript');
         expect(codeBlocks[0].value).toContain('const greeting = "Hello, World!"');
-        
+
         // Check second code block (TypeScript)
         expect(codeBlocks[1].lang).toBe('typescript');
         expect(codeBlocks[1].value).toContain('interface User');
-        
+
         // Check third code block (JSON)
         expect(codeBlocks[2].lang).toBe('json');
-        
+
         // Check fourth code block (no language)
         expect(codeBlocks[3].lang).toBe(null);
       }
@@ -52,15 +52,15 @@ describe('AstProcessor', () => {
     it('should handle nested code blocks', async () => {
       const markdown = readFileSync(join(fixturesPath, 'nested-blocks.md'), 'utf-8');
       const result = await processor.extractCodeBlocks(markdown);
-      
+
       expect(result.success).toBe(true);
       if (result.success) {
         const { codeBlocks } = result.data;
         // Should extract all code blocks, including nested ones
         expect(codeBlocks.length).toBeGreaterThan(0);
-        
+
         // Check that markdown code blocks are properly identified
-        const markdownBlocks = codeBlocks.filter(b => b.lang === 'markdown');
+        const markdownBlocks = codeBlocks.filter((b) => b.lang === 'markdown');
         expect(markdownBlocks.length).toBeGreaterThan(0);
       }
     });
@@ -79,22 +79,18 @@ const y: number = 2;
 \`\`\``;
 
       const result = await processor.extractCodeBlocks(markdown);
-      
+
       expect(result.success).toBe(true);
       if (result.success) {
         const { codeBlocks } = result.data;
         expect(codeBlocks).toHaveLength(2);
-        
+
         // Check position info exists
         expect(codeBlocks[0].position).toBeDefined();
-        expect(codeBlocks[0].position.start.line).toBeLessThan(
-          codeBlocks[0].position.end.line
-        );
-        
+        expect(codeBlocks[0].position.start.line).toBeLessThan(codeBlocks[0].position.end.line);
+
         // Second block should start after first
-        expect(codeBlocks[1].position.start.line).toBeGreaterThan(
-          codeBlocks[0].position.end.line
-        );
+        expect(codeBlocks[1].position.start.line).toBeGreaterThan(codeBlocks[0].position.end.line);
       }
     });
 
@@ -110,7 +106,7 @@ no language
 ~~~`;
 
       const result = await processor.extractCodeBlocks(markdown);
-      
+
       expect(result.success).toBe(true);
       if (result.success) {
         const { codeBlocks } = result.data;
@@ -128,7 +124,7 @@ const z = 3;
 \`\`\``;
 
       const result = await processor.extractCodeBlocks(markdown);
-      
+
       expect(result.success).toBe(true);
       if (result.success) {
         const { codeBlocks } = result.data;
@@ -139,12 +135,12 @@ const z = 3;
     it('should handle edge cases from fixtures', async () => {
       const markdown = readFileSync(join(fixturesPath, 'edge-cases.md'), 'utf-8');
       const result = await processor.extractCodeBlocks(markdown);
-      
+
       expect(result.success).toBe(true);
       if (result.success) {
         const { codeBlocks } = result.data;
         expect(codeBlocks.length).toBeGreaterThan(0);
-        
+
         // Should handle various edge cases without throwing
         // Specific assertions would depend on implementation
       }
@@ -171,7 +167,7 @@ const y:number=2;
       ]);
 
       const result = await processor.replaceCodeBlocks(markdown, replacements);
-      
+
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.data).toContain('const x = 1;');
@@ -185,12 +181,10 @@ const y:number=2;
 const x=1;
 ~~~`;
 
-      const replacements = new Map<number, string>([
-        [0, 'const x = 1;'],
-      ]);
+      const replacements = new Map<number, string>([[0, 'const x = 1;']]);
 
       const result = await processor.replaceCodeBlocks(markdown, replacements);
-      
+
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.data).toContain('~~~javascript');
@@ -207,7 +201,7 @@ const x = 1;
 
       const replacements = new Map<number, string>();
       const result = await processor.replaceCodeBlocks(markdown, replacements);
-      
+
       expect(result.success).toBe(true);
       if (result.success) {
         // Should return original markdown unchanged
@@ -225,12 +219,10 @@ const y:number=2;
 \`\`\``;
 
       // Only replace the first block
-      const replacements = new Map<number, string>([
-        [0, 'const x = 1;'],
-      ]);
+      const replacements = new Map<number, string>([[0, 'const x = 1;']]);
 
       const result = await processor.replaceCodeBlocks(markdown, replacements);
-      
+
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.data).toContain('const x = 1;');

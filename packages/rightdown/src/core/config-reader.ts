@@ -1,18 +1,8 @@
 import { readFileSync, existsSync } from 'node:fs';
 import yaml from 'js-yaml';
-import { 
-  Result, 
-  success, 
-  failure, 
-  makeError,
-  type AppError 
-} from '@outfitter/contracts';
+import { Result, success, failure, makeError, type AppError } from '@outfitter/contracts';
 import { RIGHTDOWN_ERROR_CODES } from './errors.js';
-import { 
-  type RightdownConfig, 
-  type RightdownConfigV2,
-  isV2Config 
-} from './types.js';
+import { type RightdownConfig } from './types.js';
 
 export class ConfigReader {
   /**
@@ -23,10 +13,7 @@ export class ConfigReader {
       // Check if file exists
       if (!existsSync(path)) {
         return failure(
-          makeError(
-            RIGHTDOWN_ERROR_CODES.FILE_NOT_FOUND,
-            `Configuration file not found: ${path}`
-          )
+          makeError(RIGHTDOWN_ERROR_CODES.FILE_NOT_FOUND, `Configuration file not found: ${path}`),
         );
       }
 
@@ -43,8 +30,8 @@ export class ConfigReader {
             RIGHTDOWN_ERROR_CODES.INVALID_YAML,
             'Failed to parse YAML configuration',
             { path },
-            error as Error
-          )
+            error as Error,
+          ),
         );
       }
 
@@ -56,8 +43,8 @@ export class ConfigReader {
           RIGHTDOWN_ERROR_CODES.IO_ERROR,
           'Failed to read configuration file',
           { path },
-          error as Error
-        )
+          error as Error,
+        ),
       );
     }
   }
@@ -68,144 +55,83 @@ export class ConfigReader {
   validateConfig(config: unknown): Result<RightdownConfig, AppError> {
     if (!config || typeof config !== 'object') {
       return failure(
-        makeError(
-          RIGHTDOWN_ERROR_CODES.INVALID_CONFIG,
-          'Configuration must be an object'
-        )
+        makeError(RIGHTDOWN_ERROR_CODES.INVALID_CONFIG, 'Configuration must be an object'),
       );
     }
 
     const configObj = config as Record<string, unknown>;
 
-    // Check if it's a v2 config
-    if ('version' in configObj) {
-      return this.validateV2Config(configObj);
+    // Check version
+    if (configObj.version !== 2) {
+      return failure(
+        makeError(RIGHTDOWN_ERROR_CODES.UNSUPPORTED_VERSION, `Configuration must have version: 2`),
+      );
     }
 
-    // Otherwise, treat as v1
-    return this.validateV1Config(configObj);
-  }
-
-  /**
-   * Validate v1 configuration
-   */
-  private validateV1Config(config: Record<string, unknown>): Result<RightdownConfig, AppError> {
     // Validate preset if present
-    if (config.preset !== undefined) {
+    if (configObj.preset !== undefined) {
       const validPresets = ['strict', 'standard', 'relaxed'];
-      if (!validPresets.includes(config.preset as string)) {
+      if (!validPresets.includes(configObj.preset as string)) {
         return failure(
           makeError(
             RIGHTDOWN_ERROR_CODES.INVALID_CONFIG,
-            `Invalid preset: ${config.preset}. Must be one of: ${validPresets.join(', ')}`
-          )
+            `Invalid preset: ${configObj.preset}. Must be one of: ${validPresets.join(', ')}`,
+          ),
         );
       }
     }
 
     // Validate rules if present
-    if (config.rules !== undefined && typeof config.rules !== 'object') {
-      return failure(
-        makeError(
-          RIGHTDOWN_ERROR_CODES.INVALID_CONFIG,
-          'Rules must be an object'
-        )
-      );
-    }
-
-    // Validate ignores if present
-    if (config.ignores !== undefined) {
-      if (!Array.isArray(config.ignores)) {
-        return failure(
-          makeError(
-            RIGHTDOWN_ERROR_CODES.INVALID_CONFIG,
-            'Ignores must be an array'
-          )
-        );
-      }
-      if (!config.ignores.every(item => typeof item === 'string')) {
-        return failure(
-          makeError(
-            RIGHTDOWN_ERROR_CODES.INVALID_CONFIG,
-            'All ignore patterns must be strings'
-          )
-        );
-      }
-    }
-
-    // Validate terminology if present
-    if (config.terminology !== undefined) {
-      const result = this.validateTerminology(config.terminology);
-      if (!result.success) {
-        return result;
-      }
-    }
-
-    return success(config as RightdownConfig);
-  }
-
-  /**
-   * Validate v2 configuration
-   */
-  private validateV2Config(config: Record<string, unknown>): Result<RightdownConfig, AppError> {
-    // Check version
-    if (config.version !== 2) {
-      return failure(
-        makeError(
-          RIGHTDOWN_ERROR_CODES.UNSUPPORTED_VERSION,
-          `Unsupported configuration version: ${config.version}. Only version 2 is supported.`
-        )
-      );
-    }
-
-    // Validate preset if present
-    if (config.preset !== undefined) {
-      const validPresets = ['strict', 'standard', 'relaxed'];
-      if (!validPresets.includes(config.preset as string)) {
-        return failure(
-          makeError(
-            RIGHTDOWN_ERROR_CODES.INVALID_CONFIG,
-            `Invalid preset: ${config.preset}. Must be one of: ${validPresets.join(', ')}`
-          )
-        );
-      }
+    if (configObj.rules !== undefined && typeof configObj.rules !== 'object') {
+      return failure(makeError(RIGHTDOWN_ERROR_CODES.INVALID_CONFIG, 'Rules must be an object'));
     }
 
     // Validate formatters if present
-    if (config.formatters !== undefined) {
-      const result = this.validateFormatters(config.formatters);
+    if (configObj.formatters !== undefined) {
+      const result = this.validateFormatters(configObj.formatters);
       if (!result.success) {
         return result;
       }
     }
 
     // Validate formatterOptions if present
-    if (config.formatterOptions !== undefined) {
-      if (typeof config.formatterOptions !== 'object' || config.formatterOptions === null) {
+    if (configObj.formatterOptions !== undefined) {
+      if (typeof configObj.formatterOptions !== 'object' || configObj.formatterOptions === null) {
         return failure(
-          makeError(
-            RIGHTDOWN_ERROR_CODES.INVALID_CONFIG,
-            'formatterOptions must be an object'
-          )
+          makeError(RIGHTDOWN_ERROR_CODES.INVALID_CONFIG, 'formatterOptions must be an object'),
         );
       }
     }
 
-    // Validate output if present
-    if (config.output !== undefined) {
-      const result = this.validateOutput(config.output);
+    // Validate ignores if present
+    if (configObj.ignores !== undefined) {
+      if (!Array.isArray(configObj.ignores)) {
+        return failure(makeError(RIGHTDOWN_ERROR_CODES.INVALID_CONFIG, 'Ignores must be an array'));
+      }
+      if (!configObj.ignores.every((item) => typeof item === 'string')) {
+        return failure(
+          makeError(RIGHTDOWN_ERROR_CODES.INVALID_CONFIG, 'All ignore patterns must be strings'),
+        );
+      }
+    }
+
+    // Validate terminology if present
+    if (configObj.terminology !== undefined) {
+      const result = this.validateTerminology(configObj.terminology);
       if (!result.success) {
         return result;
       }
     }
 
-    // Validate common fields (same as v1)
-    const v1Result = this.validateV1Config(config);
-    if (!v1Result.success) {
-      return v1Result;
+    // Validate output if present
+    if (configObj.output !== undefined) {
+      const result = this.validateOutput(configObj.output);
+      if (!result.success) {
+        return result;
+      }
     }
 
-    return success(config as RightdownConfigV2);
+    return success(configObj as RightdownConfig);
   }
 
   /**
@@ -214,10 +140,7 @@ export class ConfigReader {
   private validateFormatters(formatters: unknown): Result<void, AppError> {
     if (typeof formatters !== 'object' || formatters === null) {
       return failure(
-        makeError(
-          RIGHTDOWN_ERROR_CODES.INVALID_CONFIG,
-          'formatters must be an object'
-        )
+        makeError(RIGHTDOWN_ERROR_CODES.INVALID_CONFIG, 'formatters must be an object'),
       );
     }
 
@@ -226,10 +149,7 @@ export class ConfigReader {
     // Validate default formatter if present
     if (formattersObj.default !== undefined && typeof formattersObj.default !== 'string') {
       return failure(
-        makeError(
-          RIGHTDOWN_ERROR_CODES.INVALID_CONFIG,
-          'formatters.default must be a string'
-        )
+        makeError(RIGHTDOWN_ERROR_CODES.INVALID_CONFIG, 'formatters.default must be a string'),
       );
     }
 
@@ -237,10 +157,7 @@ export class ConfigReader {
     if (formattersObj.languages !== undefined) {
       if (typeof formattersObj.languages !== 'object' || formattersObj.languages === null) {
         return failure(
-          makeError(
-            RIGHTDOWN_ERROR_CODES.INVALID_CONFIG,
-            'formatters.languages must be an object'
-          )
+          makeError(RIGHTDOWN_ERROR_CODES.INVALID_CONFIG, 'formatters.languages must be an object'),
         );
       }
 
@@ -250,8 +167,8 @@ export class ConfigReader {
           return failure(
             makeError(
               RIGHTDOWN_ERROR_CODES.INVALID_CONFIG,
-              `formatters.languages.${lang} must be a string`
-            )
+              `formatters.languages.${lang} must be a string`,
+            ),
           );
         }
       }
@@ -265,12 +182,7 @@ export class ConfigReader {
    */
   private validateOutput(output: unknown): Result<void, AppError> {
     if (typeof output !== 'object' || output === null) {
-      return failure(
-        makeError(
-          RIGHTDOWN_ERROR_CODES.INVALID_CONFIG,
-          'output must be an object'
-        )
-      );
+      return failure(makeError(RIGHTDOWN_ERROR_CODES.INVALID_CONFIG, 'output must be an object'));
     }
 
     const outputObj = output as Record<string, unknown>;
@@ -279,10 +191,7 @@ export class ConfigReader {
     for (const field of booleanFields) {
       if (outputObj[field] !== undefined && typeof outputObj[field] !== 'boolean') {
         return failure(
-          makeError(
-            RIGHTDOWN_ERROR_CODES.INVALID_CONFIG,
-            `output.${field} must be a boolean`
-          )
+          makeError(RIGHTDOWN_ERROR_CODES.INVALID_CONFIG, `output.${field} must be a boolean`),
         );
       }
     }
@@ -296,10 +205,7 @@ export class ConfigReader {
   private validateTerminology(terminology: unknown): Result<void, AppError> {
     if (!Array.isArray(terminology)) {
       return failure(
-        makeError(
-          RIGHTDOWN_ERROR_CODES.INVALID_CONFIG,
-          'terminology must be an array'
-        )
+        makeError(RIGHTDOWN_ERROR_CODES.INVALID_CONFIG, 'terminology must be an array'),
       );
     }
 
@@ -307,21 +213,18 @@ export class ConfigReader {
       const term = terminology[i];
       if (typeof term !== 'object' || term === null) {
         return failure(
-          makeError(
-            RIGHTDOWN_ERROR_CODES.INVALID_CONFIG,
-            `terminology[${i}] must be an object`
-          )
+          makeError(RIGHTDOWN_ERROR_CODES.INVALID_CONFIG, `terminology[${i}] must be an object`),
         );
       }
 
       const termObj = term as Record<string, unknown>;
-      
+
       if (typeof termObj.incorrect !== 'string') {
         return failure(
           makeError(
             RIGHTDOWN_ERROR_CODES.INVALID_CONFIG,
-            `terminology[${i}].incorrect must be a string`
-          )
+            `terminology[${i}].incorrect must be a string`,
+          ),
         );
       }
 
@@ -329,8 +232,8 @@ export class ConfigReader {
         return failure(
           makeError(
             RIGHTDOWN_ERROR_CODES.INVALID_CONFIG,
-            `terminology[${i}].correct must be a string`
-          )
+            `terminology[${i}].correct must be a string`,
+          ),
         );
       }
 
@@ -338,19 +241,12 @@ export class ConfigReader {
         return failure(
           makeError(
             RIGHTDOWN_ERROR_CODES.INVALID_CONFIG,
-            `terminology[${i}].caseSensitive must be a boolean`
-          )
+            `terminology[${i}].caseSensitive must be a boolean`,
+          ),
         );
       }
     }
 
     return success(undefined);
-  }
-
-  /**
-   * Type guard for v2 config
-   */
-  isV2Config(config: RightdownConfig): config is RightdownConfigV2 {
-    return isV2Config(config);
   }
 }

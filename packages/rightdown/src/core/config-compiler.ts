@@ -1,12 +1,6 @@
-import { 
-  Result, 
-  success, 
-  failure, 
-  makeError,
-  type AppError 
-} from '@outfitter/contracts';
+import { Result, success, failure, makeError, type AppError } from '@outfitter/contracts';
 import { RIGHTDOWN_ERROR_CODES } from './errors.js';
-import { type RightdownConfigV2, isV2Config } from './types.js';
+import { type RightdownConfig } from './types.js';
 import { PRESETS } from './presets.js';
 
 export interface MarkdownlintConfig {
@@ -59,23 +53,14 @@ export interface GeneratedConfigs {
 }
 
 /**
- * Compiles Rightdown v2 config into tool-specific configurations
+ * Compiles Rightdown config into tool-specific configurations
  */
 export class ConfigCompiler {
   /**
    * Compile Rightdown config into tool-specific configs
    */
-  compile(config: RightdownConfigV2): Result<GeneratedConfigs, AppError> {
+  compile(config: RightdownConfig): Result<GeneratedConfigs, AppError> {
     try {
-      if (!isV2Config(config)) {
-        return failure(
-          makeError(
-            RIGHTDOWN_ERROR_CODES.INVALID_CONFIG,
-            'ConfigCompiler requires a v2 configuration'
-          )
-        );
-      }
-
       const configs: GeneratedConfigs = {
         markdownlint: this.generateMarkdownlintConfig(config),
       };
@@ -98,8 +83,8 @@ export class ConfigCompiler {
           RIGHTDOWN_ERROR_CODES.INTERNAL_ERROR,
           'Failed to compile configuration',
           undefined,
-          error as Error
-        )
+          error as Error,
+        ),
       );
     }
   }
@@ -107,7 +92,7 @@ export class ConfigCompiler {
   /**
    * Generate markdownlint configuration
    */
-  generateMarkdownlintConfig(config: RightdownConfigV2): MarkdownlintConfig {
+  generateMarkdownlintConfig(config: RightdownConfig): MarkdownlintConfig {
     const mdConfig: MarkdownlintConfig = {
       rules: {},
     };
@@ -145,7 +130,7 @@ export class ConfigCompiler {
   /**
    * Generate Prettier configuration
    */
-  generatePrettierConfig(config: RightdownConfigV2): PrettierConfig | undefined {
+  generatePrettierConfig(config: RightdownConfig): PrettierConfig | undefined {
     const usedFormatters = this.getUsedFormatters(config);
     if (!usedFormatters.has('prettier')) {
       return undefined;
@@ -178,7 +163,7 @@ export class ConfigCompiler {
   /**
    * Generate Biome configuration
    */
-  generateBiomeConfig(config: RightdownConfigV2): BiomeConfig | undefined {
+  generateBiomeConfig(config: RightdownConfig): BiomeConfig | undefined {
     const usedFormatters = this.getUsedFormatters(config);
     if (!usedFormatters.has('biome')) {
       return undefined;
@@ -208,7 +193,7 @@ export class ConfigCompiler {
     // Apply custom options
     if (config.formatterOptions?.biome) {
       const biomeOptions = config.formatterOptions.biome as Record<string, any>;
-      
+
       // Handle top-level formatter options
       if (biomeOptions.indentStyle) {
         biomeConfig.formatter!.indentStyle = biomeOptions.indentStyle;
@@ -241,7 +226,7 @@ export class ConfigCompiler {
   /**
    * Get set of formatters that are actually used
    */
-  private getUsedFormatters(config: RightdownConfigV2): Set<string> {
+  private getUsedFormatters(config: RightdownConfig): Set<string> {
     const formatters = new Set<string>();
 
     if (config.formatters) {
@@ -262,6 +247,6 @@ export class ConfigCompiler {
 
     // Filter out unknown formatters
     const knownFormatters = new Set(['prettier', 'biome']);
-    return new Set([...formatters].filter(f => knownFormatters.has(f)));
+    return new Set([...formatters].filter((f) => knownFormatters.has(f)));
   }
 }

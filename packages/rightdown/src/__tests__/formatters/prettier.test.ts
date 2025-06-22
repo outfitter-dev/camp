@@ -6,13 +6,13 @@ import { PrettierFormatter } from '../../formatters/prettier.js';
 const mockFormat = vi.fn();
 const mockPrettier = {
   format: mockFormat,
-  version: '3.0.0'
+  version: '3.0.0',
 };
 
 vi.mock('prettier', () => {
   return {
     default: mockPrettier,
-    ...mockPrettier
+    ...mockPrettier,
   };
 });
 
@@ -31,7 +31,7 @@ describe('PrettierFormatter', () => {
   describe('isAvailable', () => {
     it('should return true when prettier is installed', async () => {
       const result = await formatter.isAvailable();
-      
+
       expect(isSuccess(result)).toBe(true);
       if (result.success) {
         expect(result.data).toBe(true);
@@ -41,7 +41,7 @@ describe('PrettierFormatter', () => {
     it('should return false when prettier is not installed', async () => {
       // Create a new formatter instance for this test
       const testFormatter = new PrettierFormatter();
-      
+
       // Mock dynamic import to fail
       vi.doMock('prettier', () => {
         const error = new Error('Cannot find module');
@@ -50,12 +50,12 @@ describe('PrettierFormatter', () => {
       });
 
       const result = await testFormatter.isAvailable();
-      
+
       expect(isSuccess(result)).toBe(true);
       if (result.success) {
         expect(result.data).toBe(false);
       }
-      
+
       // Restore mock for other tests
       vi.doUnmock('prettier');
     });
@@ -64,7 +64,7 @@ describe('PrettierFormatter', () => {
   describe('getVersion', () => {
     it('should return prettier version', async () => {
       const result = await formatter.getVersion();
-      
+
       expect(isSuccess(result)).toBe(true);
       if (result.success) {
         expect(result.data).toMatch(/^\d+\.\d+\.\d+/);
@@ -73,7 +73,7 @@ describe('PrettierFormatter', () => {
 
     it('should handle missing prettier gracefully', async () => {
       const testFormatter = new PrettierFormatter();
-      
+
       vi.doMock('prettier', () => {
         const error = new Error('Cannot find module');
         (error as any).code = 'MODULE_NOT_FOUND';
@@ -81,12 +81,12 @@ describe('PrettierFormatter', () => {
       });
 
       const result = await testFormatter.getVersion();
-      
+
       expect(isFailure(result)).toBe(true);
       if (!result.success) {
         expect(result.error.code).toBe('NOT_FOUND');
       }
-      
+
       vi.doUnmock('prettier');
     });
   });
@@ -95,9 +95,9 @@ describe('PrettierFormatter', () => {
     it('should format JavaScript code', async () => {
       const code = 'const x=1;const y=2;';
       mockFormat.mockResolvedValueOnce('const x = 1;\nconst y = 2;\n');
-      
+
       const result = await formatter.format(code, 'javascript');
-      
+
       expect(isSuccess(result)).toBe(true);
       if (result.success) {
         // Accept either mocked or real prettier output
@@ -108,9 +108,9 @@ describe('PrettierFormatter', () => {
     it('should format TypeScript code', async () => {
       const code = 'interface User{name:string;age:number}';
       mockFormat.mockResolvedValueOnce('interface User {\n  name: string;\n  age: number;\n}\n');
-      
+
       const result = await formatter.format(code, 'typescript');
-      
+
       expect(isSuccess(result)).toBe(true);
       if (result.success) {
         // Formatted output should have proper spacing
@@ -123,9 +123,9 @@ describe('PrettierFormatter', () => {
     it('should format JSON', async () => {
       const code = '{"name":"test","value":123}';
       mockFormat.mockResolvedValueOnce('{\n  "name": "test",\n  "value": 123\n}\n');
-      
+
       const result = await formatter.format(code, 'json');
-      
+
       expect(isSuccess(result)).toBe(true);
       if (result.success) {
         // JSON should be properly formatted
@@ -143,9 +143,9 @@ describe('PrettierFormatter', () => {
         tabWidth: 4,
       };
       mockFormat.mockResolvedValueOnce('const x = 1\n');
-      
+
       const result = await formatter.format(code, 'javascript', options);
-      
+
       expect(isSuccess(result)).toBe(true);
       if (result.success) {
         // With semi: false, should not have semicolon
@@ -156,9 +156,9 @@ describe('PrettierFormatter', () => {
     it('should handle syntax errors', async () => {
       const code = 'const x = {';
       mockFormat.mockRejectedValueOnce(new Error('Unexpected end of input'));
-      
+
       const result = await formatter.format(code, 'javascript');
-      
+
       expect(isFailure(result)).toBe(true);
       if (!result.success) {
         expect(result.error.code).toBe('INTERNAL_ERROR');
@@ -170,7 +170,7 @@ describe('PrettierFormatter', () => {
     it('should handle unsupported languages', async () => {
       const code = 'SELECT * FROM users;';
       const result = await formatter.format(code, 'sql');
-      
+
       expect(isFailure(result)).toBe(true);
       if (!result.success) {
         expect(result.error.code).toBe('INTERNAL_ERROR');
@@ -182,7 +182,7 @@ describe('PrettierFormatter', () => {
   describe('getSupportedLanguages', () => {
     it('should return list of supported languages', () => {
       const languages = formatter.getSupportedLanguages();
-      
+
       expect(languages).toContain('javascript');
       expect(languages).toContain('typescript');
       expect(languages).toContain('html');
@@ -198,15 +198,15 @@ describe('PrettierFormatter', () => {
       // Prettier v3 is ESM-only, requiring dynamic import
       const code = 'const x = 1;';
       mockFormat.mockResolvedValueOnce('const x = 1;\n');
-      
+
       const result = await formatter.format(code, 'javascript');
-      
+
       expect(isSuccess(result)).toBe(true);
     });
 
     it('should provide helpful error for Node.js version issues', async () => {
       const testFormatter = new PrettierFormatter();
-      
+
       // Mock import error for old Node.js
       vi.doMock('prettier', () => {
         const error = new Error('Cannot use import statement outside a module');
@@ -215,13 +215,13 @@ describe('PrettierFormatter', () => {
       });
 
       const result = await testFormatter.format('const x = 1;', 'javascript');
-      
+
       expect(isFailure(result)).toBe(true);
       if (!result.success) {
         // Should have an error message about the import issue
         expect(result.error.message).toBeTruthy();
       }
-      
+
       vi.doUnmock('prettier');
     });
   });

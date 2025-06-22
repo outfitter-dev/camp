@@ -1,8 +1,8 @@
-# Rightdown 2.1 Development Plan
+# Rightdown 2.0 Development Plan
 
 ## Overview
 
-This document tracks the development of Rightdown 2.1, which transforms the tool from a markdownlint wrapper into a unified Markdown formatting orchestrator.
+This document tracks the development of Rightdown 2.0, which transforms the tool from a markdownlint wrapper into a unified Markdown formatting orchestrator. This is a clean break from v1 with no backward compatibility.
 
 ## Architecture
 
@@ -84,7 +84,7 @@ output:
 - [ ] Set up new directory structure
 - [ ] Create base formatter interface
 - [ ] Implement config reader for v2 schema
-- [ ] Add version detection (v1 vs v2 configs)
+- [ ] Implement config validation for v2 schema
 
 ### Phase 2: Prettier Integration (Week 2)
 - [ ] Add Prettier as dependency
@@ -105,11 +105,11 @@ output:
 - [ ] Handle errors gracefully
 
 ### Phase 5: Polish & Release (Week 5-6)
-- [ ] Backward compatibility with v1 configs
-- [ ] Migration guide and tooling
 - [ ] Performance optimization
 - [ ] Comprehensive test suite
 - [ ] Documentation updates
+- [ ] CLI command implementation
+- [ ] Integration testing
 
 ## Technical Decisions
 

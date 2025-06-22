@@ -1,15 +1,15 @@
 import { describe, it, expect } from 'vitest';
 import { isSuccess, isFailure } from '@outfitter/contracts';
 import type { Result, AppError } from '@outfitter/contracts';
-import type { RightdownConfigV2 } from '../../core/types.js';
+import type { RightdownConfig } from '../../core/types.js';
 import { ConfigCompiler } from '../../core/config-compiler.js';
 
 describe('ConfigCompiler', () => {
   const compiler = new ConfigCompiler();
 
   describe('compile', () => {
-    it('should generate configs for basic v2 config', () => {
-      const config: RightdownConfigV2 = {
+    it('should generate configs for basic config', () => {
+      const config: RightdownConfig = {
         version: 2,
         preset: 'standard',
         formatters: {
@@ -22,25 +22,25 @@ describe('ConfigCompiler', () => {
       };
 
       const result = compiler.compile(config);
-      
+
       expect(isSuccess(result)).toBe(true);
       if (result.success) {
         const configs = result.data;
-        
+
         // Should always generate markdownlint config
         expect(configs.markdownlint).toBeDefined();
         expect(configs.markdownlint.rules).toBeDefined();
-        
+
         // Should generate prettier config (default formatter)
         expect(configs.prettier).toBeDefined();
-        
+
         // Should generate biome config (used for JS/TS)
         expect(configs.biome).toBeDefined();
       }
     });
 
     it('should only generate configs for used formatters', () => {
-      const config: RightdownConfigV2 = {
+      const config: RightdownConfig = {
         version: 2,
         formatters: {
           default: 'prettier',
@@ -49,7 +49,7 @@ describe('ConfigCompiler', () => {
       };
 
       const result = compiler.compile(config);
-      
+
       expect(isSuccess(result)).toBe(true);
       if (result.success) {
         const configs = result.data;
@@ -61,13 +61,13 @@ describe('ConfigCompiler', () => {
 
   describe('generateMarkdownlintConfig', () => {
     it('should generate config for strict preset', () => {
-      const config: RightdownConfigV2 = {
+      const config: RightdownConfig = {
         version: 2,
         preset: 'strict',
       };
 
       const mdConfig = compiler.generateMarkdownlintConfig(config);
-      
+
       expect(mdConfig.rules).toBeDefined();
       expect(mdConfig.rules['heading-increment']).toBe(true);
       expect(mdConfig.rules['first-line-heading']).toBe(true);
@@ -75,20 +75,20 @@ describe('ConfigCompiler', () => {
     });
 
     it('should generate config for standard preset', () => {
-      const config: RightdownConfigV2 = {
+      const config: RightdownConfig = {
         version: 2,
         preset: 'standard',
       };
 
       const mdConfig = compiler.generateMarkdownlintConfig(config);
-      
+
       expect(mdConfig.rules).toBeDefined();
       expect(mdConfig.rules['line-length']).toBe(false);
       expect(mdConfig.rules['no-duplicate-heading']).toBe(false);
     });
 
     it('should apply custom rule overrides', () => {
-      const config: RightdownConfigV2 = {
+      const config: RightdownConfig = {
         version: 2,
         preset: 'standard',
         rules: {
@@ -99,42 +99,40 @@ describe('ConfigCompiler', () => {
       };
 
       const mdConfig = compiler.generateMarkdownlintConfig(config);
-      
+
       expect(mdConfig.rules['line-length']).toBe(100);
       expect(mdConfig.rules['heading-increment']).toBe(false);
       expect(mdConfig.rules['custom-rule']).toBe(true);
     });
 
     it('should include custom rules path', () => {
-      const config: RightdownConfigV2 = {
+      const config: RightdownConfig = {
         version: 2,
         preset: 'standard',
-        terminology: [
-          { incorrect: 'javascript', correct: 'JavaScript' },
-        ],
+        terminology: [{ incorrect: 'javascript', correct: 'JavaScript' }],
       };
 
       const mdConfig = compiler.generateMarkdownlintConfig(config);
-      
+
       expect(mdConfig.customRules).toBeDefined();
       expect(mdConfig.customRules).toContain('consistent-terminology');
     });
 
     it('should include ignore patterns', () => {
-      const config: RightdownConfigV2 = {
+      const config: RightdownConfig = {
         version: 2,
         ignores: ['node_modules/**', 'dist/**', '*.generated.md'],
       };
 
       const mdConfig = compiler.generateMarkdownlintConfig(config);
-      
+
       expect(mdConfig.ignores).toEqual(['node_modules/**', 'dist/**', '*.generated.md']);
     });
   });
 
   describe('generatePrettierConfig', () => {
     it('should generate prettier config when used', () => {
-      const config: RightdownConfigV2 = {
+      const config: RightdownConfig = {
         version: 2,
         formatters: {
           default: 'prettier',
@@ -142,7 +140,7 @@ describe('ConfigCompiler', () => {
       };
 
       const prettierConfig = compiler.generatePrettierConfig(config);
-      
+
       expect(prettierConfig).toBeDefined();
       // Default options
       expect(prettierConfig?.printWidth).toBe(80);
@@ -151,7 +149,7 @@ describe('ConfigCompiler', () => {
     });
 
     it('should apply custom prettier options', () => {
-      const config: RightdownConfigV2 = {
+      const config: RightdownConfig = {
         version: 2,
         formatters: {
           default: 'prettier',
@@ -167,7 +165,7 @@ describe('ConfigCompiler', () => {
       };
 
       const prettierConfig = compiler.generatePrettierConfig(config);
-      
+
       expect(prettierConfig?.printWidth).toBe(100);
       expect(prettierConfig?.semi).toBe(false);
       expect(prettierConfig?.singleQuote).toBe(true);
@@ -175,7 +173,7 @@ describe('ConfigCompiler', () => {
     });
 
     it('should not generate prettier config when not used', () => {
-      const config: RightdownConfigV2 = {
+      const config: RightdownConfig = {
         version: 2,
         formatters: {
           default: 'biome',
@@ -183,14 +181,14 @@ describe('ConfigCompiler', () => {
       };
 
       const prettierConfig = compiler.generatePrettierConfig(config);
-      
+
       expect(prettierConfig).toBeUndefined();
     });
   });
 
   describe('generateBiomeConfig', () => {
     it('should generate biome config when used', () => {
-      const config: RightdownConfigV2 = {
+      const config: RightdownConfig = {
         version: 2,
         formatters: {
           languages: {
@@ -201,14 +199,14 @@ describe('ConfigCompiler', () => {
       };
 
       const biomeConfig = compiler.generateBiomeConfig(config);
-      
+
       expect(biomeConfig).toBeDefined();
       expect(biomeConfig?.$schema).toBe('https://biomejs.dev/schemas/1.9.4/schema.json');
       expect(biomeConfig?.formatter?.enabled).toBe(true);
     });
 
     it('should apply custom biome options', () => {
-      const config: RightdownConfigV2 = {
+      const config: RightdownConfig = {
         version: 2,
         formatters: {
           default: 'biome',
@@ -227,7 +225,7 @@ describe('ConfigCompiler', () => {
       };
 
       const biomeConfig = compiler.generateBiomeConfig(config);
-      
+
       expect(biomeConfig?.formatter?.indentStyle).toBe('space');
       expect(biomeConfig?.formatter?.indentWidth).toBe(4);
       expect(biomeConfig?.formatter?.lineWidth).toBe(100);
@@ -236,7 +234,7 @@ describe('ConfigCompiler', () => {
     });
 
     it('should not generate biome config when not used', () => {
-      const config: RightdownConfigV2 = {
+      const config: RightdownConfig = {
         version: 2,
         formatters: {
           default: 'prettier',
@@ -244,20 +242,20 @@ describe('ConfigCompiler', () => {
       };
 
       const biomeConfig = compiler.generateBiomeConfig(config);
-      
+
       expect(biomeConfig).toBeUndefined();
     });
   });
 
   describe('edge cases', () => {
     it('should handle empty formatters config', () => {
-      const config: RightdownConfigV2 = {
+      const config: RightdownConfig = {
         version: 2,
         preset: 'standard',
       };
 
       const result = compiler.compile(config);
-      
+
       expect(isSuccess(result)).toBe(true);
       if (result.success) {
         const configs = result.data;
@@ -269,7 +267,7 @@ describe('ConfigCompiler', () => {
     });
 
     it('should handle invalid formatter names gracefully', () => {
-      const config: RightdownConfigV2 = {
+      const config: RightdownConfig = {
         version: 2,
         formatters: {
           default: 'unknown-formatter',
@@ -277,13 +275,13 @@ describe('ConfigCompiler', () => {
       };
 
       const result = compiler.compile(config);
-      
+
       expect(isSuccess(result)).toBe(true);
       // Should ignore unknown formatters
     });
 
     it('should merge preset rules with custom rules correctly', () => {
-      const config: RightdownConfigV2 = {
+      const config: RightdownConfig = {
         version: 2,
         preset: 'strict',
         rules: {
@@ -293,7 +291,7 @@ describe('ConfigCompiler', () => {
       };
 
       const mdConfig = compiler.generateMarkdownlintConfig(config);
-      
+
       // Should have preset rules
       expect(mdConfig.rules['heading-increment']).toBe(true);
       // Should override preset rule

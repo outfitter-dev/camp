@@ -1,10 +1,4 @@
-import { 
-  Result, 
-  success, 
-  failure, 
-  makeError,
-  type AppError 
-} from '@outfitter/contracts';
+import { Result, success, failure, makeError, type AppError } from '@outfitter/contracts';
 import { RIGHTDOWN_ERROR_CODES } from '../core/errors.js';
 import type { IFormatter } from './base.js';
 
@@ -37,10 +31,7 @@ export class PrettierFormatter implements IFormatter {
       const prettier = await this.loadPrettier();
       if (!prettier) {
         return failure(
-          makeError(
-            RIGHTDOWN_ERROR_CODES.FORMATTER_NOT_FOUND,
-            'Prettier is not installed'
-          )
+          makeError(RIGHTDOWN_ERROR_CODES.FORMATTER_NOT_FOUND, 'Prettier is not installed'),
         );
       }
 
@@ -52,7 +43,7 @@ export class PrettierFormatter implements IFormatter {
       } else {
         // Try to get from the prettier object structure
         const versionMatch = Object.values(prettier).find(
-          (val: any) => typeof val === 'string' && /^\d+\.\d+\.\d+/.test(val)
+          (val: any) => typeof val === 'string' && /^\d+\.\d+\.\d+/.test(val),
         );
         this.version = versionMatch || 'unknown';
       }
@@ -64,8 +55,8 @@ export class PrettierFormatter implements IFormatter {
           RIGHTDOWN_ERROR_CODES.FORMATTER_NOT_FOUND,
           'Failed to get Prettier version',
           undefined,
-          error as Error
-        )
+          error as Error,
+        ),
       );
     }
   }
@@ -74,18 +65,15 @@ export class PrettierFormatter implements IFormatter {
    * Format code using Prettier
    */
   async format(
-    code: string, 
-    language: string, 
-    options?: Record<string, unknown>
+    code: string,
+    language: string,
+    options?: Record<string, unknown>,
   ): Promise<Result<string, AppError>> {
     try {
       const prettier = await this.loadPrettier();
       if (!prettier) {
         return failure(
-          makeError(
-            RIGHTDOWN_ERROR_CODES.FORMATTER_NOT_FOUND,
-            'Prettier is not installed'
-          )
+          makeError(RIGHTDOWN_ERROR_CODES.FORMATTER_NOT_FOUND, 'Prettier is not installed'),
         );
       }
 
@@ -93,10 +81,7 @@ export class PrettierFormatter implements IFormatter {
       const parser = this.getParserForLanguage(language);
       if (!parser) {
         return failure(
-          makeError(
-            RIGHTDOWN_ERROR_CODES.FORMATTER_FAILED,
-            `Unsupported language: ${language}`
-          )
+          makeError(RIGHTDOWN_ERROR_CODES.FORMATTER_FAILED, `Unsupported language: ${language}`),
         );
       }
 
@@ -111,30 +96,37 @@ export class PrettierFormatter implements IFormatter {
       return success(formatted);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      
+
       // Check for specific error types
-      if (errorMessage.includes('Unexpected end of input') || 
-          errorMessage.includes('SyntaxError') ||
-          errorMessage.includes('Unexpected token')) {
+      if (
+        errorMessage.includes('Unexpected end of input') ||
+        errorMessage.includes('SyntaxError') ||
+        errorMessage.includes('Unexpected token')
+      ) {
         return failure(
           makeError(
             RIGHTDOWN_ERROR_CODES.FORMATTER_FAILED,
             `Prettier: ${errorMessage}`,
             { language, parser: this.getParserForLanguage(language) },
-            error as Error
-          )
+            error as Error,
+          ),
         );
       }
 
       // Check for ESM/Node.js version issues
-      if (error && typeof error === 'object' && 'code' in error && error.code === 'ERR_REQUIRE_ESM') {
+      if (
+        error &&
+        typeof error === 'object' &&
+        'code' in error &&
+        error.code === 'ERR_REQUIRE_ESM'
+      ) {
         return failure(
           makeError(
             RIGHTDOWN_ERROR_CODES.FORMATTER_FAILED,
             'Prettier v3+ requires Node.js 18.12.0 or higher with ESM support',
             undefined,
-            error as Error
-          )
+            error as Error,
+          ),
         );
       }
 
@@ -143,8 +135,8 @@ export class PrettierFormatter implements IFormatter {
           RIGHTDOWN_ERROR_CODES.FORMATTER_FAILED,
           'Failed to format code with Prettier',
           { language },
-          error as Error
-        )
+          error as Error,
+        ),
       );
     }
   }

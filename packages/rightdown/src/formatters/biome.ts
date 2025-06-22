@@ -1,10 +1,4 @@
-import { 
-  Result, 
-  success, 
-  failure, 
-  makeError,
-  type AppError 
-} from '@outfitter/contracts';
+import { Result, success, failure, makeError, type AppError } from '@outfitter/contracts';
 import { RIGHTDOWN_ERROR_CODES } from '../core/errors.js';
 import type { IFormatter } from './base.js';
 
@@ -36,10 +30,7 @@ export class BiomeFormatter implements IFormatter {
       const biome = await this.loadBiome();
       if (!biome) {
         return failure(
-          makeError(
-            RIGHTDOWN_ERROR_CODES.FORMATTER_NOT_FOUND,
-            'Biome is not installed'
-          )
+          makeError(RIGHTDOWN_ERROR_CODES.FORMATTER_NOT_FOUND, 'Biome is not installed'),
         );
       }
 
@@ -59,8 +50,8 @@ export class BiomeFormatter implements IFormatter {
           RIGHTDOWN_ERROR_CODES.FORMATTER_NOT_FOUND,
           'Failed to get Biome version',
           undefined,
-          error as Error
-        )
+          error as Error,
+        ),
       );
     }
   }
@@ -69,18 +60,15 @@ export class BiomeFormatter implements IFormatter {
    * Format code using Biome
    */
   async format(
-    code: string, 
-    language: string, 
-    options?: Record<string, unknown>
+    code: string,
+    language: string,
+    options?: Record<string, unknown>,
   ): Promise<Result<string, AppError>> {
     try {
       // Check if language is supported
       if (!this.getSupportedLanguages().includes(language)) {
         return failure(
-          makeError(
-            RIGHTDOWN_ERROR_CODES.FORMATTER_FAILED,
-            `Unsupported language: ${language}`
-          )
+          makeError(RIGHTDOWN_ERROR_CODES.FORMATTER_FAILED, `Unsupported language: ${language}`),
         );
       }
 
@@ -88,16 +76,13 @@ export class BiomeFormatter implements IFormatter {
       const biome = await this.getBiomeInstance();
       if (!biome) {
         return failure(
-          makeError(
-            RIGHTDOWN_ERROR_CODES.FORMATTER_NOT_FOUND,
-            'Biome is not installed'
-          )
+          makeError(RIGHTDOWN_ERROR_CODES.FORMATTER_NOT_FOUND, 'Biome is not installed'),
         );
       }
 
       // Map language to Biome file type
       const filePath = this.getFilePathForLanguage(language);
-      
+
       // Apply configuration if provided
       if (options) {
         const config = this.buildBiomeConfig(options);
@@ -111,17 +96,17 @@ export class BiomeFormatter implements IFormatter {
 
       if (result.diagnostics && result.diagnostics.length > 0) {
         // Check for syntax errors
-        const syntaxError = result.diagnostics.find((d: any) => 
-          d.category === 'parse' || d.severity === 'error'
+        const syntaxError = result.diagnostics.find(
+          (d: any) => d.category === 'parse' || d.severity === 'error',
         );
-        
+
         if (syntaxError) {
           return failure(
             makeError(
               RIGHTDOWN_ERROR_CODES.FORMATTER_FAILED,
               `Biome: Syntax error - ${syntaxError.message || 'Invalid syntax'}`,
-              { language, filePath }
-            )
+              { language, filePath },
+            ),
           );
         }
       }
@@ -133,8 +118,8 @@ export class BiomeFormatter implements IFormatter {
           RIGHTDOWN_ERROR_CODES.FORMATTER_FAILED,
           'Failed to format code with Biome',
           { language },
-          error as Error
-        )
+          error as Error,
+        ),
       );
     }
   }
@@ -143,14 +128,7 @@ export class BiomeFormatter implements IFormatter {
    * Get supported languages
    */
   getSupportedLanguages(): Array<string> {
-    return [
-      'javascript',
-      'typescript',
-      'jsx',
-      'tsx',
-      'json',
-      'jsonc',
-    ];
+    return ['javascript', 'typescript', 'jsx', 'tsx', 'json', 'jsonc'];
   }
 
   /**
@@ -252,11 +230,11 @@ export class BiomeFormatter implements IFormatter {
     if (options.indentStyle) {
       config.formatter.indentStyle = options.indentStyle;
     }
-    
+
     if (options.indentWidth) {
       config.formatter.indentWidth = options.indentWidth;
     }
-    
+
     if (options.lineWidth) {
       config.formatter.lineWidth = options.lineWidth;
     }

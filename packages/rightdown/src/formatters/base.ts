@@ -23,9 +23,9 @@ export interface IFormatter {
    * Format code with the given language
    */
   format(
-    code: string, 
-    language: string, 
-    options?: Record<string, unknown>
+    code: string,
+    language: string,
+    options?: Record<string, unknown>,
   ): Promise<Result<string, AppError>>;
 
   /**

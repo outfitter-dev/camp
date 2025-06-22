@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 import { isSuccess, isFailure, success, failure, makeError } from '@outfitter/contracts';
 import type { Result, AppError } from '@outfitter/contracts';
 import type { IFormatter } from '../../formatters/base.js';
-import type { RightdownConfigV2 } from '../../core/types.js';
+import type { RightdownConfig } from '../../core/types.js';
 import { Orchestrator } from '../../core/orchestrator.js';
 import { RIGHTDOWN_ERROR_CODES } from '../../core/errors.js';
 
@@ -17,7 +17,7 @@ const __dirname = dirname(__filename);
 class MockFormatter implements IFormatter {
   constructor(
     public readonly name: string,
-    private supportedLanguages: Array<string>
+    private supportedLanguages: Array<string>,
   ) {}
 
   async isAvailable() {
@@ -31,23 +31,17 @@ class MockFormatter implements IFormatter {
   async format(code: string, language: string) {
     if (!this.supportedLanguages.includes(language)) {
       return failure(
-        makeError(
-          RIGHTDOWN_ERROR_CODES.FORMATTER_FAILED,
-          `Unsupported language: ${language}`
-        )
+        makeError(RIGHTDOWN_ERROR_CODES.FORMATTER_FAILED, `Unsupported language: ${language}`),
       );
     }
-    
+
     // Check for invalid syntax (mock)
     if (code.includes('const x = {') && !code.includes('}')) {
       return failure(
-        makeError(
-          RIGHTDOWN_ERROR_CODES.FORMATTER_FAILED,
-          'Syntax error: Unexpected end of input'
-        )
+        makeError(RIGHTDOWN_ERROR_CODES.FORMATTER_FAILED, 'Syntax error: Unexpected end of input'),
       );
     }
-    
+
     // Simple mock formatting: add spaces around operators
     const formatted = code.replace(/=/g, ' = ').replace(/\s+/g, ' ').trim();
     return success(formatted);
@@ -66,14 +60,17 @@ describe('Orchestrator', () => {
 
   beforeEach(() => {
     // Create mock formatters
-    prettierFormatter = new MockFormatter('prettier', [
-      'html', 'css', 'yaml', 'markdown'
-    ]);
+    prettierFormatter = new MockFormatter('prettier', ['html', 'css', 'yaml', 'markdown']);
     biomeFormatter = new MockFormatter('biome', [
-      'javascript', 'typescript', 'jsx', 'tsx', 'json', 'jsonc'
+      'javascript',
+      'typescript',
+      'jsx',
+      'tsx',
+      'json',
+      'jsonc',
     ]);
 
-    const config: RightdownConfigV2 = {
+    const config: RightdownConfig = {
       version: 2,
       preset: 'standard',
       formatters: {
@@ -110,7 +107,7 @@ describe('Orchestrator', () => {
     });
 
     it('should return null for "none" formatter', () => {
-      const config: RightdownConfigV2 = {
+      const config: RightdownConfig = {
         version: 2,
         formatters: {
           languages: {
@@ -118,28 +115,28 @@ describe('Orchestrator', () => {
           },
         },
       };
-      
+
       const orch = new Orchestrator({
         config,
         formatters: new Map(),
       });
-      
+
       expect(orch.getFormatter('rust')).toBe(null);
     });
 
     it('should handle missing formatter gracefully', () => {
-      const config: RightdownConfigV2 = {
+      const config: RightdownConfig = {
         version: 2,
         formatters: {
           default: 'eslint', // Not in formatters map
         },
       };
-      
+
       const orch = new Orchestrator({
         config,
         formatters: new Map(),
       });
-      
+
       expect(orch.getFormatter('javascript')).toBe(null);
     });
   });
@@ -148,19 +145,19 @@ describe('Orchestrator', () => {
     it('should format basic markdown with code blocks', async () => {
       const markdown = readFileSync(join(fixturesPath, 'basic.md'), 'utf-8');
       const result = await orchestrator.format(markdown);
-      
+
       expect(isSuccess(result)).toBe(true);
       if (result.success) {
         const { content, stats } = result.data;
-        
+
         // Should preserve markdown structure
         expect(content).toContain('# Basic Markdown Test');
         expect(content).toContain('## JavaScript Example');
-        
+
         // Should format code blocks (mock formatter adds spaces around =)
         expect(content).toContain('const greeting = "Hello, World!";');
         expect(content).toContain('const user: User = {');
-        
+
         // Check stats
         expect(stats.totalBlocks).toBe(4);
         expect(stats.formattedBlocks).toBe(3); // 3 formatted, 1 plain text skipped
@@ -171,7 +168,7 @@ describe('Orchestrator', () => {
     it('should handle mixed languages', async () => {
       const markdown = readFileSync(join(fixturesPath, 'mixed-languages.md'), 'utf-8');
       const result = await orchestrator.format(markdown);
-      
+
       expect(isSuccess(result)).toBe(true);
       if (result.success) {
         const { stats } = result.data;
@@ -192,7 +189,7 @@ fn main() {
 \`\`\`
 `;
 
-      const config: RightdownConfigV2 = {
+      const config: RightdownConfig = {
         version: 2,
         formatters: {
           languages: {
@@ -207,7 +204,7 @@ fn main() {
       });
 
       const result = await orch.format(markdown);
-      
+
       expect(isSuccess(result)).toBe(true);
       if (result.success) {
         const { content, stats } = result.data;
@@ -224,7 +221,7 @@ const x = { // Invalid syntax
 `;
 
       const result = await orchestrator.format(markdown);
-      
+
       expect(isSuccess(result)).toBe(true); // Overall success
       if (result.success) {
         const { stats } = result.data;
@@ -236,7 +233,7 @@ const x = { // Invalid syntax
     it('should handle nested code blocks', async () => {
       const markdown = readFileSync(join(fixturesPath, 'nested-blocks.md'), 'utf-8');
       const result = await orchestrator.format(markdown);
-      
+
       expect(isSuccess(result)).toBe(true);
       if (result.success) {
         const { content } = result.data;
@@ -247,7 +244,7 @@ const x = { // Invalid syntax
     });
 
     it('should respect formatter options', async () => {
-      const config: RightdownConfigV2 = {
+      const config: RightdownConfig = {
         version: 2,
         formatters: {
           default: 'prettier',
@@ -272,7 +269,7 @@ const x = "test";
 `;
 
       const result = await orch.format(markdown);
-      
+
       expect(isSuccess(result)).toBe(true);
       if (result.success) {
         const { content } = result.data;
@@ -286,7 +283,7 @@ const x = "test";
     it('should format file from disk', async () => {
       const filePath = join(fixturesPath, 'basic.md');
       const result = await orchestrator.formatFile(filePath);
-      
+
       expect(isSuccess(result)).toBe(true);
       if (result.success) {
         const { stats } = result.data;
@@ -296,7 +293,7 @@ const x = "test";
 
     it('should handle non-existent files', async () => {
       const result = await orchestrator.formatFile('/does/not/exist.md');
-      
+
       expect(isFailure(result)).toBe(true);
       if (!result.success) {
         expect(result.error.code).toBe('NOT_FOUND');
@@ -308,7 +305,7 @@ const x = "test";
     it('should track formatting duration', async () => {
       const markdown = readFileSync(join(fixturesPath, 'basic.md'), 'utf-8');
       const result = await orchestrator.format(markdown);
-      
+
       expect(isSuccess(result)).toBe(true);
       if (result.success) {
         const { stats } = result.data;
@@ -322,10 +319,9 @@ const x = "test";
       const start = Date.now();
       const result = await orchestrator.format(markdown);
       const duration = Date.now() - start;
-      
+
       expect(isSuccess(result)).toBe(true);
       expect(duration).toBeLessThan(5000); // Should complete within 5 seconds
     });
   });
-
 });

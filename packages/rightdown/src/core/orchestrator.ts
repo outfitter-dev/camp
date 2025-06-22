@@ -1,18 +1,12 @@
 import { readFileSync, existsSync } from 'node:fs';
-import { 
-  Result, 
-  success, 
-  failure, 
-  makeError,
-  type AppError 
-} from '@outfitter/contracts';
+import { Result, success, failure, makeError, type AppError } from '@outfitter/contracts';
 import { RIGHTDOWN_ERROR_CODES } from './errors.js';
-import { type RightdownConfigV2 } from './types.js';
+import { type RightdownConfig } from './types.js';
 import { type IFormatter } from '../formatters/base.js';
 import { AstProcessor, type CodeBlock } from '../processors/ast.js';
 
 export interface OrchestratorOptions {
-  config: RightdownConfigV2;
+  config: RightdownConfig;
   formatters: Map<string, IFormatter>;
 }
 
@@ -32,7 +26,7 @@ export interface FormatResult {
  */
 export class Orchestrator {
   private astProcessor: AstProcessor;
-  
+
   constructor(private options: OrchestratorOptions) {
     this.astProcessor = new AstProcessor();
   }
@@ -42,7 +36,7 @@ export class Orchestrator {
    */
   async format(markdown: string): Promise<Result<FormatResult, AppError>> {
     const startTime = Date.now();
-    
+
     try {
       // Extract code blocks
       const extractResult = await this.astProcessor.extractCodeBlocks(markdown);
@@ -61,11 +55,11 @@ export class Orchestrator {
 
       // Format each code block
       const replacements = new Map<number, string>();
-      
+
       for (let i = 0; i < codeBlocks.length; i++) {
         const block = codeBlocks[i];
         const formatter = this.getFormatter(block.lang || 'text');
-        
+
         if (!formatter) {
           stats.skippedBlocks++;
           continue;
@@ -73,12 +67,12 @@ export class Orchestrator {
 
         // Get formatter options
         const formatterOptions = this.getFormatterOptions(formatter.name);
-        
+
         // Format the code
         const formatResult = await formatter.format(
           block.value,
           block.lang || 'text',
-          formatterOptions
+          formatterOptions,
         );
 
         if (formatResult.success) {
@@ -88,7 +82,7 @@ export class Orchestrator {
           stats.errors++;
           // Keep original content on error
           console.warn(
-            `Failed to format ${block.lang} block at line ${block.position.start.line}: ${formatResult.error.message}`
+            `Failed to format ${block.lang} block at line ${block.position.start.line}: ${formatResult.error.message}`,
           );
         }
       }
@@ -111,8 +105,8 @@ export class Orchestrator {
           RIGHTDOWN_ERROR_CODES.INTERNAL_ERROR,
           'Failed to format markdown',
           undefined,
-          error as Error
-        )
+          error as Error,
+        ),
       );
     }
   }
@@ -122,12 +116,7 @@ export class Orchestrator {
    */
   async formatFile(path: string): Promise<Result<FormatResult, AppError>> {
     if (!existsSync(path)) {
-      return failure(
-        makeError(
-          RIGHTDOWN_ERROR_CODES.FILE_NOT_FOUND,
-          `File not found: ${path}`
-        )
-      );
+      return failure(makeError(RIGHTDOWN_ERROR_CODES.FILE_NOT_FOUND, `File not found: ${path}`));
     }
 
     try {
@@ -135,12 +124,7 @@ export class Orchestrator {
       return this.format(content);
     } catch (error) {
       return failure(
-        makeError(
-          RIGHTDOWN_ERROR_CODES.IO_ERROR,
-          'Failed to read file',
-          { path },
-          error as Error
-        )
+        makeError(RIGHTDOWN_ERROR_CODES.IO_ERROR, 'Failed to read file', { path }, error as Error),
       );
     }
   }
@@ -150,18 +134,18 @@ export class Orchestrator {
    */
   getFormatter(language: string): IFormatter | null {
     const { config, formatters } = this.options;
-    
+
     // Normalize language
     const normalizedLang = this.normalizeLanguage(language);
-    
+
     // Check language-specific formatter
     if (config.formatters?.languages?.[normalizedLang]) {
       const formatterName = config.formatters.languages[normalizedLang];
-      
+
       if (formatterName === 'none') {
         return null;
       }
-      
+
       const formatter = formatters.get(formatterName);
       if (formatter) {
         return formatter;
@@ -199,7 +183,7 @@ export class Orchestrator {
       yml: 'yaml',
       md: 'markdown',
     };
-    
+
     return aliases[language.toLowerCase()] || language.toLowerCase();
   }
 }

@@ -10,11 +10,9 @@ describe('Test Setup', () => {
     if (successResult.success) {
       expect(successResult.data).toBe('test');
     }
-    
+
     // Test failure creation
-    const failureResult = failure(
-      makeError(RIGHTDOWN_ERROR_CODES.VALIDATION_ERROR, 'Test error')
-    );
+    const failureResult = failure(makeError(RIGHTDOWN_ERROR_CODES.VALIDATION_ERROR, 'Test error'));
     expect(isFailure(failureResult)).toBe(true);
     if (!failureResult.success) {
       expect(failureResult.error.code).toBe('VALIDATION_ERROR');
@@ -22,7 +20,7 @@ describe('Test Setup', () => {
   });
 
   it('should have proper error codes defined', () => {
-    expect(RIGHTDOWN_ERROR_CODES.FILE_NOT_FOUND).toBe('FILE_NOT_FOUND');
-    expect(RIGHTDOWN_ERROR_CODES.FORMATTER_NOT_FOUND).toBe('FORMATTER_NOT_FOUND');
+    expect(RIGHTDOWN_ERROR_CODES.FILE_NOT_FOUND).toBe('NOT_FOUND');
+    expect(RIGHTDOWN_ERROR_CODES.FORMATTER_NOT_FOUND).toBe('NOT_FOUND');
   });
 });
