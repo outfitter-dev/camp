@@ -1,80 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { isSuccess, isFailure } from '@outfitter/contracts';
 import type { Result, AppError } from '@outfitter/contracts';
-import type { RightdownConfigV2 } from './config-reader.test.js';
-
-// Types for generated configs
-interface MarkdownlintConfig {
-  extends?: string;
-  rules: Record<string, unknown>;
-  customRules?: Array<string>;
-  ignores?: Array<string>;
-}
-
-interface PrettierConfig {
-  printWidth?: number;
-  tabWidth?: number;
-  useTabs?: boolean;
-  semi?: boolean;
-  singleQuote?: boolean;
-  quoteProps?: string;
-  jsxSingleQuote?: boolean;
-  trailingComma?: string;
-  bracketSpacing?: boolean;
-  arrowParens?: string;
-  proseWrap?: string;
-  endOfLine?: string;
-  [key: string]: unknown;
-}
-
-interface BiomeConfig {
-  $schema?: string;
-  formatter?: {
-    enabled?: boolean;
-    indentStyle?: 'tab' | 'space';
-    indentWidth?: number;
-    lineWidth?: number;
-    formatWithErrors?: boolean;
-  };
-  javascript?: {
-    formatter?: {
-      quoteStyle?: 'single' | 'double';
-      jsxQuoteStyle?: 'single' | 'double';
-      semicolons?: 'always' | 'asNeeded';
-      trailingComma?: 'all' | 'es5' | 'none';
-      arrowParentheses?: 'always' | 'asNeeded';
-    };
-  };
-}
-
-interface GeneratedConfigs {
-  markdownlint: MarkdownlintConfig;
-  prettier?: PrettierConfig;
-  biome?: BiomeConfig;
-}
-
-// Mock config compiler (to be implemented)
-class ConfigCompiler {
-  compile(config: RightdownConfigV2): Result<GeneratedConfigs, AppError> {
-    // Will be implemented
-    throw new Error('Not implemented');
-  }
-
-  generateMarkdownlintConfig(config: RightdownConfigV2): MarkdownlintConfig {
-    // Will be implemented
-    throw new Error('Not implemented');
-  }
-
-  generatePrettierConfig(config: RightdownConfigV2): PrettierConfig | undefined {
-    // Will be implemented
-    throw new Error('Not implemented');
-  }
-
-  generateBiomeConfig(config: RightdownConfigV2): BiomeConfig | undefined {
-    // Will be implemented
-    throw new Error('Not implemented');
-  }
-}
+import type { RightdownConfigV2 } from '../../core/types.js';
+import { ConfigCompiler } from '../../core/config-compiler.js';
 
 describe('ConfigCompiler', () => {
   const compiler = new ConfigCompiler();
