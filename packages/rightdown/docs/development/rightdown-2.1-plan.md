@@ -129,6 +129,64 @@ output:
 - Lazy load optional formatters
 - Stream processing for large files
 
+## CLI Contract
+
+Rightdown 2.1 must remain drop-in compatible with the existing CLI while surfacing the
+new functionality.  The following contract is **binding** for the first public beta
+(`2.1.0-beta.1`) and therefore drives the automated test-suite.
+
+### Commands & Flags
+
+| Command / Flag            | Alias | Description                                                                |
+|---------------------------|-------|----------------------------------------------------------------------------|
+| `rightdown`              |       | Lint/format all Markdown files (respecting `preset` or config file)        |
+| `rightdown --fix`        | `-f`  | Format in-place (structure **and** code-blocks)                            |
+| `rightdown --check`      | `-c`  | Run in CI mode: no writes, non-zero exit on any difference                 |
+| `rightdown --init [lvl]` |       | Scaffold `.rightdown.config.yaml` (`lvl` = `strict|standard|relaxed`)       |
+| `rightdown --config <p>` | `-C`  | Use explicit config path                                                   |
+| `rightdown --version`    | `-v`  | Print version + detected tool versions (Prettier, Biome, markdownlint)     |
+
+### Exit Codes
+
+| Code | Meaning                                |
+|------|----------------------------------------|
+| 0    | No issues detected                     |
+| 1    | Lint/formatting errors found           |
+| 2    | Configuration error or invalid flag    |
+| 3    | Unexpected runtime error              |
+
+The exit-code matrix is used by both CI fixtures and unit tests (see **Testing
+Strategy**).
+
+## Definition of Done (DoD)
+
+The feature is considered **complete** when ALL items are ✅.
+
+1. ✅ `rightdown --fix` formats code-blocks for the languages defined in the
+   default schema (JS/TS/JSON/YAML/HTML/CSS/Markdown).
+2. ✅ `.rightdown.config.yaml` v2 is validated against a JSON schema at runtime;
+   helpful diagnostics are printed on failure.
+3. ✅ v1 config files continue to work unchanged.
+4. ✅ Generated configs are written **only** when `--write-configs` is passed;
+   otherwise they are built in-memory.
+5. ✅ Optional Biome peer-dependency is lazily required; a clear warning is shown
+   if a user assigns `biome` as a formatter but the package is missing.
+6. ✅ Performance: formatting the fixture set (<250 files, 1 CPU core) completes
+   in ≤1.5× the time of running raw markdownlint-cli2 alone.
+7. ✅ Test coverage ≥ 90 % on core orchestrator, formatters, and CLI flags.
+8. ✅ Documentation (README & website) updated and migration guide published.
+
+## Risk Register
+
+| Risk                                      | Impact | Likelihood | Mitigation                                         |
+|-------------------------------------------|--------|------------|----------------------------------------------------|
+| Biome size inflates install footprint     | High   | Medium     | Peer-dependency, lazy import, document tree-shaking|
+| Formatter version conflicts               | Medium | Medium     | Pin recommended versions in generated `package.json`|
+| Prettier v3 ESM-only in Node <18          | High   | Low        | Document minimum engine, load via dynamic import   |
+| Large monorepos → OOM when compiling configs | Medium | Low     | Stream processing & file chunking                  |
+| Unformatted exotic languages              | Low    | High       | Fallback : skip with verbose warning               |
+
+
 ## Testing Strategy
 
 ### Unit Tests
@@ -163,3 +221,6 @@ output:
 - [ ] No breaking changes
 - [ ] Comprehensive test coverage
 - [ ] Well-documented APIs
+
+*(See the detailed Definition-of-Done checklist above for the authoritative
+criteria.)*
