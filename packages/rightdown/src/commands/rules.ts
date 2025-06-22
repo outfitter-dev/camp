@@ -4,6 +4,7 @@ import { colors } from '../utils/colors.js';
 import * as yaml from 'js-yaml';
 import { getPresetConfig, presets } from '../presets/index.js';
 import type { PresetName, MdlintConfig } from '../types.js';
+import { getConfigPath } from '../utils/config-path.js';
 
 interface RulesListArgs {
   preset?: PresetName;
@@ -22,8 +23,6 @@ interface RulesForgetArgs {
   quiet?: boolean;
 }
 
-const CONFIG_PATH = '.markdownlint-cli2.yaml';
-
 /**
  * Displays the list of markdownlint rules from a specified preset, the current configuration file, or the default preset.
  *
@@ -40,9 +39,9 @@ export async function rulesListCommand(argv: ArgumentsCamelCase<RulesListArgs>):
       // Show preset rules
       config = getPresetConfig(preset);
       source = `${preset} preset`;
-    } else if (existsSync(CONFIG_PATH)) {
+    } else if (existsSync(getConfigPath())) {
       // Show current config rules
-      const configContent = readFileSync(CONFIG_PATH, 'utf-8');
+      const configContent = readFileSync(getConfigPath(), 'utf-8');
       config = yaml.load(configContent) as MdlintConfig;
       source = 'current configuration';
     } else {
@@ -152,8 +151,8 @@ export async function rulesUpdateCommand(argv: ArgumentsCamelCase<RulesUpdateArg
   try {
     // Load existing config or create new one
     let config: MdlintConfig;
-    if (existsSync(CONFIG_PATH)) {
-      const configContent = readFileSync(CONFIG_PATH, 'utf-8');
+    if (existsSync(getConfigPath())) {
+      const configContent = readFileSync(getConfigPath(), 'utf-8');
       config = yaml.load(configContent) as MdlintConfig;
     } else {
       config = getPresetConfig('standard');
@@ -175,7 +174,7 @@ export async function rulesUpdateCommand(argv: ArgumentsCamelCase<RulesUpdateArg
       noRefs: true,
     });
 
-    writeFileSync(CONFIG_PATH, yamlContent);
+    writeFileSync(getConfigPath(), yamlContent);
 
     if (!quiet) {
       console.log(colors.success('✅'), 'Rules updated successfully:');
@@ -202,12 +201,12 @@ export async function rulesForgetCommand(argv: ArgumentsCamelCase<RulesForgetArg
   const { rules, quiet } = argv;
 
   try {
-    if (!existsSync(CONFIG_PATH)) {
+    if (!existsSync(getConfigPath())) {
       throw new Error('No configuration file found. Run "rightdown init" first.');
     }
 
     // Load config
-    const configContent = readFileSync(CONFIG_PATH, 'utf-8');
+    const configContent = readFileSync(getConfigPath(), 'utf-8');
     const config = yaml.load(configContent) as MdlintConfig;
 
     // Remove specified rules
@@ -233,7 +232,7 @@ export async function rulesForgetCommand(argv: ArgumentsCamelCase<RulesForgetArg
       noRefs: true,
     });
 
-    writeFileSync(CONFIG_PATH, yamlContent);
+    writeFileSync(getConfigPath(), yamlContent);
 
     if (!quiet) {
       console.log(colors.success('✅'), 'Rules removed from configuration:');

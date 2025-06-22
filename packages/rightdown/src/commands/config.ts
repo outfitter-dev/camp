@@ -4,6 +4,7 @@ import { colors } from '../utils/colors.js';
 import * as yaml from 'js-yaml';
 import { getPresetConfig } from '../presets/index.js';
 import type { PresetName, MdlintConfig } from '../types.js';
+import { getConfigPath } from '../utils/config-path.js';
 
 interface ConfigPresetArgs {
   name: PresetName;
@@ -15,8 +16,6 @@ interface ConfigIgnoreArgs {
   remove?: boolean;
   quiet?: boolean;
 }
-
-const CONFIG_PATH = '.markdownlint-cli2.yaml';
 
 /**
  * Updates the markdownlint CLI configuration file to use the specified preset, preserving any existing custom rules, terminology, and ignore patterns.
@@ -39,8 +38,8 @@ export async function configPresetCommand(
     let ignores: string[] = [];
     let terminology: Array<{ incorrect: string; correct: string }> = [];
 
-    if (existsSync(CONFIG_PATH)) {
-      const existingContent = readFileSync(CONFIG_PATH, 'utf-8');
+    if (existsSync(getConfigPath())) {
+      const existingContent = readFileSync(getConfigPath(), 'utf-8');
       const existingConfig = yaml.load(existingContent) as MdlintConfig;
 
       // Preserve customizations
@@ -78,7 +77,7 @@ export async function configPresetCommand(
 
 ${yamlContent}`;
 
-    writeFileSync(CONFIG_PATH, finalContent);
+    writeFileSync(getConfigPath(), finalContent);
 
     if (!quiet) {
       console.log(colors.success('✅'), `Configuration updated to ${name} preset`);
@@ -100,8 +99,8 @@ export async function configIgnoreCommand(
   try {
     // Load existing config or create new one
     let config: MdlintConfig;
-    if (existsSync(CONFIG_PATH)) {
-      const configContent = readFileSync(CONFIG_PATH, 'utf-8');
+    if (existsSync(getConfigPath())) {
+      const configContent = readFileSync(getConfigPath(), 'utf-8');
       config = yaml.load(configContent) as MdlintConfig;
     } else {
       config = getPresetConfig('standard');
@@ -134,7 +133,7 @@ export async function configIgnoreCommand(
       noRefs: true,
     });
 
-    writeFileSync(CONFIG_PATH, yamlContent);
+    writeFileSync(getConfigPath(), yamlContent);
 
     if (!quiet) {
       console.log(colors.success('✅'), message);
