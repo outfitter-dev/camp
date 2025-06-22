@@ -34,7 +34,7 @@ export function getConfigPath(): string {
 /**
  * Get all possible config file names for checking existence
  */
-export function getConfigNames(): string[] {
+export function getConfigNames(): Array<string> {
   return DEFAULT_CONFIG_NAMES;
 }
 
