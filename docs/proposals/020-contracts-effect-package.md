@@ -21,7 +21,7 @@ keeping the current lightweight, zero-dependency `contracts` package intact.
 | Parallel API calls, cancellation, retries | Fibers, `Effect.retry`, cancellation tokens |
 | Rich error context | `Cause<E>` chain vs. flat `AppError` |
 | Plumbing resources (DB pools, file handles) safely | `Scope`, `Layer` |
-| Composition with third-party libs | Ecosystem already provides `@effect/schema`, `@effect/stream`, etc. |
+| Composition with third-party libs | Ecosystem provides `@effect/schema`, etc. |
 
 At the same time, most services only need the simple `Result` pattern.  Isolating
 Effect in its *own* package prevents unnecessary dependency weight for those
@@ -29,7 +29,7 @@ consumers and lets adoption happen incrementally.
 
 ## Scope & Deliverables
 
-```
+```text
 packages/contracts-effect/
 ├─ src/
 │  ├─ conversions.ts     // Result ↔ Effect helpers
@@ -60,20 +60,21 @@ export type AppLayer<R> = Layer.Layer<never, never, R>;
 
 ### Tooling
 
-* Add package to **root `tsconfig.references`** and `pnpm` workspace.  
-* Copy build script pattern: `tsup && tsc --emitDeclarationOnly`.  
-* Optional: lint script `scripts/check-contracts-effect-imports.ts` mirroring the
+- Add package to **root `tsconfig.references`** and `pnpm` workspace.  
+- Copy build script pattern: `tsup && tsc --emitDeclarationOnly`.  
+- Optional: lint script `scripts/check-contracts-effect-imports.ts` mirroring the
   existing import-hygiene checker.
 
 ## Adoption Path
 
 1. **Non-breaking**: existing code keeps using `Result`.
-2. New code may call `fromResult` for interop or write native Effect code:  
+2. New code may call `fromResult` for interop or write native Effect code:
 
    ```ts
    const userFx = fromResult(findUser(id));
    const enriched = Effect.flatMap(userFx, enrichProfile);
    ```
+
 3. Once mature, teams may refactor core flows entirely into Effect.
 
 ## Timeline (draft)
@@ -100,7 +101,7 @@ export type AppLayer<R> = Layer.Layer<never, never, R>;
 | --- | --- |
 | **Learning curve** for FP concepts | Internal workshop, cheat-sheets |
 | Upstream Effect still 0.x / 2.x | Keep adapter thin; version pin + renovate alerts |
-| Two abstractions (`Result` & `Effect`) coexist | Guidelines: *Result for simple sync, Effect for async/parallel* |
+| Two abstractions (`Result` & `Effect`) coexist | Guidelines: Result for simple sync, Effect for async/parallel |
 
 ## Alternatives Considered
 
@@ -115,3 +116,4 @@ export type AppLayer<R> = Layer.Layer<never, never, R>;
 
 Approve creation of `packages/contracts-effect` under the scope and timeline
 outlined above.
+
