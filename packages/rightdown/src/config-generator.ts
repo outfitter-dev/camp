@@ -38,7 +38,7 @@ export function generateConfig(options: GeneratorOptions = {}): string {
  * @returns The YAML-formatted configuration string with comments
  */
 function generateYamlConfig(config: MdlintConfig, preset: PresetName): string {
-  const lines: string[] = [];
+  const lines: Array<string> = [];
 
   // Add header comments
   lines.push('# rightdown configuration');

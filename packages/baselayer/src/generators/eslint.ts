@@ -77,6 +77,7 @@ function applyESLintOverrides(
   }
 
   // Handle any other ESLint config properties that might be added in the future
+  // Using underscore prefix for intentionally unused destructured variables
   const { ignores: _ignores, rules: _rules, ...otherOverrides } = eslintOverrides;
   if (Object.keys(otherOverrides).length > 0) {
     result.push(otherOverrides);
