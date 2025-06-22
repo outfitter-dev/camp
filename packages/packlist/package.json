@@ -25,14 +25,15 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@outfitter/eslint-config": "workspace:*",
-    "@outfitter/typescript-config": "workspace:*",
-    "@outfitter/contracts": "workspace:*",
-    "@outfitter/husky-config": "workspace:*",
     "@outfitter/changeset-config": "workspace:*",
+    "@outfitter/contracts": "workspace:*",
+    "@outfitter/eslint-config": "workspace:*",
+    "@outfitter/husky-config": "workspace:*",
+    "@outfitter/typescript-config": "workspace:*",
     "commander": "^11.0.0",
     "execa": "^8.0.0",
-    "picocolors": "^1.0.0"
+    "picocolors": "^1.0.0",
+    "zod": "^3.25.56"
   },
   "devDependencies": {
     "@outfitter/typescript-config": "workspace:*",

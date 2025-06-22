@@ -76,15 +76,15 @@ importers:
       '@outfitter/contracts-zod':
         specifier: workspace:*
         version: link:../contracts-zod
+      '@outfitter/rightdown':
+        specifier: workspace:*
+        version: link:../rightdown
       comment-json:
         specifier: ^4.2.3
         version: 4.2.5
       eslint:
         specifier: ^9.2.0
         version: 9.29.0(jiti@1.21.7)
-      markdown-medic:
-        specifier: workspace:*
-        version: link:../markdown-medic
       prettier:
         specifier: ^3.5.3
         version: 3.5.3
@@ -144,6 +144,9 @@ importers:
       '@inquirer/prompts':
         specifier: ^3.3.0
         version: 3.3.2
+      '@outfitter/contracts':
+        specifier: workspace:*
+        version: link:../contracts/typescript
       chalk:
         specifier: ^5.3.0
         version: 5.4.1
@@ -162,6 +165,9 @@ importers:
       ora:
         specifier: ^8.0.1
         version: 8.2.0
+      semver:
+        specifier: ^7.6.0
+        version: 7.7.2
       zod:
         specifier: ^3.22.4
         version: 3.25.56
@@ -175,6 +181,9 @@ importers:
       '@types/node':
         specifier: ^20.10.5
         version: 20.19.0
+      '@types/semver':
+        specifier: ^7.5.0
+        version: 7.7.0
       tsx:
         specifier: ^4.7.0
         version: 4.19.4
@@ -290,7 +299,52 @@ importers:
         specifier: ^5.7.3
         version: 5.8.3
 
-  packages/markdown-medic:
+  packages/packlist:
+    dependencies:
+      '@outfitter/changeset-config':
+        specifier: workspace:*
+        version: link:../changeset-config
+      '@outfitter/contracts':
+        specifier: workspace:*
+        version: link:../contracts/typescript
+      '@outfitter/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      '@outfitter/husky-config':
+        specifier: workspace:*
+        version: link:../husky-config
+      '@outfitter/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      commander:
+        specifier: ^11.0.0
+        version: 11.1.0
+      execa:
+        specifier: ^8.0.0
+        version: 8.0.1
+      picocolors:
+        specifier: ^1.0.0
+        version: 1.1.1
+      zod:
+        specifier: ^3.25.56
+        version: 3.25.56
+    devDependencies:
+      '@types/node':
+        specifier: ^20.10.4
+        version: 20.19.0
+      tsup:
+        specifier: ^8.0.1
+        version: 8.5.0(jiti@1.21.7)(postcss@8.5.4)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.8.0)
+      typescript:
+        specifier: ^5.3.3
+        version: 5.8.3
+      vitest:
+        specifier: ^1.0.4
+        version: 1.6.1(@types/node@20.19.0)
+
+  packages/prettier-config: {}
+
+  packages/rightdown:
     dependencies:
       '@outfitter/contracts':
         specifier: workspace:*
@@ -329,48 +383,6 @@ importers:
       vitest:
         specifier: ^2.1.5
         version: 2.1.9(@types/node@22.15.32)
-
-  packages/packlist:
-    dependencies:
-      '@outfitter/changeset-config':
-        specifier: workspace:*
-        version: link:../changeset-config
-      '@outfitter/contracts':
-        specifier: workspace:*
-        version: link:../contracts/typescript
-      '@outfitter/eslint-config':
-        specifier: workspace:*
-        version: link:../eslint-config
-      '@outfitter/husky-config':
-        specifier: workspace:*
-        version: link:../husky-config
-      '@outfitter/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
-      commander:
-        specifier: ^11.0.0
-        version: 11.1.0
-      execa:
-        specifier: ^8.0.0
-        version: 8.0.1
-      picocolors:
-        specifier: ^1.0.0
-        version: 1.1.1
-    devDependencies:
-      '@types/node':
-        specifier: ^20.10.4
-        version: 20.19.0
-      tsup:
-        specifier: ^8.0.1
-        version: 8.5.0(jiti@1.21.7)(postcss@8.5.4)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.8.0)
-      typescript:
-        specifier: ^5.3.3
-        version: 5.8.3
-      vitest:
-        specifier: ^1.0.4
-        version: 1.6.1(@types/node@20.19.0)
-
-  packages/prettier-config: {}
 
   packages/typescript-config: {}
 
@@ -1760,6 +1772,12 @@ packages:
     resolution:
       {
         integrity: sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==,
+      }
+
+  '@types/semver@7.7.0':
+    resolution:
+      {
+        integrity: sha512-k107IF4+Xr7UHjwDc7Cfd6PRQfbdkiRabXGRjo07b4WyPahFBZCZ1sE+BNxYIJPPg73UkfOsVOLwqVc/6ETrIA==,
       }
 
   '@types/through@0.0.33':
@@ -7423,6 +7441,8 @@ snapshots:
       undici-types: 6.21.0
 
   '@types/normalize-package-data@2.4.4': {}
+
+  '@types/semver@7.7.0': {}
 
   '@types/through@0.0.33':
     dependencies:

@@ -21,6 +21,20 @@ export function initHusky(options: HuskyInitOptions = {}): void {
   const { cwd = process.cwd(), hooks = ['pre-commit', 'commit-msg'] } = options;
 
   try {
+    // Check if git is available
+    try {
+      execSync('git --version', { stdio: 'ignore' });
+    } catch {
+      throw new Error('Git is not installed. Please install Git and try again.');
+    }
+
+    // Check if we're in a git repository
+    try {
+      execSync('git rev-parse --git-dir', { cwd, stdio: 'ignore' });
+    } catch {
+      throw new Error('Not in a git repository. Please run "git init" first.');
+    }
+
     // Initialize husky
     execSync('npx husky init', { cwd, stdio: 'inherit' });
 
