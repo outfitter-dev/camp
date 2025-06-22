@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'fs';
-import { join } from 'path';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 import { 
   Result, 
   success, 
@@ -11,53 +12,12 @@ import {
   type AppError 
 } from '@outfitter/contracts';
 
-// Types for the AST processor (to be implemented)
-interface CodeBlock {
-  lang: string | null;
-  value: string;
-  position: {
-    start: { line: number; column: number; offset: number };
-    end: { line: number; column: number; offset: number };
-  };
-  meta?: string | null;
-}
+// Import the real implementation
+import { AstProcessor } from '../../processors/ast.js';
 
-interface ProcessedDocument {
-  content: string;
-  codeBlocks: Array<CodeBlock>;
-}
-
-// Mock implementation for tests (to be replaced with real implementation)
-class AstProcessor {
-  async extractCodeBlocks(markdown: string): Promise<Result<ProcessedDocument, AppError>> {
-    // This will be implemented using remark/unified
-    throw new Error('Not implemented');
-  }
-
-  async replaceCodeBlocks(
-    markdown: string,
-    replacements: Map<number, string>
-  ): Promise<Result<string, AppError>> {
-    // This will be implemented
-    throw new Error('Not implemented');
-  }
-
-  normalizeLanguage(lang: string | null): string | null {
-    // Normalize language identifiers (js -> javascript, ts -> typescript, etc.)
-    if (!lang) return null;
-    
-    const aliases: Record<string, string> = {
-      js: 'javascript',
-      ts: 'typescript',
-      jsx: 'javascript',
-      tsx: 'typescript',
-      yml: 'yaml',
-      md: 'markdown',
-    };
-    
-    return aliases[lang.toLowerCase()] || lang.toLowerCase();
-  }
-}
+// ESM equivalent of __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 describe('AstProcessor', () => {
   const processor = new AstProcessor();
