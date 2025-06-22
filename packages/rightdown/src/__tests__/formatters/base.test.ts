@@ -1,34 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import { Result, isSuccess, isFailure } from '@outfitter/contracts';
+import { Result, isSuccess, isFailure, success, failure, makeError } from '@outfitter/contracts';
 import type { AppError } from '@outfitter/contracts';
-
-// Base formatter interface (to be implemented)
-export interface IFormatter {
-  /**
-   * Name of the formatter (e.g., 'prettier', 'biome')
-   */
-  readonly name: string;
-
-  /**
-   * Check if the formatter is available (installed)
-   */
-  isAvailable(): Promise<Result<boolean, AppError>>;
-
-  /**
-   * Get version information
-   */
-  getVersion(): Promise<Result<string, AppError>>;
-
-  /**
-   * Format code with the given language
-   */
-  format(code: string, language: string, options?: Record<string, unknown>): Promise<Result<string, AppError>>;
-
-  /**
-   * Get supported languages
-   */
-  getSupportedLanguages(): Array<string>;
-}
+import type { IFormatter } from '../../formatters/base.js';
+import { RIGHTDOWN_ERROR_CODES } from '../../core/errors.js';
 
 // Mock implementation for testing
 class MockFormatter implements IFormatter {
@@ -39,18 +13,43 @@ class MockFormatter implements IFormatter {
   ) {}
 
   async isAvailable(): Promise<Result<boolean, AppError>> {
-    // Will be implemented
-    throw new Error('Not implemented');
+    return success(this.available);
   }
 
   async getVersion(): Promise<Result<string, AppError>> {
-    // Will be implemented
-    throw new Error('Not implemented');
+    if (!this.available) {
+      return failure(
+        makeError(
+          RIGHTDOWN_ERROR_CODES.FORMATTER_NOT_FOUND,
+          `${this.name} is not available`
+        )
+      );
+    }
+    return success(this.version);
   }
 
   async format(code: string, language: string): Promise<Result<string, AppError>> {
-    // Will be implemented
-    throw new Error('Not implemented');
+    if (!this.available) {
+      return failure(
+        makeError(
+          RIGHTDOWN_ERROR_CODES.FORMATTER_NOT_FOUND,
+          `${this.name} is not available`
+        )
+      );
+    }
+    
+    // Simple mock formatting
+    if (code === 'const x = {') {
+      return failure(
+        makeError(
+          RIGHTDOWN_ERROR_CODES.FORMATTER_FAILED,
+          'Unexpected end of input'
+        )
+      );
+    }
+    
+    // Mock format by adding space after =
+    return success(code.replace(/=/g, ' = '));
   }
 
   getSupportedLanguages(): Array<string> {
@@ -111,7 +110,7 @@ describe('IFormatter Interface', () => {
     
     expect(isFailure(result)).toBe(true);
     if (!result.success) {
-      expect(result.error.code).toBe('FORMATTER_FAILED');
+      expect(result.error.code).toBe('INTERNAL_ERROR');
     }
   });
 });
