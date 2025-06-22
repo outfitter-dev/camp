@@ -104,9 +104,12 @@ output:
    rightdown              # Lint/format all Markdown files
    rightdown --fix        # Fix everything (structure + code blocks)
    rightdown --check      # CI mode: no writes, exit 1 on differences
+   rightdown --dry-run    # Preview changes without writing files
    rightdown --init       # Create config with formatter detection
    rightdown --config <p> # Use explicit config path
    rightdown --version    # Show version + detected formatters
+   rightdown --write-configs # Write generated tool configs
+   rightdown --check-drift  # Check if configs have drifted
    ```
 
 ### Benefits
@@ -119,29 +122,29 @@ output:
 
 ### Migration Path
 
-```javascript
-// Phase 1: Orchestrator (2.1)
-dependencies: {
-  "markdownlint-cli2": "^0.15.0",
-  "prettier": "^3.0.0"
-},
-peerDependencies: {
-  "@biomejs/biome": "^1.0.0"
-},
-optionalDependencies: {
-  "remark": "^15.0.0"
-}
+```jsonc
+// ***Dependency strategy***
+// We keep the dependency surface minimal and use **peerDependencies** for the
+// heavy-weight formatters that consuming repos may already have installed.
 
-// Phase 2: Partial Internalization (3.0)
-dependencies: {
-  "markdownlint-cli2": "^0.15.0",
-  // Custom code formatter implementation
-  "remark": "^15.0.0"
-}
+{
+  // Phase 1 – Orchestrator (Rightdown 2.1)
+  "dependencies": {
+    "markdownlint-cli2": "^0.15.0",
+    "remark": "^15.0.0",            // optional but bundled for AST features
+    "unified": "^11.0.0"            // remark peer
+  },
+  "peerDependencies": {
+    "prettier": "^3.0.0",            // ESM-only – require Node >=18.12
+    "@biomejs/biome": "^2.0.0"       // biome is heavy; peer keeps install size down
+  },
 
-// Phase 3: Full Integration (4.0)
-dependencies: {
-  // Everything internalized or using lightweight alternatives
+  // Phase 2 – Partial internalisation (Rightdown 3.0)
+  // We may drop markdownlint-cli2 and embed the rule engine, but this stays
+  // out of scope for 2.x.
+  "optionalDependencies": {
+    "prettier-plugin-python": "*"      // example: extra formatters auto-detected
+  }
 }
 ```
 
@@ -171,6 +174,30 @@ formatters:
 ignores:
   - "vendor/**"
   - "*.generated.md"
+```
+
+**Monorepo Setup**:
+```yaml
+version: 2
+preset: standard
+
+# Monorepo-specific overrides
+rules:
+  line-length: false  # Let Prettier handle this
+  
+formatters:
+  default: prettier
+  languages:
+    javascript: biome
+    typescript: biome
+    json: biome
+    
+# Monorepo ignores
+ignores:
+  - "packages/*/dist/**"
+  - "packages/*/build/**"
+  - "**/node_modules/**"
+  - "**/.turbo/**"
 ```
 
 **IDE Integration**:
@@ -203,6 +230,26 @@ rightdown/
 │           └── format.ts       # Enhanced format command
 ```
 
+### CI Integration
+
+**GitHub Actions**:
+```yaml
+- name: Check Markdown
+  run: pnpm rightdown --check
+
+- name: Verify No Drift
+  run: pnpm rightdown --check-drift
+```
+
+**Pre-commit Hooks**:
+```bash
+# .husky/pre-commit
+pnpm rightdown --dry-run || {
+  echo "Markdown issues found. Run 'pnpm rightdown --fix'"
+  exit 1
+}
+```
+
 ### Future Possibilities
 
 1. **Smart Language Detection**: Auto-detect available formatters
@@ -210,6 +257,8 @@ rightdown/
 3. **Watch Mode**: Format on save with incremental processing
 4. **Plugin System**: Allow custom formatters and processors
 5. **Cloud Formation**: Format via API for CI/CD pipelines
+6. **Configuration Sync**: Auto-sync tool configs with Rightdown config
+7. **Monorepo Awareness**: Inherit configs from parent directories
 
 ## Alternatives Considered
 
@@ -258,12 +307,12 @@ rightdown/
 ## Risk Mitigation
 
 | Risk                                  | Impact | Mitigation                                          |
-|---------------------------------------|--------|-----------------------------------------------------||
-| Biome size inflates install           | High   | Peer dependency, lazy import                        |
-| Formatter version conflicts           | Medium | Pin recommended versions in docs                    |
-| Prettier v3 ESM-only                  | High   | Dynamic import, document Node 18+ requirement       |
+|---------------------------------------|--------|-----------------------------------------------------|
+| Biome size inflates install           | High   | Keep Biome a peerDependency, lazy-import at runtime |
+| Formatter version conflicts           | Medium | Pin versions, surface `--versions` diagnostics      |
+| Prettier v3 ESM-only                  | High   | Dynamic import, require Node ≥ 18.12               |
 | Large monorepo memory usage           | Medium | Stream processing & file chunking                   |
-| Unformatted exotic languages          | Low    | Skip with verbose warning                          |
+| Unformatted exotic languages          | Low    | Skip file with warning, expose formatter hooks      |
 
 ## Conclusion
 
