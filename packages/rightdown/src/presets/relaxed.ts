@@ -16,21 +16,21 @@ export const relaxedConfig: MdlintConfig = {
   // no-missing-space-atx - No space after hash on atx style heading
   MD018: true,
   // no-missing-space-closed-atx - No space inside hashes on closed atx style heading
-  MD022: true,
+  MD020: true,
   // heading-start-left - Headings must start at the beginning of the line
   MD023: true,
   // heading-single-h1 - Multiple top-level headings in the same document
   MD025: true,
   // no-trailing-punctuation - Trailing punctuation in heading
-  MD031: true,
-  // blanks-around-lists - Lists should be surrounded by blank lines
-  MD032: true,
+  MD026: true,
   // fenced-code-language - Fenced code blocks should have a language specified
   MD040: true,
   // no-empty-links - No empty links
   MD042: true,
   // no-alt-text - Images should have alternate text (alt text)
   MD045: true,
+  // single-trailing-newline - Files should end with a single newline character
+  MD047: true,
   ignores: [
     'node_modules/**',
     '.git/**',

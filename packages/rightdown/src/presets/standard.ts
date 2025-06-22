@@ -15,6 +15,8 @@ export const standardConfig: MdlintConfig = {
   MD024: { siblings_only: true },
   // ol-prefix - Ordered list item prefix (style: ordered)
   MD029: { style: 'ordered' },
+  // blanks-around-lists - Lists should be surrounded by blank lines
+  MD032: true,
   // no-inline-html - Inline HTML (disabled - allow inline HTML)
   MD033: false,
   // first-line-heading - First line in a file should be a top-level heading (disabled)
@@ -23,6 +25,8 @@ export const standardConfig: MdlintConfig = {
   MD043: false,
   // code-block-style - Code block style (style: fenced)
   MD046: { style: 'fenced' },
+  // single-trailing-newline - Files should end with a single newline character
+  MD047: true,
   ignores: [
     'node_modules/**',
     '.git/**',
