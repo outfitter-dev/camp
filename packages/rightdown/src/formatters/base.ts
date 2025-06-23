@@ -1,6 +1,16 @@
 import { Result, type AppError } from '@outfitter/contracts';
 
 /**
+ * Result of a formatting operation
+ */
+export interface FormatterResult {
+  /** The formatted code */
+  formatted: string;
+  /** Whether the code changed during formatting */
+  didChange: boolean;
+}
+
+/**
  * Base formatter interface for code formatting integrations
  */
 export interface IFormatter {
@@ -26,7 +36,7 @@ export interface IFormatter {
     code: string,
     language: string,
     options?: Record<string, unknown>,
-  ): Promise<Result<string, AppError>>;
+  ): Promise<Result<FormatterResult, AppError>>;
 
   /**
    * Get supported languages

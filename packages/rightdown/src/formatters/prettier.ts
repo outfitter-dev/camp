@@ -1,13 +1,22 @@
 import { Result, success, failure, makeError, type AppError } from '@outfitter/contracts';
 import { RIGHTDOWN_ERROR_CODES } from '../core/errors.js';
-import type { IFormatter } from './base.js';
+import type { IFormatter, FormatterResult } from './base.js';
 
 /**
  * Prettier formatter integration
  */
+interface PrettierModule {
+  format: (source: string, options: Record<string, unknown>) => Promise<string>;
+  version?: string;
+  default?: {
+    format: (source: string, options: Record<string, unknown>) => Promise<string>;
+    version?: string;
+  };
+}
+
 export class PrettierFormatter implements IFormatter {
   readonly name = 'prettier';
-  private prettierInstance: any = null;
+  private prettierInstance: PrettierModule | null = null;
   private version: string | null = null;
 
   /**
@@ -43,7 +52,7 @@ export class PrettierFormatter implements IFormatter {
       } else {
         // Try to get from the prettier object structure
         const versionMatch = Object.values(prettier).find(
-          (val: any) => typeof val === 'string' && /^\d+\.\d+\.\d+/.test(val),
+          (val): val is string => typeof val === 'string' && /^\d+\.\d+\.\d+/.test(val),
         );
         this.version = versionMatch || 'unknown';
       }
@@ -68,7 +77,7 @@ export class PrettierFormatter implements IFormatter {
     code: string,
     language: string,
     options?: Record<string, unknown>,
-  ): Promise<Result<string, AppError>> {
+  ): Promise<Result<FormatterResult, AppError>> {
     try {
       const prettier = await this.loadPrettier();
       if (!prettier) {
@@ -93,7 +102,8 @@ export class PrettierFormatter implements IFormatter {
 
       // Format the code
       const formatted = await prettier.format(code, formatOptions);
-      return success(formatted);
+      const didChange = formatted !== code;
+      return success({ formatted, didChange });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
 
@@ -165,7 +175,7 @@ export class PrettierFormatter implements IFormatter {
   /**
    * Load Prettier dynamically
    */
-  private async loadPrettier(): Promise<any> {
+  private async loadPrettier(): Promise<PrettierModule | null> {
     if (this.prettierInstance) {
       return this.prettierInstance;
     }

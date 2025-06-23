@@ -30,8 +30,8 @@ describe('ConfigReader', () => {
   });
 
   describe('read', () => {
-    it('should fail to read legacy config without version field', async () => {
-      const configPath = join(fixturesPath, 'legacy.yaml');
+    it('should fail to read config without version field', async () => {
+      const configPath = join(fixturesPath, 'no-version.yaml');
       const result = await configReader.read(configPath);
 
       expect(result.success).toBe(false);

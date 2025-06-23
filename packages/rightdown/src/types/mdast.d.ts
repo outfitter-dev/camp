@@ -23,5 +23,5 @@ export interface Code {
 
 export interface Root {
   type: 'root';
-  children: Array<any>;
+  children: Array<Code | unknown>;
 }

@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document tracks the development of Rightdown 2.0, which transforms the tool from a markdownlint wrapper into a unified Markdown formatting orchestrator. This is a clean break from v1 with no backward compatibility.
+This document tracks the development of Rightdown 2.0, a unified Markdown formatting orchestrator that coordinates code formatters (Prettier, Biome) for code blocks within markdown files.
 
 ## Architecture
 
@@ -131,10 +131,10 @@ All formatters are peer dependencies to:
 - Keep bundle size minimal for basic usage
 - Let users control formatter versions
 
-### Breaking Changes
-- None! v1 configs continue to work
-- v2 features require explicit version declaration
-- Gradual migration path provided
+### Features
+- Simple YAML configuration with version 2 format
+- Preset support (strict, standard, relaxed)
+- Language-specific formatter routing
 
 ### Performance Considerations
 - Parallelize code block formatting
@@ -180,7 +180,7 @@ new functionality.  The following contract is **binding** for the first public b
 | `rightdown --init [lvl]` |       | Scaffold `.rightdown.config.yaml` (`lvl` = `strict|standard|relaxed`)       |
 | `rightdown --config <p>` | `-C`  | Use explicit config path                                                   |
 | `rightdown --version`    | `-v`  | Print version + detected tool versions (Prettier, Biome, markdownlint)     |
-| `rightdown --write-configs` |     | Write generated tool configs (for debugging/migration)                    |
+| `rightdown --write-configs` |     | Write generated tool configs (for debugging)                              |
 | `rightdown --check-drift` |       | Check if generated configs differ from existing ones                      |
 
 ### Exit Codes
@@ -203,7 +203,7 @@ The feature is considered **complete** when ALL items are ✅.
    default schema (JS/TS/JSON/YAML/HTML/CSS/Markdown).
 2. ✅ `.rightdown.config.yaml` v2 is validated against a JSON schema at runtime;
    helpful diagnostics are printed on failure.
-3. ✅ v1 config files continue to work unchanged.
+3. ✅ Simple configuration format with presets.
 4. ✅ Generated configs are written **only** when `--write-configs` is passed;
    otherwise they are built in-memory.
 5. ✅ Optional Biome peer-dependency is lazily required; a clear warning is shown
@@ -211,7 +211,7 @@ The feature is considered **complete** when ALL items are ✅.
 6. ✅ Performance: formatting the fixture set (<250 files, 1 CPU core) completes
    in ≤1.5× the time of running raw markdownlint-cli2 alone.
 7. ✅ Test coverage ≥ 90 % on core orchestrator, formatters, and CLI flags.
-8. ✅ Documentation (README & website) updated and migration guide published.
+8. ✅ Documentation (README & website) updated.
 9. ✅ `rightdown --dry-run` shows what would change without modifying files;
    exits with code 1 if changes would be made (CI-friendly).
 10. ✅ `rightdown --check-drift` detects configuration drift between Rightdown
@@ -371,7 +371,7 @@ Following TDD principles, we'll create comprehensive test fixtures before implem
    │   ├── edge-cases.md        # Malformed blocks, edge cases
    │   └── large-file.md        # Performance testing
    ├── configs/
-   │   ├── v1-legacy.yaml       # v1 config (no version field)
+   │   ├── no-version.yaml      # Config without version field
    │   ├── v2-basic.yaml        # Simple v2 config
    │   ├── v2-full.yaml         # All features
    │   └── v2-invalid.yaml      # Invalid config for error testing
@@ -406,7 +406,7 @@ Following TDD principles, we'll create comprehensive test fixtures before implem
 
 - [ ] Single command formats everything
 - [ ] Performance comparable to individual tools
-- [ ] Clear migration path from v1
+- [ ] Clear documentation and examples
 - [ ] No breaking changes
 - [ ] Comprehensive test coverage
 - [ ] Well-documented APIs

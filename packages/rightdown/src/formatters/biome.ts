@@ -177,7 +177,7 @@ export class BiomeFormatter implements IFormatter {
     }
 
     try {
-      this.biomeInstance = await Biome.create({
+      this.biomeInstance = await Biome.Biome.create({
         // Use distribution from node_modules
         distribution: await this.findBiomeDistribution(),
       });
@@ -190,7 +190,7 @@ export class BiomeFormatter implements IFormatter {
   /**
    * Find Biome distribution path
    */
-  private async findBiomeDistribution(): Promise<any> {
+  private async findBiomeDistribution(): Promise<unknown> {
     try {
       const { Distribution } = await import('@biomejs/biome');
       return Distribution.NODE;

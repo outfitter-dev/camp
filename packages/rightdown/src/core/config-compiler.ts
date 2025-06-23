@@ -192,7 +192,7 @@ export class ConfigCompiler {
 
     // Apply custom options
     if (config.formatterOptions?.biome) {
-      const biomeOptions = config.formatterOptions.biome as Record<string, any>;
+      const biomeOptions = config.formatterOptions.biome as Record<string, unknown>;
 
       // Handle top-level formatter options
       if (biomeOptions.indentStyle) {
@@ -207,7 +207,7 @@ export class ConfigCompiler {
 
       // Handle JavaScript formatter options
       if (biomeOptions.formatter) {
-        const jsFormatter = biomeOptions.formatter as Record<string, any>;
+        const jsFormatter = biomeOptions.formatter as Record<string, unknown>;
         if (jsFormatter.quoteStyle) {
           biomeConfig.javascript!.formatter!.quoteStyle = jsFormatter.quoteStyle;
         }

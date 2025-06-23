@@ -145,7 +145,7 @@ const result = await orchestrator.format(markdownContent);
 
 ## Important Notes
 
-- Version 2.0 is a complete rewrite with no backward compatibility
+- Version 2.0 is a unified formatter orchestrator for code blocks in markdown
 - Prettier and Biome are peer dependencies - install only what you need
 - All functions use the Result pattern for error handling
 - Code blocks with unsupported languages fall back to default formatter

@@ -22,6 +22,7 @@ export const RIGHTDOWN_ERROR_CODES = {
   // General errors
   VALIDATION_ERROR: ErrorCode.VALIDATION_ERROR,
   IO_ERROR: ErrorCode.INTERNAL_ERROR,
+  INTERNAL_ERROR: ErrorCode.INTERNAL_ERROR,
 } as const;
 
 export type RightdownErrorCode = (typeof RIGHTDOWN_ERROR_CODES)[keyof typeof RIGHTDOWN_ERROR_CODES];

@@ -27,8 +27,18 @@ yargs(hideBin(process.argv))
           type: 'boolean',
           default: false,
         })
+        .option('fix', {
+          describe: 'Alias for --write (fix files in place)',
+          type: 'boolean',
+          default: false,
+        })
         .option('check', {
           describe: 'Check if files are formatted correctly',
+          type: 'boolean',
+          default: false,
+        })
+        .option('dry-run', {
+          describe: 'Show what would be formatted without making changes',
           type: 'boolean',
           default: false,
         })
@@ -38,7 +48,19 @@ yargs(hideBin(process.argv))
           type: 'string',
           default: '.rightdown.config.yaml',
         })
-        .conflicts('write', 'check');
+        .option('write-configs', {
+          describe: 'Write generated tool configs (for debugging)',
+          type: 'boolean',
+          default: false,
+        })
+        .option('check-drift', {
+          describe: 'Check if generated configs match expected',
+          type: 'boolean',
+          default: false,
+        })
+        .conflicts('write', 'check')
+        .conflicts('fix', 'check')
+        .conflicts('dry-run', ['write', 'fix']);
     },
     formatCommand,
   )

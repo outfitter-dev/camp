@@ -39,6 +39,17 @@ export class AstProcessor {
           return;
         }
 
+        // Check if this is a fenced code block by looking at the raw markdown
+        const startOffset = node.position.start.offset || 0;
+        const endOffset = node.position.end.offset || 0;
+        const blockText = markdown.substring(startOffset, endOffset);
+        
+        // Skip if it's not a fenced code block (indented code blocks don't start with ``` or ~~~)
+        // Also skip code blocks inside blockquotes
+        if (!blockText.match(/^(`{3,}|~{3,})/) || blockText.match(/^>/m)) {
+          return;
+        }
+
         codeBlocks.push({
           lang: this.normalizeLanguage(node.lang || null),
           value: node.value,

@@ -1,5 +1,5 @@
-# Legacy config without version field
-# This should fail validation as version 2 is required
+# Config without version field
+# This should fail validation as version field is required
 
 # Built-in preset
 preset: standard
