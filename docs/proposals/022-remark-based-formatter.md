@@ -1,22 +1,43 @@
+---
+author: "Matt Galligan"
+id: "ADR-022"
+date: 2025-06-23
+status: "Draft"
+related: ["ADR-021", "ADR-023"]
+---
 # Proposal: Lightweight Formatting Setup Tool
 
 ## Summary
 
-Create `@outfitter/formatting` - a lightweight formatting setup tool that installs config packages, detects available formatters, and configures projects for consistent code formatting across JavaScript/TypeScript (Biome), Markdown (Remark), and other files (Prettier).
+Create `@outfitter/formatting` - a lightweight formatting setup tool that installs config packages, detects available formatters, and configures projects for consistent code formatting across JavaScript/TypeScript (Biome), Markdown (Remark), and other files (Prettier). Future expansion includes ESLint and markdownlint-cli2 for broader ecosystem compatibility.
 
 ## Motivation
 
-Current challenges:
-1. **Scattered configuration** - Multiple config files (.prettierrc, biome.json, .editorconfig, etc.)
-2. **Limited markdown formatting** - Most tools handle code well but not markdown structure
-3. **No unified approach** - Each tool has its own config format and conventions
-4. **Poor code block handling** - Tools either format everything or nothing
+### Configuration Drift
+Keeping formatting configs synchronized across multiple packages in this monorepo is manual and error-prone. Each package potentially has its own `.prettierrc`, `biome.json`, and other config files that can drift out of sync.
 
-This proposal addresses all these issues with:
-- **Lightweight setup tool** that doesn't bundle heavy formatters
-- **Config packages** that provide consistent settings
-- **Smart detection** of available formatters (local, global, system)
-- **Flexible installation** options including devcontainers
+### Project Consistency
+Projects created by Outfitter CLI need the same formatting standards as the monorepo. Currently there's no automated way to ensure new projects start with the correct formatting setup.
+
+### External Adoption
+Teams who want to adopt Outfitter's opinionated formatting standards have no easy way to do so. They must manually copy configuration files and keep them updated.
+
+### Tool Overlap and Separation of Concerns
+While Biome, Prettier, and Remark have overlapping capabilities, there's value in an orchestration layer that:
+
+- Routes specific file types to the most appropriate formatter
+- Manages the complexity of tool-specific configurations
+- Provides a unified interface while leveraging each tool's strengths
+
+### Multiple Configuration Formats
+Each formatter requires its own config file format:
+
+- Prettier: `.prettierrc` (JSON/YAML/JS)
+- Biome: `biome.json` or `biome.jsonc`
+- Remark: `.remarkrc` (JSON/YAML/JS)
+- EditorConfig: `.editorconfig` (INI format)
+
+This proposal addresses these challenges with a unified approach that provides shared config packages and a lightweight setup tool.
 
 ## Architecture
 
@@ -93,8 +114,15 @@ export async function init(options: InitOptions = {}) {
   const configPackages = [
     '@outfitter/prettier-config',
     '@outfitter/biome-config',
-    '@outfitter/remark-config'
-  ];
+    '@outfitter/remark-config',
+    // Future expansion
+    '@outfitter/eslint-config',
+    '@outfitter/markdownlint-config'
+  ].filter(pkg => {
+    // Only install configs for detected formatters
+    const formatter = pkg.split('/')[1].replace('-config', '');
+    return formatters[formatter] || ['prettier', 'biome', 'remark'].includes(formatter);
+  });
   
   console.log('\n📦 Installing config packages...');
   await installPackages(configPackages, { dev: true });
@@ -113,6 +141,16 @@ export async function init(options: InitOptions = {}) {
   console.log('\n✅ Formatting setup complete!');
 }
 
+// Helper constants and type definitions
+const FORMATTER_COMMANDS = {
+  biome: '@biomejs/biome',
+  prettier: 'prettier', 
+  remark: 'remark-cli',
+  // Future expansion
+  eslint: 'eslint',
+  markdownlint: 'markdownlint-cli2'
+};
+
 async function detectAvailableFormatters() {
   const formatters: FormattersInfo = {};
   
@@ -130,19 +168,171 @@ async function findFormatter(name: string): Promise<FormatterInfo | null> {
     return { type: 'local', path: localPath, version: await getVersion(name) };
   } catch {}
   
-  // 2. Check global installation
+  // 2. Check global installation (cross-platform)
   const globalPath = await findGlobalBinary(name);
   if (globalPath) {
     return { type: 'global', path: globalPath, version: await getVersion(name, true) };
   }
   
   // 3. Check system PATH (Docker, devcontainer, etc.)
-  const systemPath = await which(name);
+  const systemPath = await which(name).catch(() => null);
   if (systemPath) {
     return { type: 'system', path: systemPath, version: 'system' };
   }
   
   return null;
+}
+
+// Cross-platform global binary detection
+async function findGlobalBinary(name: string): Promise<string | null> {
+  try {
+    // Use which/where command based on platform
+    const command = process.platform === 'win32' ? 'where' : 'which';
+    const result = await execa(command, [name]);
+    return result.stdout.trim();
+  } catch {
+    // Fallback: check common global paths
+    const globalPaths = process.platform === 'win32' 
+      ? [process.env.APPDATA + '\\npm', 'C:\\Users\\' + process.env.USERNAME + '\\AppData\\Roaming\\npm']
+      : ['/usr/local/bin', process.env.HOME + '/.local/bin'];
+    
+    for (const basePath of globalPaths) {
+      const binPath = path.join(basePath, name + (process.platform === 'win32' ? '.cmd' : ''));
+      if (await fs.pathExists(binPath)) {
+        return binPath;
+      }
+    }
+    return null;
+  }
+}
+
+// Helper function stubs
+async function getVersion(name: string, global = false): Promise<string> {
+  try {
+    const result = await execa(name, ['--version']);
+    return result.stdout.trim();
+  } catch {
+    return 'unknown';
+  }
+}
+
+async function promptVSCode(): Promise<boolean> {
+  const { createVSCode } = await prompt({
+    type: 'confirm',
+    message: 'Create VS Code settings for formatter integration?',
+    initial: true
+  });
+  return createVSCode;
+}
+
+function generateVSCodeSettings(formatters: FormattersInfo): Record<string, any> {
+  const settings: Record<string, any> = {};
+  
+  if (formatters.remark) {
+    settings['[markdown]'] = { 'editor.defaultFormatter': 'unifiedjs.vscode-remark' };
+  }
+  if (formatters.biome) {
+    settings['[typescript]'] = { 'editor.defaultFormatter': 'biomejs.biome' };
+    settings['[javascript]'] = { 'editor.defaultFormatter': 'biomejs.biome' };
+    settings['[json]'] = { 'editor.defaultFormatter': 'biomejs.biome' };
+    settings['[jsonc]'] = { 'editor.defaultFormatter': 'biomejs.biome' };
+  }
+  if (formatters.prettier) {
+    settings['[yaml]'] = { 'editor.defaultFormatter': 'esbenp.prettier-vscode' };
+    settings['[css]'] = { 'editor.defaultFormatter': 'esbenp.prettier-vscode' };
+    settings['[html]'] = { 'editor.defaultFormatter': 'esbenp.prettier-vscode' };
+  }
+  
+  return settings;
+}
+
+function deepMerge(target: any, source: any): any {
+  const result = { ...target };
+  for (const key in source) {
+    if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+      result[key] = deepMerge(result[key] || {}, source[key]);
+    } else {
+      result[key] = source[key];
+    }
+  }
+  return result;
+}
+
+function getSchemaUrl(tool: string): string {
+  const schemas = {
+    biome: 'https://biomejs.dev/schemas/1.9.4/schema.json',
+    prettier: 'https://json.schemastore.org/prettierrc',
+    remark: 'https://json.schemastore.org/remarkrc'
+  };
+  return schemas[tool] || '';
+}
+
+function getConfigFilename(tool: string): string {
+  const filenames = {
+    biome: 'biome.jsonc',      // JSONC supports comments
+    prettier: '.prettierrc.yaml', // YAML supports comments
+    remark: '.remarkrc.yaml',     // YAML supports comments
+    eslint: 'eslint.config.js',   // JS supports comments (future)
+    markdownlint: '.markdownlint.yaml' // YAML supports comments (future)
+  };
+  return filenames[tool] || `.${tool}rc.yaml`;
+}
+
+function formatConfigFile(tool: string, config: any): string {
+  // Generate configs with comments where possible
+  switch (tool) {
+    case 'biome':
+      // JSONC format with comments
+      return `// Generated by @outfitter/formatting
+// Schema: https://biomejs.dev/schemas/1.9.4/schema.json
+${JSON.stringify(config, null, 2)}`;
+    
+    case 'prettier':
+    case 'remark':
+    default:
+      // YAML format with comments for everything else
+      return `# Generated by @outfitter/formatting
+# Tool: ${tool}
+# Preset: ${config._preset || 'standard'}
+
+${generateYAML(config)}`;
+  }
+}
+
+function generateYAML(config: any): string {
+  // Remove internal metadata before YAML generation
+  const { _preset, $schema, ...cleanConfig } = config;
+  
+  // Use a YAML library like js-yaml for proper generation
+  return yaml.dump(cleanConfig, {
+    indent: 2,
+    quotingType: '"',
+    forceQuotes: false
+  });
+}
+
+function generateEditorConfig(common: any, projectInfo: any): string {
+  return `# Generated by @outfitter/formatting
+root = true
+
+[*]
+end_of_line = ${common.endOfLine || 'lf'}
+indent_style = ${common.indentation?.style || 'space'}
+indent_size = ${common.indentation?.width || 2}
+trim_trailing_whitespace = true
+insert_final_newline = true
+charset = utf-8
+
+[*.{md,mdx,mdc}]
+trim_trailing_whitespace = false
+
+[Makefile]
+indent_style = tab
+`;
+}
+
+async function getPackageName(formatterName: string): string {
+  return FORMATTER_COMMANDS[formatterName] || formatterName;
 }
 ```
 
@@ -155,7 +345,7 @@ function generateScripts(formatters: FormattersInfo, projectInfo: ProjectInfo) {
   // Main format command - uses our router if available, falls back to individual tools
   if (formatters.biome || formatters.prettier) {
     scripts['format'] = 'outfitter-formatting format . --write';
-    scripts['format:check'] = 'outfitter-formatting format .';
+    scripts['format:check'] = 'outfitter-formatting format . --check';
   }
   
   // Individual formatter commands (only if tool is available)
@@ -166,11 +356,11 @@ function generateScripts(formatters: FormattersInfo, projectInfo: ProjectInfo) {
   }
   
   if (formatters.prettier) {
-    scripts['format:prettier'] = 'prettier --write "**/*.{yml,yaml,css,scss,html}"';
+    scripts['format:prettier'] = 'prettier --write "**/*.{yml,yaml,css,scss,less,html}"';
   }
   
   if (formatters.remark) {
-    scripts['format:markdown'] = 'remark . --output';
+    scripts['format:markdown'] = 'remark . --output --quiet';
     scripts['lint:docs'] = 'remark . --quiet --frail';
   }
   
@@ -208,6 +398,7 @@ function wrapScriptsForMonorepo(scripts: Record<string, string>) {
   
   return monorepoScripts;
 }
+```
 
 ### Config File Creation
 
@@ -216,7 +407,10 @@ async function createConfigFiles(preset: Preset, formatters: FormattersInfo, pro
   // Process preset to generate tool configs
   const configs = await processPreset(preset, formatters);
   
-  // Write tool-specific config files
+  // Update package.json with config references (for tools that support it)
+  const packageJson = await fs.readJson('package.json');
+  
+  // Write config files for all detected formatters
   for (const [tool, config] of Object.entries(configs)) {
     if (!formatters[tool]) continue; // Skip if tool not available
     
@@ -396,36 +590,57 @@ export class FormatterRouter {
   private getFormatterForFile(file: string): string {
     const ext = path.extname(file).slice(1);
     
-    // Biome handles JS/TS/JSON
+    // Biome handles JS/TS/JSON files
     if (['js', 'jsx', 'ts', 'tsx', 'mjs', 'cjs', 'json', 'jsonc'].includes(ext)) {
       return 'biome';
     }
     
-    // Remark handles markdown
+    // Remark handles markdown files
     if (['md', 'mdx', 'mdc'].includes(ext)) {
       return 'remark';
     }
     
-    // Prettier handles everything else
+    // Prettier handles everything else (YAML, CSS, HTML, etc.)
     return 'prettier';
   }
   
   private async runFormatter(name: string, files: string[], options: FormatOptions) {
+    // Handle large file lists by chunking to avoid argv length limits
+    const chunks = this.chunkFiles(files, options.concurrency || 5);
+    
+    for (const chunk of chunks) {
+      await this.runFormatterChunk(name, chunk, options);
+    }
+  }
+  
+  private chunkFiles(files: string[], chunkSize: number): string[][] {
+    // Conservative chunk size to avoid argv length limits on Windows (~8191 chars)
+    // Consider file path lengths when setting chunk size
+    const chunks: string[][] = [];
+    for (let i = 0; i < files.length; i += chunkSize) {
+      chunks.push(files.slice(i, i + chunkSize));
+    }
+    return chunks;
+  }
+  
+  private async runFormatterChunk(name: string, files: string[], options: FormatOptions) {
+    // Note: For very large file lists, consider using stdin-based approaches when available
+    // e.g., biome format --files-from-stdin or tmpfile with @- syntax
+    
     const commands = {
-      biome: `biome format ${files.join(' ')} ${options.write ? '--write' : ''}`,
+      biome: `biome format ${files.join(' ')} ${options.write ? '--write' : ''} ${options.check ? '--write=false' : ''}`,
       prettier: `prettier ${files.join(' ')} ${options.write ? '--write' : '--check'}`,
-      remark: `remark ${files.join(' ')} ${options.write ? '--output' : ''}`
+      remark: `remark ${files.join(' ')} ${options.write ? '--output --quiet' : '--quiet --frail'}`
     };
     
     const command = commands[name];
     if (!command) return;
     
-    console.log(`Running ${name}...`);
+    console.log(`Running ${name} on ${files.length} files...`);
     await execa.command(command, { stdio: 'inherit' });
   }
 }
 ```
-
 
 ### CLI Interface
 
@@ -433,6 +648,7 @@ export class FormatterRouter {
 #!/usr/bin/env node
 import { Command } from 'commander';
 import { ConfigManager, RemarkFormatter } from '@outfitter/formatting';
+import globby from 'globby';
 
 const program = new Command();
 
@@ -457,16 +673,30 @@ program
   .description('Format files using appropriate formatters')
   .option('--write', 'Write formatted files (default: check only)')
   .option('--check', 'Check if files are formatted')
+  .option('--concurrency <number>', 'Number of files to process in parallel', '5')
   .action(async (patterns, options) => {
+    // Handle conflicting options
+    if (options.write && options.check) {
+      console.error('Error: --write and --check cannot be used together');
+      process.exit(1);
+    }
+    
     const formatters = await detectAvailableFormatters();
     const router = new FormatterRouter(formatters);
     
     // Default to all files if no patterns provided
     const filePatterns = patterns.length > 0 ? patterns : ['.'];
     
+    // Expand patterns and check file count
+    const files = await globby(filePatterns);
+    if (files.length > 100) {
+      console.warn(`⚠️  Processing ${files.length} files. Consider using more specific patterns for better performance.`);
+    }
+    
     await router.format(filePatterns, {
-      write: options.write && !options.check,
-      check: options.check || !options.write
+      write: options.write,
+      check: options.check || !options.write,
+      concurrency: parseInt(options.concurrency)
     });
   });
 
@@ -521,7 +751,8 @@ The `@outfitter/formatting` package is lightweight, containing only configs:
     "execa": "^8.0.0",
     "globby": "^14.0.0",
     "prompts": "^2.4.2",
-    "which": "^4.0.0"
+    "which": "^4.0.0",
+    "js-yaml": "^4.1.0"
   },
   "peerDependencies": {
     // Formatters are optional - detected at runtime
@@ -555,43 +786,48 @@ pnpm exec outfitter-formatting init
 
 ## Generated Configurations
 
-The system updates config packages and generates runtime configs:
+The system generates standalone config files for all detected formatters:
 
-### .prettierrc
-```json
-{
-  "endOfLine": "lf",
-  "tabWidth": 2,
-  "useTabs": false,
-  "plugins": ["prettier-plugin-tailwindcss"],
-  "overrides": [
-    {
-      "files": ["**/*.{yml,yaml}"],
-      "options": {
-        "bracketSpacing": true,
-        "proseWrap": "preserve"
-      }
-    },
-    {
-      "files": ["**/*.{css,scss,less}"],
-      "options": {
-        "singleQuote": true
-      }
-    },
-    {
-      "files": ["**/.{prettier,eslint}rc*", "**/package.json"],
-      "options": {
-        "parser": "json5",
-        "trailingComma": "none"
-      }
-    }
-  ]
-}
+### .prettierrc.yaml
+
+```yaml
+# Generated by @outfitter/formatting
+# Tool: prettier  
+# Preset: standard
+
+endOfLine: lf
+tabWidth: 2
+useTabs: false
+printWidth: 80
+singleQuote: true
+trailingComma: all
+plugins:
+  - prettier-plugin-tailwindcss
+
+# File-specific overrides
+overrides:
+  - files: ["**/*.{yml,yaml}"]
+    options:
+      bracketSpacing: true
+      proseWrap: preserve
+  
+  - files: ["**/*.{css,scss,less}"]
+    options:
+      singleQuote: true
+  
+  - files: ["**/.{prettier,eslint}rc*", "**/package.json"]
+    options:
+      parser: json5
+      trailingComma: none
 ```
 
 ### biome.jsonc
+
 ```jsonc
-// Generated from formatting.config.yaml
+// Generated by @outfitter/formatting
+// Tool: biome
+// Preset: standard
+// Schema: https://biomejs.dev/schemas/1.9.4/schema.json
 {
   "formatter": {
     "enabled": true,
@@ -620,8 +856,10 @@ The system updates config packages and generates runtime configs:
 ```
 
 ### .editorconfig
+
 ```ini
-# Generated from formatting.config.yaml
+# Generated by @outfitter/formatting
+# Preset: standard
 root = true
 
 [*]
@@ -643,18 +881,50 @@ indent_style = tab
 ```
 
 ### .vscode/settings.json
+
 ```json
 {
   "[markdown]": {
-    "editor.defaultFormatter": "outfitter.formatting"
+    "editor.defaultFormatter": "unifiedjs.vscode-remark"
   },
-  "[typescript][javascript]": {
+  "[typescript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[javascript]": {
     "editor.defaultFormatter": "biomejs.biome"
   },
   "[yaml]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "biomejs.biome"
   }
 }
+```
+
+### .remarkrc.yaml
+
+```yaml
+# Generated by @outfitter/formatting
+# Tool: remark
+# Preset: standard
+
+plugins:
+  - remark-preset-lint-recommended
+  - [remark-lint-list-marker-style, "-"]
+  - [remark-lint-heading-style, "atx"]
+  - [remark-lint-maximum-line-length, 80]
+  - remark-lint-no-duplicate-headings
+
+# Settings for unified/remark ecosystem
+settings:
+  bullet: "-"
+  emphasis: "*"
+  strong: "*"
+  listItemIndent: "one"
 ```
 
 ## Benefits
@@ -669,28 +939,39 @@ indent_style = tab
 8. **Smart routing** - Automatically routes files to appropriate formatters
 9. **Graceful degradation** - Works with whatever formatters are available
 
-## Implementation Phases
+## Implementation Milestones
 
-### Phase 1: Core Setup Tool (Week 1)
+### Milestone 1: Core Infrastructure
+
 - Create `@outfitter/remark-config` package with standard rules
 - Build init command with formatter detection
 - Script generation for package.json
 - Monorepo detection and configuration
-- Basic formatter router
+- Basic formatter router (Prettier, Biome, Remark)
 
-### Phase 2: Enhanced Features (Week 2)
+### Milestone 2: Enhanced Features
+
 - DevContainer configuration generator
 - Preset support (strict, relaxed, library)
 - Better error messages for missing tools
 - Performance optimization for formatter routing
 - Integration tests
 
-### Phase 3: Polish & Documentation (Week 3)
+### Milestone 3: Production Ready
+
 - Comprehensive documentation
 - Example configurations
 - Migration guide from individual tools
 - GitHub Action for CI
 - VS Code workspace recommendations
+
+### Milestone 4: Extended Ecosystem (Future)
+
+- Create `@outfitter/eslint-config` package
+- Create `@outfitter/markdownlint-config` package
+- Extend formatter router for ESLint and markdownlint-cli2
+- Update presets to include linting rules
+- Cross-tool rule consistency (e.g., line length across formatters and linters)
 
 ## Preset Configuration
 
@@ -741,7 +1022,7 @@ tools:
       proseWrap: preserve
       htmlWhitespaceSensitivity: css
       plugins:
-        - prettier-plugin-tailwindcss
+        - prettier-plugin-tailwindcss  # Note: Plugin versions managed by config package
     
   remark:
     # Remark doesn't share common formatter concepts
@@ -755,7 +1036,7 @@ tools:
 # Scripts to add to package.json
 scripts:
   format: "outfitter-formatting format . --write"
-  format:check: "outfitter-formatting format ."
+  format:check: "outfitter-formatting format . --check"
   lint: "biome lint . && remark . --quiet --frail"
   lint:fix: "biome lint . --write"
   ci:format: "pnpm format:check && pnpm lint"
@@ -781,6 +1062,7 @@ common.quotes.style     → biome.javascript.formatter.quoteStyle
 ```
 
 The `raw` section in each tool contains settings that:
+
 - Have no common equivalent
 - Are tool-specific features
 - Override the common mappings if needed
@@ -791,11 +1073,20 @@ The `raw` section in each tool contains settings that:
 # /formatting/presets/strict.yaml
 version: 1
 name: strict
-extends: standard  # Inherit from standard preset
 
 common:
+  indentation:
+    style: space
+    width: 2
   lineWidth: 80
+  quotes:
+    style: single
+    jsx: single
   semicolons: always
+  trailingComma: all
+  bracketSpacing: true
+  arrowParens: always
+  endOfLine: lf
   
 tools:
   biome:
@@ -812,11 +1103,20 @@ tools:
 # /formatting/presets/relaxed.yaml
 version: 1
 name: relaxed
-extends: standard
 
 common:
+  indentation:
+    style: space
+    width: 2
   lineWidth: 120
+  quotes:
+    style: single
+    jsx: single
   semicolons: asNeeded
+  trailingComma: es5
+  bracketSpacing: true
+  arrowParens: avoid
+  endOfLine: lf
   
 tools:
   biome:
@@ -831,6 +1131,7 @@ tools:
 ## Migration Strategy
 
 ### From Manual Setup
+
 ```bash
 # 1. Install the formatting package
 pnpm add -D @outfitter/formatting
@@ -848,6 +1149,7 @@ rm .prettierrc .remarkrc  # Keep if you need custom overrides
 ```
 
 ### For Monorepos
+
 ```bash
 # Run init at the root
 cd monorepo-root
@@ -861,6 +1163,7 @@ pnpm exec outfitter-formatting init
 ```
 
 ### Using DevContainers
+
 ```bash
 # If formatters aren't installed locally
 pnpm exec outfitter-formatting init
@@ -871,39 +1174,278 @@ pnpm exec outfitter-formatting init
 # This generates .devcontainer/devcontainer.json with all tools pre-installed
 ```
 
-## Relationship to Rightdown
+## Technical Notes
 
-`@outfitter/formatting` and Rightdown serve different purposes:
+### Plugin Version Management
+Prettier plugins referenced in configurations (e.g., `prettier-plugin-tailwindcss`) are managed as dependencies of the config packages. This ensures:
 
-- **Rightdown**: Specialized tool for formatting code blocks within markdown files
-- **@outfitter/formatting**: General-purpose formatting setup tool for entire projects
+- Consistent plugin versions across all projects
+- Proper version pinning and security auditing via Renovate and `npm audit`
+- No need for users to manually install plugins
 
-They complement each other:
-1. Use `@outfitter/formatting` to set up project-wide formatting
-2. Use Rightdown when you need specialized markdown code block formatting
-3. Both can coexist - Rightdown for precision, formatting for general use
+### Security Pipeline
+Config packages use automated dependency management:
+
+- **Renovate** for automated security updates of plugin dependencies
+- **npm audit** in CI to catch vulnerable dependencies
+- **Lockfile validation** to ensure reproducible builds
+- **Pin exact versions** for plugins to prevent supply chain attacks
+
+### Biome API Stability
+The Biome JavaScript API is still stabilizing. The formatter integration may need updates as the API evolves. Current implementation should use the available API (e.g., `createProject`) with appropriate error handling for API changes.
+
+### Configuration Precedence
+The simplified approach has clear precedence:
+
+1. **Local config files** (generated by formatting package)
+2. **Config package defaults** (when config files reference them)  
+3. **Tool built-in defaults**
+
+All configuration is explicit and visible in the generated config files - no hidden package.json fields or complex resolution logic.
+
+### DevContainer Features
+The proposal references DevContainer features for Biome and Prettier:
+
+- `ghcr.io/devcontainers-contrib/features/prettier:1` - **Verified available**
+- `ghcr.io/devcontainers-contrib/features/biome:1` - **Status unknown, may need custom implementation**
+
+**Fallback strategy**: Install Biome via npm in `postCreateCommand` if DevContainer feature unavailable:
+
+```json
+"postCreateCommand": "npm install -g @biomejs/biome remark-cli"
+```
+
+### Remark Configuration Resolution
+When migration instructions suggest removing `.remarkrc`, the system handles remark config through:
+
+- Generated `.remarkrc.json` with `@outfitter/remark-config` settings
+- CLI invocation: `remark . --use @outfitter/remark-config --output --quiet`
+- VS Code integration via `unifiedjs.vscode-remark` extension
+
+### Astro Starlight Integration
+To support the planned move to **Astro Starlight** for documentation sites, the formatting package (or a future `@outfitter/docs-site` helper) should expose a tiny utility that can be imported into `astro.config.mjs`.  
+
+**Example `astro.config.mjs` snippet**
+
+```js
+// astro.config.mjs
+import { defineConfig } from "astro/config";
+import starlight from "@astrojs/starlight";
+
+// 🔽 NEW: pulls in the same remark preset used by `@outfitter/remark-config`
+import { outfitterRemarkPlugins } from "@outfitter/remark-config/astro"; // hypothetical helper
+
+export default defineConfig({
+  integrations: [starlight()],
+
+  markdown: {
+    remarkPlugins: [
+      ...outfitterRemarkPlugins(), // ensures docs follow the same rules as repo markdown
+    ],
+  },
+});
+```
+
+Key points:
+
+1. **Single-source of truth** – `outfitterRemarkPlugins()` returns the exact plugin list already defined in `@outfitter/remark-config`, so your docs site stays in sync with the repository-wide rules.
+2. **Optional widening** – Projects can still add their own plugins *after* the helper (e.g. `remark-smartypants`) without losing the core defaults.
+3. **Future package** – A forthcoming `@outfitter/docs-site` package could expose a CLI (`pnpm exec outfitter-docs init`) that:
+   - Generates/updates `astro.config.mjs` with the snippet above.
+   - Adds Starlight, the helper package, and any required remark/rehype plugins to `package.json`.
+   - Optionally scaffolds a starter `src/content/docs` tree.
+4. **CI parity** – Because the same remark plugins are used when formatting `.md` files in the repo and when building the site, there is no drift between "code view" and "rendered view.
+
+_No immediate changes are required to land the formatter, but reserving this extension point now avoids a breaking change later._
+
+### Cross-Platform EOL Handling
+EditorConfig standardizes on `lf` line endings. Windows considerations:
+
+- **Git checkout**: Configure `git config core.autocrlf input` for consistent LF in repo
+- **WSL vs Windows**: EditorConfig enforces LF in both environments
+- **IDE behavior**: VS Code respects EditorConfig and converts on save
+
+### Preset to Config Package Translation
+The YAML presets are translated into published config packages through a build process:
+
+1. **Preset Processing**: `standard.yaml` → extract `common` + tool-specific `raw` settings
+2. **Config Generation**: Apply `mapCommonToTool()` + merge `raw` → tool-native format
+3. **Package Publishing**: Generated configs become the exported defaults in `@outfitter/*-config` packages
+4. **Runtime Resolution**: Projects importing config packages get the preset-derived settings
+
+This ensures presets and config packages stay synchronized while allowing both approaches (preset-based generation vs. direct config package usage).
+
+### Formatter Check Mode Limitations
+The `--check` flag behavior varies across formatters:
+
+- **Prettier**: Full `--check` support (exits non-zero if formatting needed)
+- **Biome**: Uses `--write=false` flag for check-only mode  
+- **Remark**: Uses `--frail` for check mode (exits non-zero on lint issues)
+
+All formatters support check mode, but with different CLI syntax. The router normalizes this behavior.
+
+### Configuration File Format Strategy
+
+The formatting package generates configuration files with **comments and consistency** as priorities:
+
+**Format Selection Priority:**
+
+1. **YAML** (preferred) - Supports comments, human-readable, consistent syntax
+2. **JSONC** - For tools that require JSON but support comments (Biome)
+3. **INI** - For legacy tools (.editorconfig)
+4. **JavaScript** - For tools requiring programmatic configs (future ESLint)
+
+**Benefits of YAML-first approach:**
+
+- **Consistent commenting** across all config files
+- **Human-readable** configuration
+- **Tool identification** in headers (generated by, tool, preset)
+- **Schema references** where supported
+- **Easier maintenance** and debugging
+
+**Generated file headers include:**
+
+```yaml
+# Generated by @outfitter/formatting
+# Tool: [formatter-name]  
+# Preset: [preset-name]
+# Last updated: [timestamp]
+```
+
+### Simplified Configuration Strategy
+
+The formatting package generates **standalone config files** for all tools to maintain consistency and simplicity:
+
+**Benefits of standalone files:**
+
+- **Consistent behavior** across all tools
+- **No tool-specific configuration methods** to remember
+- **Self-documenting** with comments and headers
+- **Easy debugging** - all settings visible in one place
+- **Predictable file locations** - no hunting through package.json
+
+**Configuration files generated:**
+
+- `.prettierrc.yaml` - Prettier configuration with comments
+- `biome.jsonc` - Biome configuration with comments  
+- `.remarkrc.yaml` - Remark configuration with comments
+- `.editorconfig` - EditorConfig with comments
+- `.eslintrc.yaml` - ESLint configuration (future)
+- `.markdownlint.yaml` - Markdownlint configuration (future)
+
+### Required Changes to Existing Config Packages
+
+#### @outfitter/prettier-config
+**Current state**: Static config export in `index.js`
+**Required changes**:
+
+```typescript
+// Add to package.json
+"exports": {
+  ".": "./index.js",
+  "./base": "./base.js"  // For programmatic access
+}
+
+// Update index.js to support both static and programmatic use
+module.exports = {
+  printWidth: 80,  // Align with preset (currently 100)
+  semi: true,
+  singleQuote: true,
+  tabWidth: 2,
+  trailingComma: 'all',
+  useTabs: false,
+  // Export function for programmatic generation
+  generate: (presetConfig) => ({
+    ...module.exports,
+    ...mapPresetToPrettier(presetConfig)
+  })
+};
+```
+
+#### @outfitter/biome-config  
+**Current state**: Static `biome.config.json` file
+**Required changes**:
+
+```typescript
+// Add src/index.ts for programmatic access
+export const config = {
+  // Current biome.config.json content
+};
+
+export function generate(presetConfig) {
+  return {
+    ...config,
+    ...mapPresetToBiome(presetConfig)
+  };
+}
+
+// Update package.json main field to point to dist/index.js
+```
+
+#### @outfitter/remark-config (New Package)
+**Required structure**:
+
+```
+packages/remark-config/
+├── package.json
+├── src/
+│   └── index.ts
+└── presets/
+    ├── standard.js
+    ├── strict.js
+    └── relaxed.js
+```
+
+## Note on Rightdown
+
+Rightdown is a work-in-progress package related to documentation formatting. The `@outfitter/formatting` package will supersede any formatting use cases where Rightdown was previously used.
 
 ## Success Criteria
 
 1. **Adoption** - All Outfitter packages migrated
-2. **Performance** - < 1s to format average markdown file
-3. **Compatibility** - Zero breaks in existing workflows
+2. **Performance** - < 1s to format average markdown file (defined as ~500 lines with 5-10 code blocks)
+   - *Note: Chunked processing may spawn multiple formatter processes; benchmarks should account for process overhead*
+3. **Compatibility** - Zero breaks in existing workflows  
 4. **Developer Experience** - Single config file, clear error messages
 5. **IDE Integration** - Seamless VS Code experience
 
+## Addendum: Why Choose Remark Over Prettier for Markdown Formatting
+
+Although both Prettier and Remark can format Markdown, they serve different philosophies and capabilities. For the sophisticated documentation workflows envisioned in this proposal, Remark (and the wider **unified** ecosystem) offers several decisive advantages:
+
+### Key advantages of Remark
+
+- **Delegated code-block formatting** – Custom plugins can detect fenced code blocks (```` ```ts ```` etc.), pass them to the *language-specific* formatter of your choice (Biome, Prettier, Rust fmt — anything), and then re-insert the results. Prettier formats code blocks using its own built-in printers and cannot delegate.
+- **Plugin-driven extensibility** – Remark exposes the Markdown AST (**mdast**). Hundreds of community plugins – or your own – can modify, lint, validate, or generate content during the same pass. Prettier is intentionally *not* extensible to keep its output predictable.
+- **Unified processing pipelines** – Because Remark participates in `unified`, you can chain Remark → Rehype → etc. to produce HTML, run link checking, generate tables of contents, or apply GitHub-Flavoured Markdown transforms – all without extra I/O.
+- **Semantic understanding** – Working on the AST means rules can be context-aware (e.g. "only re-wrap paragraphs inside list items" or "ensure heading IDs are unique"). Prettier treats the document as text and focuses on surface formatting.
+- **Custom project conventions** – Need alphabetical list sorting, automatic front-matter updates, or house-style link rewriting? Write a small plugin once and ship it with your config package.
+
+### Quick comparison
+
+| Capability | Remark (unified) | Prettier |
+| --- | --- | --- |
+| Code-block delegation | ✅ via plugins | ❌ not possible |
+| Custom formatting rules | ✅ limitless | 🚧 intentionally limited |
+| Combined lint + format pipeline | ✅ (`remark-lint` + others) | ❌ |
+| AST access | ✅ (`mdast`) | ❌ |
+| Simplicity / zero-config | ▢ requires selecting plugins | ✅ one command |
+
+In short, Prettier remains an excellent *baseline* formatter, but Remark is better suited when you need **language-aware code-block handling, custom style rules, or rich content pipelines** – all of which align with the goals of Outfitter's formatting tool.
+
 ## Next Steps
 
-1. Create `@outfitter/remark-config` package structure
-2. Update existing config packages to support programmatic updates
-3. Validate config schema with team
-4. Prototype remark code formatting plugin
-5. Build package update mechanism
-6. Create migration tooling
-7. Test with real projects
+### Immediate (Milestone 1)
 
----
+1. **Create `@outfitter/remark-config` package** - New package (doesn't exist)
+2. **Update `@outfitter/prettier-config`** - Add programmatic access and align with presets
+3. **Update `@outfitter/biome-config`** - Add programmatic access to existing config  
+4. **Validate config schema** with team
+5. **Build core formatter router** for Prettier, Biome, Remark
 
-**Author**: Matt Galligan  
-**Date**: 2024-12-23  
-**Status**: Draft  
-**Related**: Rightdown v2, Config Sync proposals
+### Future Expansion (Milestone 4)
+
+5. Research ESLint config package requirements and rule compatibility
+6. Research markdownlint-cli2 integration with remark workflows
+7. Design cross-tool rule consistency strategy (e.g., unified line length settings)
+8. Create migration tooling for existing ESLint/markdownlint setups
