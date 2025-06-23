@@ -144,11 +144,15 @@ Rightdown includes three built-in presets:
 rightdown [files...] [options]
 
 Options:
-  --write, -w     Write formatted output to files
-  --check, -c     Check if files are formatted
-  --config        Path to config file (default: .rightdown.config.yaml)
-  --help, -h      Show help
-  --version, -v   Show version
+  --write, -w       Write formatted output to files
+  --check, -c       Check if files are formatted
+  --fix             Auto-fix issues found during formatting
+  --dry-run         Show what changes would be made without writing
+  --write-configs   Write tool-specific configuration files
+  --check-drift     Check if configurations are out of sync
+  --config          Path to config file (default: .rightdown.config.yaml)
+  --help, -h        Show help
+  --version, -v     Show version
 ```
 
 ## Programmatic Usage
