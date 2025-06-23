@@ -2,7 +2,7 @@
 
 ## Summary
 
-Create `@outfitter/formatter` - a comprehensive formatting solution that uses remark as the foundation for markdown processing, delegates code block formatting to specialized tools (Prettier/Biome), and introduces a unified YAML configuration that generates all tool-specific configs.
+Create `@outfitter/formatting` - a comprehensive formatting solution that uses remark as the foundation for markdown processing, delegates code block formatting to specialized tools (Prettier/Biome), and introduces a unified YAML configuration (`formatting.config.yaml`) that generates all tool-specific configs.
 
 ## Motivation
 
@@ -14,7 +14,7 @@ Current challenges:
 
 This proposal addresses all these issues with:
 - **Remark** as the AST-based markdown processor
-- **Unified config** (`formatter.config.yaml`) as single source of truth
+- **Unified config** (`formatting.config.yaml`) as single source of truth
 - **Smart routing** of code blocks to appropriate formatters
 - **Config generation** for all downstream tools
 
@@ -23,7 +23,7 @@ This proposal addresses all these issues with:
 ### Overview
 
 ```
-formatter.config.yaml
+formatting.config.yaml
         ↓
    ConfigLoader
         ↓
@@ -37,7 +37,7 @@ formatter.config.yaml
 ### Unified Configuration Schema
 
 ```yaml
-# formatter.config.yaml
+# formatting.config.yaml
 version: 1
 
 # Global defaults
@@ -242,6 +242,37 @@ export class ConfigManager {
     await this.generateVSCodeSettings();
   }
 
+  private generateEditorConfig(): string {
+    const lines = [
+      '# Generated from formatting.config.yaml',
+      'root = true',
+      '',
+      '[*]',
+      `end_of_line = ${this.config.defaults.endOfLine}`,
+      `indent_style = ${this.config.defaults.indentStyle}`,
+      `indent_size = ${this.config.defaults.indentWidth}`,
+      `trim_trailing_whitespace = ${this.config.defaults.trimTrailingWhitespace}`,
+      `insert_final_newline = ${this.config.defaults.insertFinalNewline}`,
+      'charset = utf-8',
+      ''
+    ];
+
+    // Add pattern-specific overrides
+    for (const pattern of this.config.patterns) {
+      if (pattern.formatter === 'remark') {
+        lines.push('[*.{md,mdx,mdc}]');
+        lines.push('trim_trailing_whitespace = false');
+        lines.push('');
+      }
+    }
+
+    // Common overrides
+    lines.push('[Makefile]');
+    lines.push('indent_style = tab');
+    
+    return lines.join('\n');
+  }
+
   private generatePrettierConfig(): PrettierConfig {
     const config: PrettierConfig = {
       ...this.extractPrettierDefaults(),
@@ -406,7 +437,7 @@ export class RemarkFormatter {
 ```typescript
 #!/usr/bin/env node
 import { Command } from 'commander';
-import { ConfigManager, RemarkFormatter } from '@outfitter/formatter';
+import { ConfigManager, RemarkFormatter } from '@outfitter/formatting';
 
 const program = new Command();
 
@@ -418,12 +449,12 @@ program
 // Generate tool configs
 program
   .command('generate')
-  .description('Generate tool-specific configs from formatter.config.yaml')
+  .description('Generate tool-specific configs from formatting.config.yaml')
   .action(async () => {
     const configManager = new ConfigManager();
-    await configManager.load('./formatter.config.yaml');
+    await configManager.load('./formatting.config.yaml');
     await configManager.generateConfigs();
-    console.log('Generated: .prettierrc, biome.json, .editorconfig');
+    console.log('Generated: .prettierrc, biome.json, .editorconfig, .vscode/settings.json');
   });
 
 // Format files
@@ -434,7 +465,7 @@ program
   .option('--write', 'Write formatted files')
   .action(async (files, options) => {
     const configManager = new ConfigManager();
-    await configManager.load('./formatter.config.yaml');
+    await configManager.load('./formatting.config.yaml');
     
     const formatter = new RemarkFormatter(configManager);
     
@@ -465,7 +496,7 @@ program
   .description('Show which formatter would be used')
   .action(async (file) => {
     const configManager = new ConfigManager();
-    await configManager.load('./formatter.config.yaml');
+    await configManager.load('./formatting.config.yaml');
     
     const formatter = configManager.getFormatter(file);
     console.log(`${file}: ${formatter.tool}`);
@@ -539,11 +570,34 @@ The system generates appropriate configs for each tool:
 }
 ```
 
+### .editorconfig
+```ini
+# Generated from formatting.config.yaml
+root = true
+
+[*]
+end_of_line = lf
+indent_style = space
+indent_size = 2
+trim_trailing_whitespace = true
+insert_final_newline = true
+charset = utf-8
+
+[*.{md,mdx,mdc}]
+trim_trailing_whitespace = false
+
+[*.{yml,yaml}]
+indent_size = 2
+
+[Makefile]
+indent_style = tab
+```
+
 ### .vscode/settings.json
 ```json
 {
   "[markdown]": {
-    "editor.defaultFormatter": "outfitter.formatter"
+    "editor.defaultFormatter": "outfitter.formatting"
   },
   "[typescript][javascript]": {
     "editor.defaultFormatter": "biomejs.biome"
