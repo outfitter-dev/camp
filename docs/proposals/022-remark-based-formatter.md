@@ -49,59 +49,80 @@ defaults:
   trimTrailingWhitespace: true
   insertFinalNewline: true
 
-# Formatting patterns (array style)
+# Language to formatter mapping (for code blocks)
+languages:
+  javascript: biome
+  typescript: biome
+  jsx: biome
+  tsx: biome
+  json: biome
+  jsonc: biome
+  css: prettier
+  scss: prettier
+  html: prettier
+  yaml: prettier
+  markdown: prettier
+  toml: dprint
+  rust: dprint
+  # Default fallback
+  default: prettier
+
+# Formatting patterns (array style, globs only)
 patterns:
-  - files: ["md", "mdx", "mdc"]
-    globs: ["docs/**/*.md", "!**/CHANGELOG.md"]
+  - globs: ["**/*.md", "**/*.mdx", "**/*.mdc", "!**/CHANGELOG.md"]
     formatter: remark
     options:
-      proseWrap: preserve
-      headingStyle: atx
-      listMarker: "-"
-      emphasisMarker: "_"
-      strongMarker: "**"
+      # Direct remark-stringify options
+      bullet: "-"
+      emphasis: "_"
+      strong: "**"
+      rule: "-"
+      ruleSpaces: false
+    # Override language mappings for this pattern
     codeBlocks:
-      javascript: biome
-      typescript: biome
-      jsx: biome
-      tsx: biome
-      json: biome
-      css: prettier
-      html: prettier
-      yaml: prettier
-      default: prettier
+      # Could override specific languages if needed
+      # javascript: prettier  # Use prettier instead of biome for JS in markdown
 
-  - files: ["ts", "tsx", "mts", "cts"]
-    globs: ["src/**/*.ts", "!**/*.d.ts"]
+  - globs: ["**/*.{ts,tsx,mts,cts}", "!**/*.d.ts"]
     formatter: biome
     options:
-      quoteStyle: single
-      semicolons: always
-      trailingComma: all
-      arrowParentheses: always
+      # Direct Biome formatter options
+      formatter:
+        indentStyle: space
+        indentWidth: 2
+        lineWidth: 80
+      javascript:
+        formatter:
+          quoteStyle: single
+          semicolons: always
+          trailingComma: all
+          arrowParentheses: always
 
-  - files: ["js", "jsx", "mjs", "cjs"]
+  - globs: ["**/*.{js,jsx,mjs,cjs}"]
     formatter: biome
-    extends: typescript  # Inherit options from typescript pattern
+    extends: typescript  # Inherit options
 
-  - files: ["json", "jsonc", "json5"]
+  - globs: ["**/*.{json,jsonc,json5}"]
     formatter: biome
     options:
-      trailingComma: none
+      json:
+        formatter:
+          trailingComma: none
 
-  - files: ["yml", "yaml"]
+  - globs: ["**/*.{yml,yaml}"]
     formatter: prettier
     options:
+      # Direct Prettier options
       bracketSpacing: true
       proseWrap: preserve
 
-  - files: ["css", "scss", "less"]
+  - globs: ["**/*.{css,scss,less}"]
     formatter: prettier
     options:
       singleQuote: true
 
   # Special patterns
-  - globs: ["**/.prettierrc*", "**/.eslintrc*"]
+  - globs: ["**/.prettierrc*", "**/.eslintrc*", "**/package.json"]
     formatter: prettier
     options:
       parser: json5
@@ -140,6 +161,30 @@ ignore:
   - "**/.next/**"
 ```
 
+### Resolution Logic
+
+The system uses a two-tier resolution approach:
+
+1. **File-level formatting**: Determined by matching `patterns[].globs`
+2. **Code block formatting**: 
+   - First checks `patterns[].codeBlocks` for overrides
+   - Falls back to global `languages` mapping
+   - Finally uses `languages.default` if no match
+
+Example resolution flow:
+```yaml
+# Global language mapping says JavaScript uses Biome
+languages:
+  javascript: biome
+
+# But this pattern overrides it for specific files
+patterns:
+  - globs: ["**/docs/**/*.md"]
+    formatter: remark
+    codeBlocks:
+      javascript: prettier  # Override: use Prettier for JS in docs
+```
+
 ### Core Implementation
 
 #### Config Loader & Generator
@@ -154,15 +199,18 @@ const FormatterConfigSchema = z.object({
   defaults: z.object({
     indentWidth: z.number(),
     indentStyle: z.enum(['space', 'tab']),
-    // ... other defaults
+    lineWidth: z.number(),
+    endOfLine: z.enum(['lf', 'crlf', 'cr', 'auto']),
+    trimTrailingWhitespace: z.boolean(),
+    insertFinalNewline: z.boolean()
   }),
+  languages: z.record(z.string()),  // Language to formatter mapping
   patterns: z.array(z.object({
-    files: z.array(z.string()).optional(),
-    globs: z.array(z.string()).optional(),
+    globs: z.array(z.string()),
     extends: z.string().optional(),
     formatter: z.enum(['prettier', 'biome', 'remark', 'dprint']),
-    options: z.record(z.any()),
-    codeBlocks: z.record(z.string()).optional()
+    options: z.record(z.any()),  // Tool-specific options, no mapping
+    codeBlocks: z.record(z.string()).optional()  // Override language mappings
   })),
   tools: z.object({
     prettier: z.object({
@@ -208,10 +256,15 @@ export class ConfigManager {
     for (const pattern of this.config.patterns) {
       if (pattern.formatter === 'prettier') {
         config.overrides.push({
-          files: this.getFilePatterns(pattern),
-          options: this.mapOptionsToPrettier(pattern.options)
+          files: pattern.globs,
+          options: pattern.options  // Direct pass-through, no mapping
         });
       }
+    }
+
+    // Add tool-specific config
+    if (this.config.tools?.prettier) {
+      Object.assign(config, this.config.tools.prettier);
     }
 
     return config;
@@ -229,6 +282,17 @@ export class ConfigManager {
       }
     }
     return { tool: 'prettier', options: {} };
+  }
+
+  // Get formatter for a code block language
+  getCodeBlockFormatter(language: string, filePattern?: FormatterInfo): string {
+    // First check if the file pattern has a specific override
+    if (filePattern?.codeBlocks?.[language]) {
+      return filePattern.codeBlocks[language];
+    }
+    
+    // Fall back to global language mapping
+    return this.config.languages[language] || this.config.languages.default || 'prettier';
   }
 }
 ```
@@ -277,13 +341,13 @@ export class RemarkFormatter {
         visit(tree, 'code', (node: Code) => {
           if (!node.lang) return;
 
-          const markdownFormat = this.configManager.getFormatter(file.path);
-          const codeFormatter = markdownFormat.codeBlocks?.[node.lang] || 
-                               markdownFormat.codeBlocks?.default;
+          const filePattern = this.configManager.getFormatter(file.path);
+          const codeFormatter = this.configManager.getCodeBlockFormatter(
+            node.lang, 
+            filePattern
+          );
 
-          if (codeFormatter) {
-            promises.push(this.formatCodeBlock(node, codeFormatter));
-          }
+          promises.push(this.formatCodeBlock(node, codeFormatter));
         });
 
         await Promise.all(promises);
@@ -409,16 +473,23 @@ The system generates appropriate configs for each tool:
   "plugins": ["prettier-plugin-tailwindcss"],
   "overrides": [
     {
-      "files": ["*.yml", "*.yaml"],
+      "files": ["**/*.{yml,yaml}"],
       "options": {
         "bracketSpacing": true,
         "proseWrap": "preserve"
       }
     },
     {
-      "files": ["*.css", "*.scss", "*.less"],
+      "files": ["**/*.{css,scss,less}"],
       "options": {
         "singleQuote": true
+      }
+    },
+    {
+      "files": ["**/.prettierrc*", "**/.eslintrc*", "**/package.json"],
+      "options": {
+        "parser": "json5",
+        "trailingComma": "none"
       }
     }
   ]
@@ -441,6 +512,15 @@ The system generates appropriate configs for each tool:
       "trailingComma": "all",
       "arrowParentheses": "always"
     }
+  },
+  "json": {
+    "formatter": {
+      "trailingComma": "none"
+    }
+  },
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git"
   }
 }
 ```
@@ -463,11 +543,13 @@ The system generates appropriate configs for each tool:
 ## Benefits
 
 1. **Single source of truth** - One YAML file configures everything
-2. **Intelligent markdown handling** - Remark for structure, specialized formatters for code blocks
-3. **Tool compatibility** - Generates configs that existing tools/IDEs understand
-4. **Flexible file matching** - Both extensions and glob patterns
-5. **DRY configuration** - Inherit rules with `extends`
-6. **Migration path** - Can import existing configs
+2. **No translation layer** - Options are passed directly to tools in their native format
+3. **Intelligent markdown handling** - Remark for structure, specialized formatters for code blocks
+4. **Two-tier resolution** - Global language mappings with pattern-specific overrides
+5. **Tool compatibility** - Generates configs that existing tools/IDEs understand
+6. **Flexible matching** - Full glob pattern support
+7. **DRY configuration** - Inherit options with `extends`
+8. **Migration path** - Can import existing configs
 
 ## Implementation Phases
 
