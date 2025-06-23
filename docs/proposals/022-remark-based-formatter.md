@@ -84,7 +84,12 @@ export async function init(options: InitOptions = {}) {
   const projectInfo = await detectProjectStructure();
   console.log('\n📁 Project type:', projectInfo.type);
   
-  // 3. Install config packages only (lightweight)
+  // 3. Load and apply preset
+  const presetName = options.preset || 'standard';
+  const preset = await loadPreset(presetName);
+  console.log(`\n📋 Using preset: ${preset.name}`);
+  
+  // 4. Install config packages only (lightweight)
   const configPackages = [
     '@outfitter/prettier-config',
     '@outfitter/biome-config',
@@ -94,15 +99,15 @@ export async function init(options: InitOptions = {}) {
   console.log('\n📦 Installing config packages...');
   await installPackages(configPackages, { dev: true });
   
-  // 4. Create config files that reference the packages
+  // 5. Generate and create config files
   console.log('\n📝 Creating config files...');
-  await createConfigFiles(projectInfo);
+  await createConfigFiles(preset, formatters, projectInfo);
   
-  // 5. Update package.json scripts
+  // 6. Update package.json scripts
   console.log('\n⚙️  Updating package.json scripts...');
-  await updatePackageScripts(generateScripts(formatters, projectInfo));
+  await updatePackageScripts(preset.scripts, projectInfo);
   
-  // 6. Offer to install missing tools
+  // 7. Offer to install missing tools
   await handleMissingFormatters(formatters);
   
   console.log('\n✅ Formatting setup complete!');
@@ -207,31 +212,92 @@ function wrapScriptsForMonorepo(scripts: Record<string, string>) {
 ### Config File Creation
 
 ```typescript
-async function createConfigFiles(projectInfo: ProjectInfo) {
-  // Simple config files that reference our packages
-  const configs = {
-    '.prettierrc.js': `module.exports = require('@outfitter/prettier-config');\n`,
-    
-    'biome.jsonc': `{
-  // Extends the Outfitter Biome configuration
-  "extends": ["@outfitter/biome-config"]
-}\n`,
-    
-    '.remarkrc.js': `module.exports = require('@outfitter/remark-config');\n`,
-    
-    '.editorconfig': generateEditorConfig(projectInfo)
-  };
+async function createConfigFiles(preset: Preset, formatters: FormattersInfo, projectInfo: ProjectInfo) {
+  // Process preset to generate tool configs
+  const configs = await processPreset(preset, formatters);
   
-  for (const [filename, content] of Object.entries(configs)) {
-    await fs.writeFile(filename, content);
+  // Write tool-specific config files
+  for (const [tool, config] of Object.entries(configs)) {
+    if (!formatters[tool]) continue; // Skip if tool not available
+    
+    const filename = getConfigFilename(tool);
+    await fs.writeFile(filename, formatConfigFile(tool, config));
     console.log(`  ✓ Created ${filename}`);
   }
+  
+  // Always create .editorconfig
+  const editorConfig = generateEditorConfig(preset.common, projectInfo);
+  await fs.writeFile('.editorconfig', editorConfig);
+  console.log('  ✓ Created .editorconfig');
   
   // VS Code settings (if .vscode exists or user wants it)
   if (await fs.pathExists('.vscode') || await promptVSCode()) {
     await fs.ensureDir('.vscode');
-    await fs.writeJson('.vscode/settings.json', generateVSCodeSettings(), { spaces: 2 });
+    const vscodeSettings = generateVSCodeSettings(formatters);
+    await fs.writeJson('.vscode/settings.json', vscodeSettings, { spaces: 2 });
     console.log('  ✓ Created .vscode/settings.json');
+  }
+}
+
+async function processPreset(preset: Preset, formatters: FormattersInfo): Promise<ToolConfigs> {
+  const configs: ToolConfigs = {};
+  
+  for (const [tool, toolConfig] of Object.entries(preset.tools)) {
+    if (!formatters[tool]) continue;
+    
+    // Start with mapped common settings
+    let config = mapCommonToTool(preset.common, tool);
+    
+    // Merge in raw tool-specific settings
+    if (toolConfig.raw) {
+      config = deepMerge(config, toolConfig.raw);
+    }
+    
+    // Add schema reference
+    config.$schema = getSchemaUrl(tool);
+    
+    configs[tool] = config;
+  }
+  
+  return configs;
+}
+
+function mapCommonToTool(common: CommonConfig, tool: string): any {
+  switch (tool) {
+    case 'biome':
+      return {
+        formatter: {
+          indentStyle: common.indentation.style,
+          indentWidth: common.indentation.width,
+          lineWidth: common.lineWidth
+        },
+        javascript: {
+          formatter: {
+            quoteStyle: common.quotes.style,
+            jsxQuoteStyle: common.quotes.jsx,
+            semicolons: common.semicolons,
+            trailingComma: common.trailingComma,
+            arrowParentheses: common.arrowParens
+          }
+        }
+      };
+      
+    case 'prettier':
+      return {
+        tabWidth: common.indentation.width,
+        useTabs: common.indentation.style === 'tab',
+        printWidth: common.lineWidth,
+        singleQuote: common.quotes.style === 'single',
+        jsxSingleQuote: common.quotes.jsx === 'single',
+        semi: common.semicolons === 'always' || common.semicolons === true,
+        trailingComma: common.trailingComma,
+        bracketSpacing: common.bracketSpacing,
+        arrowParens: common.arrowParens === 'asNeeded' ? 'avoid' : common.arrowParens,
+        endOfLine: common.endOfLine
+      };
+      
+    default:
+      return {};
   }
 }
 ```
@@ -625,6 +691,142 @@ indent_style = tab
 - Migration guide from individual tools
 - GitHub Action for CI
 - VS Code workspace recommendations
+
+## Preset Configuration
+
+### Common Configuration Format
+
+The formatting package uses a YAML-based preset system that maps common formatting concepts across tools:
+
+```yaml
+# /formatting/presets/standard.yaml
+version: 1
+name: standard
+description: "Balanced formatting for most projects"
+
+# Common formatting rules that map across tools
+common:
+  indentation:
+    style: space
+    width: 2
+  lineWidth: 80
+  quotes:
+    style: double
+    jsx: double
+  semicolons: always
+  trailingComma: all
+  bracketSpacing: true
+  arrowParens: always
+  endOfLine: lf
+
+# Tool-specific configurations
+tools:
+  biome:
+    # Inherits all common settings automatically
+    # Additional Biome-specific settings under 'raw'
+    raw:
+      linter:
+        rules:
+          recommended: true
+          correctness:
+            noUnusedVariables: warn
+      vcs:
+        enabled: true
+        clientKind: git
+
+  prettier:
+    # Inherits common settings
+    # Prettier-specific additions
+    raw:
+      proseWrap: preserve
+      htmlWhitespaceSensitivity: css
+      plugins:
+        - prettier-plugin-tailwindcss
+    
+  remark:
+    # Remark doesn't share common formatter concepts
+    # Everything goes in raw
+    raw:
+      plugins:
+        - remark-preset-lint-recommended
+        - [remark-lint-list-marker-style, "-"]
+        - [remark-lint-heading-style, "atx"]
+
+# Scripts to add to package.json
+scripts:
+  format: "outfitter-formatting format . --write"
+  format:check: "outfitter-formatting format ."
+  lint: "biome lint . && remark . --quiet --frail"
+  lint:fix: "biome lint . --write"
+  ci:format: "pnpm format:check && pnpm lint"
+```
+
+### How Mapping Works
+
+The `common` section defines universal formatting concepts that are automatically mapped to tool-specific settings:
+
+```typescript
+// Common concept → Tool mappings
+common.indentation.style → biome.formatter.indentStyle
+                        → prettier.useTabs (inverted)
+
+common.indentation.width → biome.formatter.indentWidth
+                        → prettier.tabWidth
+
+common.lineWidth        → biome.formatter.lineWidth
+                        → prettier.printWidth
+
+common.quotes.style     → biome.javascript.formatter.quoteStyle
+                        → prettier.singleQuote (inverted)
+```
+
+The `raw` section in each tool contains settings that:
+- Have no common equivalent
+- Are tool-specific features
+- Override the common mappings if needed
+
+### Additional Presets
+
+```yaml
+# /formatting/presets/strict.yaml
+version: 1
+name: strict
+extends: standard  # Inherit from standard preset
+
+common:
+  lineWidth: 80
+  semicolons: always
+  
+tools:
+  biome:
+    raw:
+      linter:
+        rules:
+          recommended: true
+          correctness:
+            all: true
+          style:
+            all: true
+            noNonNullAssertion: error
+
+# /formatting/presets/relaxed.yaml
+version: 1
+name: relaxed
+extends: standard
+
+common:
+  lineWidth: 120
+  semicolons: asNeeded
+  
+tools:
+  biome:
+    raw:
+      linter:
+        rules:
+          recommended: true
+          correctness:
+            noUnusedVariables: off
+```
 
 ## Migration Strategy
 
