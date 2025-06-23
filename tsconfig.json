@@ -40,6 +40,9 @@
       "path": "./packages/remark-config"
     },
     {
+      "path": "./packages/formatting"
+    },
+    {
       "path": "./packages/cli"
     },
     {
