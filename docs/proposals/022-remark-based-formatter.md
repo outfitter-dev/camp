@@ -58,7 +58,7 @@ languages:
 
 # Formatting patterns (array style, globs only)
 patterns:
-  - globs: ["**/*.md", "**/*.mdx", "**/*.mdc", "!**/CHANGELOG.md"]
+  - globs: ["**/*.{md,mdx,mdc}", "!**/CHANGELOG.md"]
     formatter: remark
     options:
       # Direct remark-stringify options
@@ -111,7 +111,7 @@ patterns:
       singleQuote: true
 
   # Special patterns
-  - globs: ["**/.prettierrc*", "**/.eslintrc*", "**/package.json"]
+  - globs: ["**/.{prettier,eslint}rc*", "**/package.json"]
     formatter: prettier
     options:
       parser: json5
@@ -500,7 +500,7 @@ The system generates appropriate configs for each tool:
       }
     },
     {
-      "files": ["**/.prettierrc*", "**/.eslintrc*", "**/package.json"],
+      "files": ["**/.{prettier,eslint}rc*", "**/package.json"],
       "options": {
         "parser": "json5",
         "trailingComma": "none"
