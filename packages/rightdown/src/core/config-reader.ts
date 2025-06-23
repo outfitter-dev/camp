@@ -1,6 +1,6 @@
 import { readFileSync, existsSync } from 'node:fs';
 import yaml from 'js-yaml';
-import { Result, success, failure, makeError, type AppError } from '@outfitter/contracts';
+import { success, failure, makeError, type Result, type AppError } from '@outfitter/contracts';
 import { RIGHTDOWN_ERROR_CODES } from './errors.js';
 import { type RightdownConfig } from './types.js';
 

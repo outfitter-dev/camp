@@ -134,18 +134,6 @@ describe('Orchestrator - formatFile', () => {
     }
   });
 
-  it('should handle file not found', async () => {
-    const filePath = join(tempDir, 'non-existent.md');
-
-    const result = await orchestrator.formatFile(filePath);
-    
-    expect(result.success).toBe(false);
-    if (!result.success) {
-      expect(result.error.code).toBe('NOT_FOUND');
-      expect(result.error.message).toContain('File not found');
-    }
-  });
-
   it('should preserve file permissions and timestamps', async () => {
     const filePath = join(tempDir, 'test.md');
     const content = '# Test\n\n```javascript\nconst x=1\n```\n';

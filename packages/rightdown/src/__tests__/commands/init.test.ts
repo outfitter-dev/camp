@@ -140,7 +140,7 @@ describe('initCommand', () => {
       consoleLog.mockRestore();
     });
 
-    it.skip('should handle write errors gracefully', async () => {
+    it('should handle write errors gracefully', async () => {
       // Make directory read-only to force write error
       const fs = await import('fs');
       const writeFileSyncSpy = vi.spyOn(fs, 'writeFileSync').mockImplementation(() => {

@@ -45,7 +45,7 @@ describe('PrettierFormatter', () => {
       // Mock dynamic import to fail
       vi.doMock('prettier', () => {
         const error = new Error('Cannot find module');
-        (error as any).code = 'MODULE_NOT_FOUND';
+        (error as NodeJS.ErrnoException).code = 'MODULE_NOT_FOUND';
         throw error;
       });
 
@@ -76,7 +76,7 @@ describe('PrettierFormatter', () => {
 
       vi.doMock('prettier', () => {
         const error = new Error('Cannot find module');
-        (error as any).code = 'MODULE_NOT_FOUND';
+        (error as NodeJS.ErrnoException).code = 'MODULE_NOT_FOUND';
         throw error;
       });
 

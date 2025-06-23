@@ -1,4 +1,4 @@
-import { Result, success, failure, makeError, type AppError } from '@outfitter/contracts';
+import { success, failure, makeError, type Result, type AppError } from '@outfitter/contracts';
 import { RIGHTDOWN_ERROR_CODES } from '../core/errors.js';
 import type { IFormatter, FormatterResult } from './base.js';
 

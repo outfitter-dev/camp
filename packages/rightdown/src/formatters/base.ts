@@ -1,4 +1,4 @@
-import { Result, type AppError } from '@outfitter/contracts';
+import type { Result, AppError } from '@outfitter/contracts';
 
 /**
  * Result of a formatting operation

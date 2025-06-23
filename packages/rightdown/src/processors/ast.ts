@@ -1,7 +1,7 @@
 import { remark } from 'remark';
 import { visit } from 'unist-util-visit';
-import type { Root, Code } from '../types/mdast.js';
-import { Result, success, failure, makeError, type AppError } from '@outfitter/contracts';
+import type { Code } from '../types/mdast.js';
+import { success, failure, makeError, type Result, type AppError } from '@outfitter/contracts';
 import { RIGHTDOWN_ERROR_CODES } from '../core/errors.js';
 
 export interface CodeBlock {

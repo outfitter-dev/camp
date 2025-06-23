@@ -1,22 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
-import {
-  Result,
-  success,
-  failure,
-  makeError,
-  isSuccess,
-  isFailure,
-  type AppError,
-} from '@outfitter/contracts';
 
 // ESM equivalent of __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
-// Import the config type from the main types file
-import type { RightdownConfig } from '../../core/types.js';
 
 // Import the real implementation
 import { ConfigReader } from '../../core/config-reader.js';

@@ -1,13 +1,57 @@
-import { Result, success, failure, makeError, type AppError } from '@outfitter/contracts';
+import { success, failure, makeError, type Result, type AppError } from '@outfitter/contracts';
 import { RIGHTDOWN_ERROR_CODES } from '../core/errors.js';
-import type { IFormatter } from './base.js';
+import type { IFormatter, FormatterResult } from './base.js';
+
+/**
+ * Type definitions for Biome
+ */
+interface BiomeDiagnostic {
+  category?: string;
+  severity?: string;
+  message?: string;
+}
+
+interface BiomeFormatResult {
+  content: string;
+  diagnostics?: Array<BiomeDiagnostic>;
+}
+
+interface BiomeInstance {
+  formatContent(code: string, options: { filePath: string }): Promise<BiomeFormatResult>;
+  applyConfiguration(config: BiomeConfig): Promise<void>;
+  shutdown(): Promise<void>;
+}
+
+interface BiomeConfig {
+  formatter: {
+    enabled: boolean;
+    indentStyle?: string;
+    indentWidth?: number;
+    lineWidth?: number;
+  };
+  javascript?: {
+    formatter?: {
+      semicolons?: string;
+      quoteStyle?: string;
+    };
+  };
+}
+
+interface BiomeModule {
+  Biome: {
+    create(options: { distribution?: unknown }): Promise<BiomeInstance>;
+  };
+  Distribution?: {
+    NODE: unknown;
+  };
+}
 
 /**
  * Biome formatter integration
  */
 export class BiomeFormatter implements IFormatter {
   readonly name = 'biome';
-  private biomeInstance: any = null;
+  private biomeInstance: BiomeInstance | null = null;
   private version: string | null = null;
 
   /**
@@ -63,7 +107,7 @@ export class BiomeFormatter implements IFormatter {
     code: string,
     language: string,
     options?: Record<string, unknown>,
-  ): Promise<Result<string, AppError>> {
+  ): Promise<Result<FormatterResult, AppError>> {
     try {
       // Check if language is supported
       if (!this.getSupportedLanguages().includes(language)) {
@@ -97,7 +141,7 @@ export class BiomeFormatter implements IFormatter {
       if (result.diagnostics && result.diagnostics.length > 0) {
         // Check for syntax errors
         const syntaxError = result.diagnostics.find(
-          (d: any) => d.category === 'parse' || d.severity === 'error',
+          (d: BiomeDiagnostic) => d.category === 'parse' || d.severity === 'error',
         );
 
         if (syntaxError) {
@@ -111,7 +155,10 @@ export class BiomeFormatter implements IFormatter {
         }
       }
 
-      return success(result.content);
+      return success({
+        formatted: result.content,
+        didChange: code !== result.content,
+      });
     } catch (error) {
       return failure(
         makeError(
@@ -148,10 +195,10 @@ export class BiomeFormatter implements IFormatter {
   /**
    * Load Biome dynamically
    */
-  private async loadBiome(): Promise<any> {
+  private async loadBiome(): Promise<BiomeModule | null> {
     try {
-      const { Biome } = await import('@biomejs/biome');
-      return Biome;
+      const biomeModule = await import('@biomejs/biome') as BiomeModule;
+      return biomeModule;
     } catch (error) {
       // Check if it's a module not found error
       if (error && typeof error === 'object' && 'code' in error) {
@@ -166,7 +213,7 @@ export class BiomeFormatter implements IFormatter {
   /**
    * Get or create Biome instance
    */
-  private async getBiomeInstance(): Promise<any> {
+  private async getBiomeInstance(): Promise<BiomeInstance | null> {
     if (this.biomeInstance) {
       return this.biomeInstance;
     }
@@ -219,8 +266,8 @@ export class BiomeFormatter implements IFormatter {
   /**
    * Build Biome configuration from options
    */
-  private buildBiomeConfig(options: Record<string, unknown>): any {
-    const config: any = {
+  private buildBiomeConfig(options: Record<string, unknown>): BiomeConfig {
+    const config: BiomeConfig = {
       formatter: {
         enabled: true,
       },

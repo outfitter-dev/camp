@@ -9,7 +9,7 @@ import { BiomeFormatter } from '../formatters/biome.js';
 import type { IFormatter } from '../formatters/base.js';
 
 interface FormatCommandArgs {
-  files?: string[];
+  files?: Array<string>;
   write?: boolean;
   fix?: boolean;
   check?: boolean;
