@@ -51,20 +51,9 @@ defaults:
 
 # Language to formatter mapping (for code blocks)
 languages:
-  javascript: biome
-  typescript: biome
-  jsx: biome
-  tsx: biome
-  json: biome
-  jsonc: biome
-  css: prettier
-  scss: prettier
-  html: prettier
-  yaml: prettier
-  markdown: prettier
-  toml: dprint
-  rust: dprint
-  # Default fallback
+  biome: ["*script", "*sx", "json*"]
+  prettier: ["css", "scss", "less", "html", "xml", "yaml", "yml", "markdown", "md*"]
+  dprint: ["toml", "rust", "rs"]
   default: prettier
 
 # Formatting patterns (array style, globs only)
@@ -173,9 +162,10 @@ The system uses a two-tier resolution approach:
 
 Example resolution flow:
 ```yaml
-# Global language mapping says JavaScript uses Biome
+# Global language mapping with wildcards
 languages:
-  javascript: biome
+  biome: ["*script", "*sx", "json*"]  # Handles javascript, typescript, jsx, etc.
+  prettier: ["css", "html", "yaml"]
 
 # But this pattern overrides it for specific files
 patterns:
@@ -183,6 +173,7 @@ patterns:
     formatter: remark
     codeBlocks:
       javascript: prettier  # Override: use Prettier for JS in docs
+      typescript: prettier  # Even though globally it's Biome
 ```
 
 ### Core Implementation
@@ -204,7 +195,12 @@ const FormatterConfigSchema = z.object({
     trimTrailingWhitespace: z.boolean(),
     insertFinalNewline: z.boolean()
   }),
-  languages: z.record(z.string()),  // Language to formatter mapping
+  languages: z.object({
+    biome: z.array(z.string()).optional(),
+    prettier: z.array(z.string()).optional(), 
+    dprint: z.array(z.string()).optional(),
+    default: z.string()
+  }),  // Formatter to languages mapping
   patterns: z.array(z.object({
     globs: z.array(z.string()),
     extends: z.string().optional(),
@@ -291,8 +287,26 @@ export class ConfigManager {
       return filePattern.codeBlocks[language];
     }
     
-    // Fall back to global language mapping
-    return this.config.languages[language] || this.config.languages.default || 'prettier';
+    // Check global language mappings with wildcard support
+    for (const [formatter, patterns] of Object.entries(this.config.languages)) {
+      if (formatter === 'default') continue;
+      
+      for (const pattern of patterns as string[]) {
+        if (pattern.includes('*')) {
+          // Wildcard matching
+          const regex = new RegExp('^' + pattern.replace('*', '.*') + '$');
+          if (regex.test(language)) {
+            return formatter;
+          }
+        } else if (pattern === language) {
+          // Exact match
+          return formatter;
+        }
+      }
+    }
+    
+    // Fall back to default
+    return this.config.languages.default || 'prettier';
   }
 }
 ```
