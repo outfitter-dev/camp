@@ -1,6 +1,6 @@
 # Nested Code Blocks Test
 
-This tests nested code blocks and edge cases.
+This fixture tests nested code blocks and edge cases.
 
 ## Markdown with Code Blocks
 

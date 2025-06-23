@@ -3,6 +3,7 @@ import { visit } from 'unist-util-visit';
 import type { Code } from '../types/mdast.js';
 import { success, failure, makeError, type Result, type AppError } from '@outfitter/contracts';
 import { RIGHTDOWN_ERROR_CODES } from '../core/errors.js';
+import { normalizeLanguage } from '../utils/language.js';
 
 export interface CodeBlock {
   lang: string | null;
@@ -155,17 +156,6 @@ export class AstProcessor {
    * Normalize language identifiers
    */
   normalizeLanguage(lang: string | null): string | null {
-    if (!lang) return null;
-
-    const aliases: Record<string, string> = {
-      js: 'javascript',
-      ts: 'typescript',
-      jsx: 'javascript',
-      tsx: 'typescript',
-      yml: 'yaml',
-      md: 'markdown',
-    };
-
-    return aliases[lang.toLowerCase()] || lang.toLowerCase();
+    return lang ? normalizeLanguage(lang) : null;
   }
 }

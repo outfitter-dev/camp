@@ -45,17 +45,9 @@ export class PrettierFormatter implements IFormatter {
       }
 
       // Get version from prettier itself
-      if (prettier.version) {
-        this.version = prettier.version;
-      } else if (prettier.default && prettier.default.version) {
-        this.version = prettier.default.version;
-      } else {
-        // Try to get from the prettier object structure
-        const versionMatch = Object.values(prettier).find(
-          (val): val is string => typeof val === 'string' && /^\d+\.\d+\.\d+/.test(val),
-        );
-        this.version = versionMatch || 'unknown';
-      }
+      this.version = prettier.version || 
+                     prettier.default?.version || 
+                     'unknown';
 
       return success(this.version);
     } catch (error) {

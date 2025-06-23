@@ -177,6 +177,7 @@ ignores:
 ```
 
 **Monorepo Setup**:
+
 ```yaml
 version: 2
 preset: standard
@@ -233,6 +234,7 @@ rightdown/
 ### CI Integration
 
 **GitHub Actions**:
+
 ```yaml
 - name: Check Markdown
   run: pnpm rightdown --check
@@ -242,6 +244,7 @@ rightdown/
 ```
 
 **Pre-commit Hooks**:
+
 ```bash
 # .husky/pre-commit
 pnpm rightdown --dry-run || {

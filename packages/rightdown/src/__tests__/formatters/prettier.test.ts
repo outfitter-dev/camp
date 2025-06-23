@@ -100,8 +100,8 @@ describe('PrettierFormatter', () => {
 
       expect(isSuccess(result)).toBe(true);
       if (result.success) {
-        // Accept either mocked or real prettier output
-        expect(result.data).toMatch(/const x = 1[;]?\s*\n?\s*const y = 2[;]?\s*\n?/);
+        expect(result.data.formatted).toBe('const x = 1;\nconst y = 2;\n');
+        expect(result.data.didChange).toBe(true);
       }
     });
 

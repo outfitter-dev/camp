@@ -48,14 +48,13 @@ describe('BiomeFormatter', () => {
     });
 
     it('should return false when @biomejs/biome is not installed', async () => {
-      const testFormatter = new BiomeFormatter();
-
       vi.doMock('@biomejs/biome', () => {
         const error = new Error('Cannot find module');
-        (error as any).code = 'MODULE_NOT_FOUND';
+        (error as NodeJS.ErrnoException).code = 'MODULE_NOT_FOUND';
         throw error;
       });
 
+      const testFormatter = new BiomeFormatter();
       const result = await testFormatter.isAvailable();
 
       expect(isSuccess(result)).toBe(true);
@@ -83,14 +82,13 @@ describe('BiomeFormatter', () => {
     });
 
     it('should handle missing biome gracefully', async () => {
-      const testFormatter = new BiomeFormatter();
-
       vi.doMock('@biomejs/biome', () => {
         const error = new Error('Cannot find module');
-        (error as any).code = 'MODULE_NOT_FOUND';
+        (error as NodeJS.ErrnoException).code = 'MODULE_NOT_FOUND';
         throw error;
       });
 
+      const testFormatter = new BiomeFormatter();
       const result = await testFormatter.getVersion();
 
       expect(isFailure(result)).toBe(true);
