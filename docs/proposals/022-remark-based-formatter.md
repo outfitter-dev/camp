@@ -1,8 +1,8 @@
-# Proposal: Remark-based Formatter with Unified Configuration
+# Proposal: Lightweight Formatting Setup Tool
 
 ## Summary
 
-Create `@outfitter/formatting` - a comprehensive formatting solution that uses remark as the foundation for markdown processing, delegates code block formatting to specialized tools (Prettier/Biome), and introduces a unified YAML configuration (`formatting.config.yaml`) that generates all tool-specific configs.
+Create `@outfitter/formatting` - a lightweight formatting setup tool that installs config packages, detects available formatters, and configures projects for consistent code formatting across JavaScript/TypeScript (Biome), Markdown (Remark), and other files (Prettier).
 
 ## Motivation
 
@@ -13,494 +13,353 @@ Current challenges:
 4. **Poor code block handling** - Tools either format everything or nothing
 
 This proposal addresses all these issues with:
-- **Remark** as the AST-based markdown processor
-- **Unified config** (`formatting.config.yaml`) as single source of truth
-- **Smart routing** of code blocks to appropriate formatters
-- **Config generation** for all downstream tools
+- **Lightweight setup tool** that doesn't bundle heavy formatters
+- **Config packages** that provide consistent settings
+- **Smart detection** of available formatters (local, global, system)
+- **Flexible installation** options including devcontainers
 
 ## Architecture
 
 ### Overview
 
 ```
-formatting.config.yaml
-        ↓
-   ConfigLoader
-        ↓
- [Updates config packages]
-        ↓
- @outfitter/prettier-config
- @outfitter/biome-config
- @outfitter/eslint-config
- @outfitter/remark-config (new)
-        ↓
- RemarkProcessor ← [Imports configs]
-        ↓
- [Formats markdown + code blocks]
+User runs: npx @outfitter/formatting init
+                    ↓
+            [Detect formatters]
+          /         |          \
+    Local?      Global?      System?
+         \         |          /
+          [Install config packages]
+                    ↓
+         @outfitter/prettier-config
+         @outfitter/biome-config
+         @outfitter/remark-config
+                    ↓
+         [Create config files]
+         [Update package.json]
 ```
 
-### Unified Configuration Schema
+### Tool Detection Strategy
 
-```yaml
-# formatting.config.yaml
-version: 1
+The package provides configs but not the heavy formatter tools themselves:
 
-# Global defaults
-defaults:
-  indentWidth: 2
-  indentStyle: space
-  lineWidth: 80
-  endOfLine: lf
-  trimTrailingWhitespace: true
-  insertFinalNewline: true
+```json
+{
+  "name": "@outfitter/formatting",
+  "dependencies": {
+    // Lightweight config packages only
+    "@outfitter/prettier-config": "workspace:*",
+    "@outfitter/biome-config": "workspace:*",
+    "@outfitter/remark-config": "workspace:*"
+  },
+  "peerDependencies": {
+    // Tools are optional - user provides these
+    "prettier": "^3.0.0",
+    "@biomejs/biome": "^1.9.0",
+    "remark-cli": "^12.0.0"
+  },
+  "peerDependenciesMeta": {
+    "prettier": { "optional": true },
+    "@biomejs/biome": { "optional": true },
+    "remark-cli": { "optional": true }
+  }
+}
+```
 
-# Language to formatter mapping (for code blocks)
-languages:
-  biome: ["*script", "*sx", "json*"]
-  prettier: ["css", "scss", "less", "html", "xml", "yaml", "yml", "markdown", "md*"]
-  dprint: ["toml", "rust", "rs"]
-  default: prettier
+### Init Command Implementation
 
-# Formatting patterns (array style, globs only)
-patterns:
-  - globs: ["**/*.{md,mdx,mdc}", "!**/CHANGELOG.md"]
-    formatter: remark
-    options:
-      # Direct remark-stringify options
-      bullet: "-"
-      emphasis: "_"
-      strong: "**"
-      rule: "-"
-      ruleSpaces: false
-    # Override language mappings for this pattern
-    codeBlocks:
-      # Could override specific languages if needed
-      # javascript: prettier  # Use prettier instead of biome for JS in markdown
+```typescript
+export async function init(options: InitOptions = {}) {
+  console.log('🚀 Initializing Outfitter formatting...');
+  
+  // 1. Detect available formatters
+  const formatters = await detectAvailableFormatters();
+  
+  console.log('\n🔍 Detected formatters:');
+  console.log('  Biome:', formatters.biome?.type || '❌ not found');
+  console.log('  Prettier:', formatters.prettier?.type || '❌ not found');
+  console.log('  Remark:', formatters.remark?.type || '❌ not found');
+  
+  // 2. Detect project structure
+  const projectInfo = await detectProjectStructure();
+  console.log('\n📁 Project type:', projectInfo.type);
+  
+  // 3. Install config packages only (lightweight)
+  const configPackages = [
+    '@outfitter/prettier-config',
+    '@outfitter/biome-config',
+    '@outfitter/remark-config'
+  ];
+  
+  console.log('\n📦 Installing config packages...');
+  await installPackages(configPackages, { dev: true });
+  
+  // 4. Create config files that reference the packages
+  console.log('\n📝 Creating config files...');
+  await createConfigFiles(projectInfo);
+  
+  // 5. Update package.json scripts
+  console.log('\n⚙️  Updating package.json scripts...');
+  await updatePackageScripts(generateScripts(formatters, projectInfo));
+  
+  // 6. Offer to install missing tools
+  await handleMissingFormatters(formatters);
+  
+  console.log('\n✅ Formatting setup complete!');
+}
 
-  - globs: ["**/*.{ts,tsx,mts,cts}", "!**/*.d.ts"]
-    formatter: biome
-    options:
-      # Direct Biome formatter options
-      formatter:
-        indentStyle: space
-        indentWidth: 2
-        lineWidth: 80
-      javascript:
-        formatter:
-          quoteStyle: single
-          semicolons: always
-          trailingComma: all
-          arrowParentheses: always
+async function detectAvailableFormatters() {
+  const formatters: FormattersInfo = {};
+  
+  for (const [name, command] of Object.entries(FORMATTER_COMMANDS)) {
+    formatters[name] = await findFormatter(command);
+  }
+  
+  return formatters;
+}
 
-  - globs: ["**/*.{js,jsx,mjs,cjs}"]
-    formatter: biome
-    extends: typescript  # Inherit options
+async function findFormatter(name: string): Promise<FormatterInfo | null> {
+  // 1. Check local node_modules
+  try {
+    const localPath = require.resolve(name);
+    return { type: 'local', path: localPath, version: await getVersion(name) };
+  } catch {}
+  
+  // 2. Check global installation
+  const globalPath = await findGlobalBinary(name);
+  if (globalPath) {
+    return { type: 'global', path: globalPath, version: await getVersion(name, true) };
+  }
+  
+  // 3. Check system PATH (Docker, devcontainer, etc.)
+  const systemPath = await which(name);
+  if (systemPath) {
+    return { type: 'system', path: systemPath, version: 'system' };
+  }
+  
+  return null;
+}
+```
 
-  - globs: ["**/*.{json,jsonc,json5}"]
-    formatter: biome
-    options:
-      json:
-        formatter:
-          trailingComma: none
+### Script Generation
 
-  - globs: ["**/*.{yml,yaml}"]
-    formatter: prettier
-    options:
-      # Direct Prettier options
-      bracketSpacing: true
-      proseWrap: preserve
+```typescript
+function generateScripts(formatters: FormattersInfo, projectInfo: ProjectInfo) {
+  const scripts: Record<string, string> = {};
+  
+  // Main format command - uses our router if available, falls back to individual tools
+  if (formatters.biome || formatters.prettier) {
+    scripts['format'] = 'outfitter-formatting format . --write';
+    scripts['format:check'] = 'outfitter-formatting format .';
+  }
+  
+  // Individual formatter commands (only if tool is available)
+  if (formatters.biome) {
+    scripts['format:biome'] = 'biome format . --write';
+    scripts['lint'] = 'biome lint .';
+    scripts['lint:fix'] = 'biome lint . --write';
+  }
+  
+  if (formatters.prettier) {
+    scripts['format:prettier'] = 'prettier --write "**/*.{yml,yaml,css,scss,html}"';
+  }
+  
+  if (formatters.remark) {
+    scripts['format:markdown'] = 'remark . --output';
+    scripts['lint:docs'] = 'remark . --quiet --frail';
+  }
+  
+  // Combined lint command
+  const lintCommands = [];
+  if (formatters.biome) lintCommands.push('biome lint .');
+  if (formatters.remark) lintCommands.push('remark . --quiet --frail');
+  if (lintCommands.length > 0) {
+    scripts['lint:all'] = lintCommands.join(' && ');
+  }
+  
+  // CI command
+  scripts['ci:format'] = 'pnpm format:check && pnpm lint:all';
+  
+  // Monorepo adjustments
+  if (projectInfo.type === 'monorepo') {
+    return wrapScriptsForMonorepo(scripts);
+  }
+  
+  return scripts;
+}
 
-  - globs: ["**/*.{css,scss,less}"]
-    formatter: prettier
-    options:
-      singleQuote: true
+function wrapScriptsForMonorepo(scripts: Record<string, string>) {
+  const monorepoScripts: Record<string, string> = {};
+  
+  for (const [name, command] of Object.entries(scripts)) {
+    // Root level runs recursively
+    if (name.startsWith('format') || name.startsWith('lint')) {
+      monorepoScripts[name] = `pnpm -r ${name}`;
+      monorepoScripts[`${name}:root`] = command; // Also provide root-only version
+    } else {
+      monorepoScripts[name] = command;
+    }
+  }
+  
+  return monorepoScripts;
+}
 
-  # Special patterns
-  - globs: ["**/.{prettier,eslint}rc*", "**/package.json"]
-    formatter: prettier
-    options:
-      parser: json5
-      trailingComma: none
+### Config File Creation
 
-# Tool configurations
-tools:
-  prettier:
-    plugins: ["prettier-plugin-tailwindcss"]
+```typescript
+async function createConfigFiles(projectInfo: ProjectInfo) {
+  // Simple config files that reference our packages
+  const configs = {
+    '.prettierrc.js': `module.exports = require('@outfitter/prettier-config');\n`,
     
-  biome:
-    vcs:
-      enabled: true
-      clientKind: git
-      
-  remark:
-    plugins:
-      # Structure
-      - remark-gfm
-      - remark-frontmatter
-      # Linting
-      - remark-lint-recommended
-      - [remark-lint-list-marker-style, "-"]
-      - [remark-lint-heading-style, "atx"]
-      # Formatting
-      - remark-reference-links
-      - remark-squeeze-paragraphs
-      # Custom
-      - ./plugins/remark-terminology.js
-
-# Shared ignore patterns
-ignore:
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/coverage/**"
-  - "**/.next/**"
+    'biome.jsonc': `{
+  // Extends the Outfitter Biome configuration
+  "extends": ["@outfitter/biome-config"]
+}\n`,
+    
+    '.remarkrc.js': `module.exports = require('@outfitter/remark-config');\n`,
+    
+    '.editorconfig': generateEditorConfig(projectInfo)
+  };
+  
+  for (const [filename, content] of Object.entries(configs)) {
+    await fs.writeFile(filename, content);
+    console.log(`  ✓ Created ${filename}`);
+  }
+  
+  // VS Code settings (if .vscode exists or user wants it)
+  if (await fs.pathExists('.vscode') || await promptVSCode()) {
+    await fs.ensureDir('.vscode');
+    await fs.writeJson('.vscode/settings.json', generateVSCodeSettings(), { spaces: 2 });
+    console.log('  ✓ Created .vscode/settings.json');
+  }
+}
 ```
 
-### Resolution Logic
+### DevContainer Support
 
-The system uses a two-tier resolution approach:
+For users who prefer containerized development environments:
 
-1. **File-level formatting**: Determined by matching `patterns[].globs`
-2. **Code block formatting**: 
-   - First checks `patterns[].codeBlocks` for overrides
-   - Falls back to global `languages` mapping
-   - Finally uses `languages.default` if no match
+```typescript
+async function handleMissingFormatters(formatters: FormattersInfo) {
+  const missing = Object.entries(formatters)
+    .filter(([_, info]) => !info)
+    .map(([name]) => name);
+    
+  if (missing.length === 0) return;
+  
+  console.log('\n⚠️  Missing formatters:', missing.join(', '));
+  console.log('\nYou have several options:');
+  console.log('  1. Install locally: pnpm add -D', missing.map(getPackageName).join(' '));
+  console.log('  2. Install globally: npm install -g', missing.join(' '));
+  console.log('  3. Use a devcontainer with tools pre-installed');
+  
+  const { createDevContainer } = await prompt({
+    type: 'confirm',
+    message: 'Would you like to create a devcontainer configuration?'
+  });
+  
+  if (createDevContainer) {
+    await createDevContainerConfig();
+  }
+}
 
-Example resolution flow:
-```yaml
-# Global language mapping with wildcards
-languages:
-  biome: ["*script", "*sx", "json*"]  # Handles javascript, typescript, jsx, etc.
-  prettier: ["css", "html", "yaml"]
-
-# But this pattern overrides it for specific files
-patterns:
-  - globs: ["**/docs/**/*.md"]
-    formatter: remark
-    codeBlocks:
-      javascript: prettier  # Override: use Prettier for JS in docs
-      typescript: prettier  # Even though globally it's Biome
+async function createDevContainerConfig() {
+  const config = {
+    "name": "Outfitter Dev",
+    "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
+    "features": {
+      "ghcr.io/devcontainers-contrib/features/prettier:1": {},
+      "ghcr.io/devcontainers-contrib/features/biome:1": {}
+    },
+    "postCreateCommand": "npm install -g remark-cli remark-preset-lint-recommended",
+    "customizations": {
+      "vscode": {
+        "extensions": [
+          "biomejs.biome",
+          "esbenp.prettier-vscode",
+          "unifiedjs.vscode-remark"
+        ]
+      }
+    }
+  };
+  
+  await fs.ensureDir('.devcontainer');
+  await fs.writeJson('.devcontainer/devcontainer.json', config, { spaces: 2 });
+  console.log('  ✓ Created .devcontainer/devcontainer.json');
+}
 ```
 
 ### Core Implementation
 
-#### Config Loader & Generator
-
 ```typescript
-import { load } from 'js-yaml';
-import { z } from 'zod';
-
-// Schema validation
-const FormatterConfigSchema = z.object({
-  version: z.number(),
-  defaults: z.object({
-    indentWidth: z.number(),
-    indentStyle: z.enum(['space', 'tab']),
-    lineWidth: z.number(),
-    endOfLine: z.enum(['lf', 'crlf', 'cr', 'auto']),
-    trimTrailingWhitespace: z.boolean(),
-    insertFinalNewline: z.boolean()
-  }),
-  languages: z.object({
-    biome: z.array(z.string()).optional(),
-    prettier: z.array(z.string()).optional(), 
-    dprint: z.array(z.string()).optional(),
-    default: z.string()
-  }),  // Formatter to languages mapping
-  patterns: z.array(z.object({
-    globs: z.array(z.string()),
-    extends: z.string().optional(),
-    formatter: z.enum(['prettier', 'biome', 'remark', 'dprint']),
-    options: z.record(z.any()),  // Tool-specific options, no mapping
-    codeBlocks: z.record(z.string()).optional()  // Override language mappings
-  })),
-  tools: z.object({
-    prettier: z.object({
-      plugins: z.array(z.string()).optional()
-    }).optional(),
-    biome: z.object({
-      vcs: z.object({
-        enabled: z.boolean(),
-        clientKind: z.string()
-      }).optional()
-    }).optional(),
-    remark: z.object({
-      plugins: z.array(z.any())
-    }).optional()
-  }).optional(),
-  ignore: z.array(z.string()).optional()
-});
-
-export class ConfigManager {
-  private config: FormatterConfig;
-
-  async load(configPath: string): Promise<void> {
-    const yaml = await fs.readFile(configPath, 'utf-8');
-    const parsed = load(yaml);
-    this.config = FormatterConfigSchema.parse(parsed);
+// Formatter router command - routes files to appropriate formatters
+export class FormatterRouter {
+  private formatters: FormattersInfo;
+  
+  constructor(formatters: FormattersInfo) {
+    this.formatters = formatters;
   }
-
-  // Update config packages (development only)
-  async updateConfigPackages(): Promise<void> {
-    if (process.env.NODE_ENV !== 'development') {
-      throw new Error('Config package updates only allowed in development');
-    }
-
-    await this.updatePrettierConfig();
-    await this.updateBiomeConfig();
-    await this.updateRemarkConfig();
-    // EditorConfig and VS Code settings are generated at runtime
-  }
-
-  private async updatePrettierConfig(): Promise<void> {
-    const config = {
-      ...this.extractPrettierDefaults(),
-      overrides: []
-    };
-
-    // Add overrides for each pattern using prettier
-    for (const pattern of this.config.patterns) {
-      if (pattern.formatter === 'prettier') {
-        config.overrides.push({
-          files: pattern.globs,
-          options: pattern.options
-        });
-      }
-    }
-
-    // Add tool-specific config
-    if (this.config.tools?.prettier) {
-      Object.assign(config, this.config.tools.prettier);
-    }
-
-    // Write to @outfitter/prettier-config
-    const prettierConfigPath = path.join(__dirname, '../../prettier-config/index.js');
-    await fs.writeFile(
-      prettierConfigPath,
-      `module.exports = ${JSON.stringify(config, null, 2)};`
-    );
-  }
-
-  private async updateBiomeConfig(): Promise<void> {
-    const config = {
-      $schema: "https://biomejs.dev/schemas/1.9.4/schema.json",
-      formatter: {
-        enabled: true,
-        indentStyle: this.config.defaults.indentStyle,
-        indentWidth: this.config.defaults.indentWidth,
-        lineWidth: this.config.defaults.lineWidth
-      }
-    };
-
-    // Extract Biome-specific patterns
-    for (const pattern of this.config.patterns) {
-      if (pattern.formatter === 'biome' && pattern.options) {
-        deepMerge(config, pattern.options);
-      }
-    }
-
-    // Add tool-specific config
-    if (this.config.tools?.biome) {
-      deepMerge(config, this.config.tools.biome);
-    }
-
-    // Write to @outfitter/biome-config
-    const biomeConfigPath = path.join(__dirname, '../../biome-config/biome.config.jsonc');
-    await fs.writeFile(
-      biomeConfigPath,
-      `// Generated from formatting.config.yaml\n${JSON.stringify(config, null, 2)}`
-    );
-  }
-
-  private async updateRemarkConfig(): Promise<void> {
-    const config = {
-      plugins: this.config.tools?.remark?.plugins || []
-    };
-
-    // Write to @outfitter/remark-config (new package)
-    const remarkConfigPath = path.join(__dirname, '../../remark-config/index.js');
-    await fs.writeFile(
-      remarkConfigPath,
-      `module.exports = ${JSON.stringify(config, null, 2)};`
-    );
-  }
-
-  // Runtime config generation (not saved to packages)
-  generateEditorConfig(): string {
-    const lines = [
-      '# Generated from formatting.config.yaml',
-      'root = true',
-      '',
-      '[*]',
-      `end_of_line = ${this.config.defaults.endOfLine}`,
-      `indent_style = ${this.config.defaults.indentStyle}`,
-      `indent_size = ${this.config.defaults.indentWidth}`,
-      `trim_trailing_whitespace = ${this.config.defaults.trimTrailingWhitespace}`,
-      `insert_final_newline = ${this.config.defaults.insertFinalNewline}`,
-      'charset = utf-8',
-      ''
-    ];
-
-    // Add pattern-specific overrides
-    for (const pattern of this.config.patterns) {
-      if (pattern.formatter === 'remark') {
-        lines.push('[*.{md,mdx,mdc}]');
-        lines.push('trim_trailing_whitespace = false');
-        lines.push('');
-      }
-    }
-
-    // Common overrides
-    lines.push('[Makefile]');
-    lines.push('indent_style = tab');
+  
+  async format(patterns: string[], options: FormatOptions) {
+    const files = await globby(patterns);
+    const filesByFormatter = this.groupFilesByFormatter(files);
     
-    return lines.join('\n');
-  }
-
-  // Find which formatter to use for a file
-  getFormatter(filePath: string): FormatterInfo {
-    for (const pattern of this.config.patterns) {
-      if (this.matchesPattern(filePath, pattern)) {
-        return {
-          tool: pattern.formatter,
-          options: this.resolveOptions(pattern),
-          codeBlocks: pattern.codeBlocks
-        };
+    for (const [formatter, files] of Object.entries(filesByFormatter)) {
+      if (!this.formatters[formatter]) {
+        console.warn(`⚠️  ${formatter} not available, skipping ${files.length} files`);
+        continue;
       }
-    }
-    return { tool: 'prettier', options: {} };
-  }
-
-  // Get formatter for a code block language
-  getCodeBlockFormatter(language: string, filePattern?: FormatterInfo): string {
-    // First check if the file pattern has a specific override
-    if (filePattern?.codeBlocks?.[language]) {
-      return filePattern.codeBlocks[language];
-    }
-    
-    // Check global language mappings with wildcard support
-    for (const [formatter, patterns] of Object.entries(this.config.languages)) {
-      if (formatter === 'default') continue;
       
-      for (const pattern of patterns as string[]) {
-        if (pattern.includes('*')) {
-          // Wildcard matching
-          const regex = new RegExp('^' + pattern.replace('*', '.*') + '$');
-          if (regex.test(language)) {
-            return formatter;
-          }
-        } else if (pattern === language) {
-          // Exact match
-          return formatter;
-        }
-      }
+      await this.runFormatter(formatter, files, options);
+    }
+  }
+  
+  private groupFilesByFormatter(files: string[]): Record<string, string[]> {
+    const groups: Record<string, string[]> = {};
+    
+    for (const file of files) {
+      const formatter = this.getFormatterForFile(file);
+      if (!groups[formatter]) groups[formatter] = [];
+      groups[formatter].push(file);
     }
     
-    // Fall back to default
-    return this.config.languages.default || 'prettier';
+    return groups;
   }
-}
-```
-
-#### Remark Processor
-
-```typescript
-import { remark } from 'remark';
-import { visit } from 'unist-util-visit';
-import type { Code } from 'mdast';
-import prettier from 'prettier';
-import { Biome } from '@biomejs/js-api';
-
-export class RemarkFormatter {
-  private processor: any;
-  private configManager: ConfigManager;
-  private biome: Biome;
-  private prettierConfig: any;
-  private biomeConfig: any;
-
-  constructor(configManager: ConfigManager) {
-    this.configManager = configManager;
-    this.loadConfigs();
-    this.setupProcessor();
-  }
-
-  private async loadConfigs(): Promise<void> {
-    // Import configs from packages
-    this.prettierConfig = await import('@outfitter/prettier-config');
-    this.biomeConfig = await import('@outfitter/biome-config');
-  }
-
-  private setupProcessor(): void {
-    this.processor = remark();
-
-    // Import remark config from package
-    const remarkConfig = require('@outfitter/remark-config');
+  
+  private getFormatterForFile(file: string): string {
+    const ext = path.extname(file).slice(1);
     
-    // Add plugins from remark config
-    for (const plugin of remarkConfig.plugins) {
-      if (Array.isArray(plugin)) {
-        this.processor.use(plugin[0], plugin[1]);
-      } else {
-        this.processor.use(plugin);
-      }
+    // Biome handles JS/TS/JSON
+    if (['js', 'jsx', 'ts', 'tsx', 'mjs', 'cjs', 'json', 'jsonc'].includes(ext)) {
+      return 'biome';
     }
-
-    // Add our code formatting plugin
-    this.processor.use(this.createCodeFormatPlugin());
+    
+    // Remark handles markdown
+    if (['md', 'mdx', 'mdc'].includes(ext)) {
+      return 'remark';
+    }
+    
+    // Prettier handles everything else
+    return 'prettier';
   }
-
-  private createCodeFormatPlugin() {
-    return () => {
-      return async (tree: any, file: any) => {
-        const promises: Promise<void>[] = [];
-
-        visit(tree, 'code', (node: Code) => {
-          if (!node.lang) return;
-
-          const filePattern = this.configManager.getFormatter(file.path);
-          const codeFormatter = this.configManager.getCodeBlockFormatter(
-            node.lang, 
-            filePattern
-          );
-
-          promises.push(this.formatCodeBlock(node, codeFormatter));
-        });
-
-        await Promise.all(promises);
-      };
+  
+  private async runFormatter(name: string, files: string[], options: FormatOptions) {
+    const commands = {
+      biome: `biome format ${files.join(' ')} ${options.write ? '--write' : ''}`,
+      prettier: `prettier ${files.join(' ')} ${options.write ? '--write' : '--check'}`,
+      remark: `remark ${files.join(' ')} ${options.write ? '--output' : ''}`
     };
-  }
-
-  private async formatCodeBlock(node: Code, formatter: string): Promise<void> {
-    try {
-      if (formatter === 'prettier') {
-        const parser = this.getPrettierParser(node.lang);
-        if (!parser) return;
-
-        node.value = await prettier.format(node.value, {
-          parser,
-          ...this.configManager.getPrettierOptions()
-        });
-      } else if (formatter === 'biome') {
-        const result = await this.biome.formatContent(node.value, {
-          filePath: `temp.${node.lang}`
-        });
-        node.value = result.content;
-      }
-    } catch (error) {
-      // Don't fail on malformed code
-      console.warn(`Failed to format ${node.lang} code block:`, error);
-    }
-  }
-
-  async format(content: string, filePath: string): Promise<string> {
-    const result = await this.processor.process({
-      value: content,
-      path: filePath
-    });
-    return String(result);
+    
+    const command = commands[name];
+    if (!command) return;
+    
+    console.log(`Running ${name}...`);
+    await execa.command(command, { stdio: 'inherit' });
   }
 }
 ```
+
 
 ### CLI Interface
 
@@ -512,84 +371,54 @@ import { ConfigManager, RemarkFormatter } from '@outfitter/formatting';
 const program = new Command();
 
 program
-  .name('outfitter-fmt')
-  .description('Unified formatter for all file types')
+  .name('outfitter-formatting')
+  .description('Setup and manage code formatting')
   .version('1.0.0');
 
-// Update config packages (dev only)
+// Initialize formatting setup
 program
-  .command('update-packages')
-  .description('Update config packages from formatting.config.yaml (dev only)')
-  .action(async () => {
-    const configManager = new ConfigManager();
-    await configManager.load('./formatting.config.yaml');
-    await configManager.updateConfigPackages();
-    console.log('Updated: @outfitter/prettier-config, @outfitter/biome-config, @outfitter/remark-config');
+  .command('init')
+  .description('Initialize formatting configuration')
+  .option('--preset <name>', 'Use a preset configuration', 'standard')
+  .option('--no-devcontainer', 'Skip devcontainer prompt')
+  .action(async (options) => {
+    await init(options);
   });
 
-// Generate runtime configs
+// Format files using detected formatters
 program
-  .command('generate')
-  .description('Generate runtime configs (.editorconfig, .vscode/settings.json)')
-  .action(async () => {
-    const configManager = new ConfigManager();
-    await configManager.load('./formatting.config.yaml');
-    
-    // Generate .editorconfig
-    const editorConfig = configManager.generateEditorConfig();
-    await fs.writeFile('.editorconfig', editorConfig);
-    
-    // Generate VS Code settings
-    const vscodeSettings = configManager.generateVSCodeSettings();
-    await fs.ensureDir('.vscode');
-    await fs.writeFile('.vscode/settings.json', JSON.stringify(vscodeSettings, null, 2));
-    
-    console.log('Generated: .editorconfig, .vscode/settings.json');
-  });
-
-// Format files
-program
-  .command('format [files...]')
-  .description('Format files')
+  .command('format [patterns...]')
+  .description('Format files using appropriate formatters')
+  .option('--write', 'Write formatted files (default: check only)')
   .option('--check', 'Check if files are formatted')
-  .option('--write', 'Write formatted files')
-  .action(async (files, options) => {
-    const configManager = new ConfigManager();
-    await configManager.load('./formatting.config.yaml');
+  .action(async (patterns, options) => {
+    const formatters = await detectAvailableFormatters();
+    const router = new FormatterRouter(formatters);
     
-    const formatter = new RemarkFormatter(configManager);
+    // Default to all files if no patterns provided
+    const filePatterns = patterns.length > 0 ? patterns : ['.'];
     
-    for (const pattern of files) {
-      const matchedFiles = await glob(pattern);
-      for (const file of matchedFiles) {
-        const content = await fs.readFile(file, 'utf-8');
-        const formatted = await formatter.format(content, file);
-        
-        if (options.check) {
-          if (content !== formatted) {
-            console.error(`${file} needs formatting`);
-            process.exit(1);
-          }
-        } else if (options.write) {
-          await fs.writeFile(file, formatted);
-          console.log(`Formatted ${file}`);
-        } else {
-          console.log(formatted);
-        }
+    await router.format(filePatterns, {
+      write: options.write && !options.check,
+      check: options.check || !options.write
+    });
+  });
+
+// Show detected formatters
+program
+  .command('status')
+  .description('Show available formatters')
+  .action(async () => {
+    const formatters = await detectAvailableFormatters();
+    
+    console.log('Detected formatters:');
+    for (const [name, info] of Object.entries(formatters)) {
+      if (info) {
+        console.log(`  ✓ ${name}: ${info.type} (${info.version || 'unknown version'})`);
+      } else {
+        console.log(`  ✗ ${name}: not found`);
       }
     }
-  });
-
-// Which formatter for a file?
-program
-  .command('which <file>')
-  .description('Show which formatter would be used')
-  .action(async (file) => {
-    const configManager = new ConfigManager();
-    await configManager.load('./formatting.config.yaml');
-    
-    const formatter = configManager.getFormatter(file);
-    console.log(`${file}: ${formatter.tool}`);
   });
 
 program.parse();
@@ -605,33 +434,57 @@ Using existing config packages provides:
 4. **Testing isolation** - Each config can be tested independently
 5. **Clear dependencies** - package.json shows exactly which configs are used
 
-### Package Dependencies
+### Package Structure
 
-The `@outfitter/formatting` package would have:
+The `@outfitter/formatting` package is lightweight, containing only configs:
 
 ```json
 {
   "name": "@outfitter/formatting",
+  "bin": {
+    "outfitter-formatting": "./dist/cli.js"
+  },
   "dependencies": {
+    // Config packages only - no heavy formatter tools
     "@outfitter/prettier-config": "workspace:*",
     "@outfitter/biome-config": "workspace:*",
-    "@outfitter/eslint-config": "workspace:*",
     "@outfitter/remark-config": "workspace:*",
-    "remark": "^15.0.0",
-    "remark-gfm": "^4.0.0",
-    "remark-frontmatter": "^5.0.0",
-    "unified": "^11.0.0",
-    "unist-util-visit": "^5.0.0"
+    
+    // CLI utilities
+    "commander": "^12.0.0",
+    "execa": "^8.0.0",
+    "globby": "^14.0.0",
+    "prompts": "^2.4.2",
+    "which": "^4.0.0"
   },
   "peerDependencies": {
+    // Formatters are optional - detected at runtime
     "prettier": "^3.0.0",
-    "@biomejs/js-api": "^0.7.0"
+    "@biomejs/biome": "^1.9.0",
+    "remark-cli": "^12.0.0"
   },
-  "devDependencies": {
-    "js-yaml": "^4.1.0",
-    "zod": "^3.0.0"
+  "peerDependenciesMeta": {
+    "prettier": { "optional": true },
+    "@biomejs/biome": { "optional": true },
+    "remark-cli": { "optional": true }
   }
 }
+```
+
+### User Installation Flow
+
+```bash
+# 1. Install the formatting package (lightweight)
+pnpm add -D @outfitter/formatting
+
+# 2. Run init to set up configs
+pnpm exec outfitter-formatting init
+
+# 3. Choose how to install formatters:
+#    a) Locally: pnpm add -D prettier @biomejs/biome remark-cli
+#    b) Globally: npm i -g prettier @biomejs/biome remark-cli  
+#    c) Use devcontainer/Docker with pre-installed tools
+#    d) Use system-installed tools (homebrew, apt, etc.)
 ```
 
 ## Generated Configurations
@@ -740,73 +593,93 @@ indent_style = tab
 
 ## Benefits
 
-1. **Single source of truth** - One YAML file configures everything
-2. **No translation layer** - Options are passed directly to tools in their native format
-3. **Intelligent markdown handling** - Remark for structure, specialized formatters for code blocks
-4. **Two-tier resolution** - Global language mappings with pattern-specific overrides
-5. **Tool compatibility** - Updates versioned configs that tools/IDEs understand
-6. **Flexible matching** - Full glob pattern support
-7. **DRY configuration** - Inherit options with `extends`
-8. **Modular architecture** - Config packages can be used independently
-9. **Version control** - Each config package has its own version and changelog
+1. **Lightweight installation** - Only installs config packages, not heavy formatter tools
+2. **Flexible tool management** - Use local, global, or containerized formatters
+3. **No version conflicts** - Projects can use their preferred formatter versions
+4. **Container-friendly** - Perfect for devcontainers and CI environments
+5. **Simple setup** - One `init` command configures everything
+6. **Monorepo aware** - Detects and configures monorepo structures
+7. **Modular configs** - Config packages can be used independently
+8. **Smart routing** - Automatically routes files to appropriate formatters
+9. **Graceful degradation** - Works with whatever formatters are available
 
 ## Implementation Phases
 
-### Phase 1: Core Infrastructure (Week 1)
-- Create `@outfitter/remark-config` package
-- Update existing config packages to support generation
-- Config schema and validation in formatting package
-- Package update mechanism (dev mode)
-- Basic remark pipeline with code formatting
+### Phase 1: Core Setup Tool (Week 1)
+- Create `@outfitter/remark-config` package with standard rules
+- Build init command with formatter detection
+- Script generation for package.json
+- Monorepo detection and configuration
+- Basic formatter router
 
-### Phase 2: Features (Week 2)
-- Import existing configs functionality
-- Runtime config generation (.editorconfig, VS Code settings)
-- Caching for performance
-- Watch mode
-- Package dependency management
+### Phase 2: Enhanced Features (Week 2)
+- DevContainer configuration generator
+- Preset support (strict, relaxed, library)
+- Better error messages for missing tools
+- Performance optimization for formatter routing
+- Integration tests
 
-### Phase 3: Polish (Week 3)
-- VS Code extension
-- Pre-commit hooks
-- GitHub Action
-- Documentation and migration guide
+### Phase 3: Polish & Documentation (Week 3)
+- Comprehensive documentation
+- Example configurations
+- Migration guide from individual tools
+- GitHub Action for CI
+- VS Code workspace recommendations
 
 ## Migration Strategy
 
+### From Manual Setup
 ```bash
-# Import existing configs into formatting.config.yaml
-outfitter-fmt import --prettier .prettierrc --biome biome.jsonc
+# 1. Install the formatting package
+pnpm add -D @outfitter/formatting
 
-# Validate new config
-outfitter-fmt validate
+# 2. Run init (detects existing configs and tools)
+pnpm exec outfitter-formatting init
 
-# Update config packages (development only)
-NODE_ENV=development outfitter-fmt update-packages
+# 3. Review generated scripts in package.json
+# 4. Test the new setup
+pnpm format
+pnpm lint:all
 
-# Build and publish updated packages
-pnpm build
-pnpm changeset
-pnpm publish
+# 5. Remove old config files (optional)
+rm .prettierrc .remarkrc  # Keep if you need custom overrides
+```
 
-# In consuming projects, update dependencies
-pnpm update @outfitter/prettier-config @outfitter/biome-config @outfitter/remark-config
+### For Monorepos
+```bash
+# Run init at the root
+cd monorepo-root
+pnpm add -D @outfitter/formatting
+pnpm exec outfitter-formatting init
 
-# Generate runtime configs
-outfitter-fmt generate
+# Init will detect monorepo and offer to:
+# - Set up root-level formatting scripts
+# - Add formatting to all workspace packages
+# - Create shared config at root
+```
 
-# Test formatting
-outfitter-fmt format "**/*.md" --check
+### Using DevContainers
+```bash
+# If formatters aren't installed locally
+pnpm exec outfitter-formatting init
+
+# When prompted about missing formatters, choose:
+# "Create devcontainer configuration"
+
+# This generates .devcontainer/devcontainer.json with all tools pre-installed
 ```
 
 ## Relationship to Rightdown
 
-This formatter could:
-1. **Replace Rightdown** - More comprehensive solution
-2. **Power Rightdown v3** - Rightdown as a specialized wrapper
-3. **Complement Rightdown** - Rightdown for markdown, this for everything else
+`@outfitter/formatting` and Rightdown serve different purposes:
 
-Recommendation: Option 2 - Keep Rightdown's focused brand/CLI but use this as the engine.
+- **Rightdown**: Specialized tool for formatting code blocks within markdown files
+- **@outfitter/formatting**: General-purpose formatting setup tool for entire projects
+
+They complement each other:
+1. Use `@outfitter/formatting` to set up project-wide formatting
+2. Use Rightdown when you need specialized markdown code block formatting
+3. Both can coexist - Rightdown for precision, formatting for general use
 
 ## Success Criteria
 
