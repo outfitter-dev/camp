@@ -27,9 +27,14 @@ formatting.config.yaml
         ↓
    ConfigLoader
         ↓
- [Generates tool configs]
+ [Updates config packages]
         ↓
- RemarkProcessor ← [Uses generated configs]
+ @outfitter/prettier-config
+ @outfitter/biome-config
+ @outfitter/eslint-config
+ @outfitter/remark-config (new)
+        ↓
+ RemarkProcessor ← [Imports configs]
         ↓
  [Formats markdown + code blocks]
 ```
@@ -234,15 +239,93 @@ export class ConfigManager {
     this.config = FormatterConfigSchema.parse(parsed);
   }
 
-  // Generate tool-specific configs
-  async generateConfigs(): Promise<void> {
-    await this.generatePrettierConfig();
-    await this.generateBiomeConfig();
-    await this.generateEditorConfig();
-    await this.generateVSCodeSettings();
+  // Update config packages (development only)
+  async updateConfigPackages(): Promise<void> {
+    if (process.env.NODE_ENV !== 'development') {
+      throw new Error('Config package updates only allowed in development');
+    }
+
+    await this.updatePrettierConfig();
+    await this.updateBiomeConfig();
+    await this.updateRemarkConfig();
+    // EditorConfig and VS Code settings are generated at runtime
   }
 
-  private generateEditorConfig(): string {
+  private async updatePrettierConfig(): Promise<void> {
+    const config = {
+      ...this.extractPrettierDefaults(),
+      overrides: []
+    };
+
+    // Add overrides for each pattern using prettier
+    for (const pattern of this.config.patterns) {
+      if (pattern.formatter === 'prettier') {
+        config.overrides.push({
+          files: pattern.globs,
+          options: pattern.options
+        });
+      }
+    }
+
+    // Add tool-specific config
+    if (this.config.tools?.prettier) {
+      Object.assign(config, this.config.tools.prettier);
+    }
+
+    // Write to @outfitter/prettier-config
+    const prettierConfigPath = path.join(__dirname, '../../prettier-config/index.js');
+    await fs.writeFile(
+      prettierConfigPath,
+      `module.exports = ${JSON.stringify(config, null, 2)};`
+    );
+  }
+
+  private async updateBiomeConfig(): Promise<void> {
+    const config = {
+      $schema: "https://biomejs.dev/schemas/1.9.4/schema.json",
+      formatter: {
+        enabled: true,
+        indentStyle: this.config.defaults.indentStyle,
+        indentWidth: this.config.defaults.indentWidth,
+        lineWidth: this.config.defaults.lineWidth
+      }
+    };
+
+    // Extract Biome-specific patterns
+    for (const pattern of this.config.patterns) {
+      if (pattern.formatter === 'biome' && pattern.options) {
+        deepMerge(config, pattern.options);
+      }
+    }
+
+    // Add tool-specific config
+    if (this.config.tools?.biome) {
+      deepMerge(config, this.config.tools.biome);
+    }
+
+    // Write to @outfitter/biome-config
+    const biomeConfigPath = path.join(__dirname, '../../biome-config/biome.config.jsonc');
+    await fs.writeFile(
+      biomeConfigPath,
+      `// Generated from formatting.config.yaml\n${JSON.stringify(config, null, 2)}`
+    );
+  }
+
+  private async updateRemarkConfig(): Promise<void> {
+    const config = {
+      plugins: this.config.tools?.remark?.plugins || []
+    };
+
+    // Write to @outfitter/remark-config (new package)
+    const remarkConfigPath = path.join(__dirname, '../../remark-config/index.js');
+    await fs.writeFile(
+      remarkConfigPath,
+      `module.exports = ${JSON.stringify(config, null, 2)};`
+    );
+  }
+
+  // Runtime config generation (not saved to packages)
+  generateEditorConfig(): string {
     const lines = [
       '# Generated from formatting.config.yaml',
       'root = true',
@@ -271,30 +354,6 @@ export class ConfigManager {
     lines.push('indent_style = tab');
     
     return lines.join('\n');
-  }
-
-  private generatePrettierConfig(): PrettierConfig {
-    const config: PrettierConfig = {
-      ...this.extractPrettierDefaults(),
-      overrides: []
-    };
-
-    // Add overrides for each pattern using prettier
-    for (const pattern of this.config.patterns) {
-      if (pattern.formatter === 'prettier') {
-        config.overrides.push({
-          files: pattern.globs,
-          options: pattern.options  // Direct pass-through, no mapping
-        });
-      }
-    }
-
-    // Add tool-specific config
-    if (this.config.tools?.prettier) {
-      Object.assign(config, this.config.tools.prettier);
-    }
-
-    return config;
   }
 
   // Find which formatter to use for a file
@@ -355,18 +414,29 @@ export class RemarkFormatter {
   private processor: any;
   private configManager: ConfigManager;
   private biome: Biome;
+  private prettierConfig: any;
+  private biomeConfig: any;
 
   constructor(configManager: ConfigManager) {
     this.configManager = configManager;
+    this.loadConfigs();
     this.setupProcessor();
+  }
+
+  private async loadConfigs(): Promise<void> {
+    // Import configs from packages
+    this.prettierConfig = await import('@outfitter/prettier-config');
+    this.biomeConfig = await import('@outfitter/biome-config');
   }
 
   private setupProcessor(): void {
     this.processor = remark();
 
-    // Add plugins from config
-    const remarkPlugins = this.configManager.config.tools?.remark?.plugins || [];
-    for (const plugin of remarkPlugins) {
+    // Import remark config from package
+    const remarkConfig = require('@outfitter/remark-config');
+    
+    // Add plugins from remark config
+    for (const plugin of remarkConfig.plugins) {
       if (Array.isArray(plugin)) {
         this.processor.use(plugin[0], plugin[1]);
       } else {
@@ -446,15 +516,35 @@ program
   .description('Unified formatter for all file types')
   .version('1.0.0');
 
-// Generate tool configs
+// Update config packages (dev only)
 program
-  .command('generate')
-  .description('Generate tool-specific configs from formatting.config.yaml')
+  .command('update-packages')
+  .description('Update config packages from formatting.config.yaml (dev only)')
   .action(async () => {
     const configManager = new ConfigManager();
     await configManager.load('./formatting.config.yaml');
-    await configManager.generateConfigs();
-    console.log('Generated: .prettierrc, biome.json, .editorconfig, .vscode/settings.json');
+    await configManager.updateConfigPackages();
+    console.log('Updated: @outfitter/prettier-config, @outfitter/biome-config, @outfitter/remark-config');
+  });
+
+// Generate runtime configs
+program
+  .command('generate')
+  .description('Generate runtime configs (.editorconfig, .vscode/settings.json)')
+  .action(async () => {
+    const configManager = new ConfigManager();
+    await configManager.load('./formatting.config.yaml');
+    
+    // Generate .editorconfig
+    const editorConfig = configManager.generateEditorConfig();
+    await fs.writeFile('.editorconfig', editorConfig);
+    
+    // Generate VS Code settings
+    const vscodeSettings = configManager.generateVSCodeSettings();
+    await fs.ensureDir('.vscode');
+    await fs.writeFile('.vscode/settings.json', JSON.stringify(vscodeSettings, null, 2));
+    
+    console.log('Generated: .editorconfig, .vscode/settings.json');
   });
 
 // Format files
@@ -505,9 +595,48 @@ program
 program.parse();
 ```
 
+## Package Architecture Benefits
+
+Using existing config packages provides:
+
+1. **Independent versioning** - Each config can evolve with its own version
+2. **Direct consumption** - Other projects can use `@outfitter/prettier-config` without the formatting package
+3. **Type safety** - Config packages can export TypeScript types
+4. **Testing isolation** - Each config can be tested independently
+5. **Clear dependencies** - package.json shows exactly which configs are used
+
+### Package Dependencies
+
+The `@outfitter/formatting` package would have:
+
+```json
+{
+  "name": "@outfitter/formatting",
+  "dependencies": {
+    "@outfitter/prettier-config": "workspace:*",
+    "@outfitter/biome-config": "workspace:*",
+    "@outfitter/eslint-config": "workspace:*",
+    "@outfitter/remark-config": "workspace:*",
+    "remark": "^15.0.0",
+    "remark-gfm": "^4.0.0",
+    "remark-frontmatter": "^5.0.0",
+    "unified": "^11.0.0",
+    "unist-util-visit": "^5.0.0"
+  },
+  "peerDependencies": {
+    "prettier": "^3.0.0",
+    "@biomejs/js-api": "^0.7.0"
+  },
+  "devDependencies": {
+    "js-yaml": "^4.1.0",
+    "zod": "^3.0.0"
+  }
+}
+```
+
 ## Generated Configurations
 
-The system generates appropriate configs for each tool:
+The system updates config packages and generates runtime configs:
 
 ### .prettierrc
 ```json
@@ -541,8 +670,9 @@ The system generates appropriate configs for each tool:
 }
 ```
 
-### biome.json
-```json
+### biome.jsonc
+```jsonc
+// Generated from formatting.config.yaml
 {
   "formatter": {
     "enabled": true,
@@ -614,47 +744,59 @@ indent_style = tab
 2. **No translation layer** - Options are passed directly to tools in their native format
 3. **Intelligent markdown handling** - Remark for structure, specialized formatters for code blocks
 4. **Two-tier resolution** - Global language mappings with pattern-specific overrides
-5. **Tool compatibility** - Generates configs that existing tools/IDEs understand
+5. **Tool compatibility** - Updates versioned configs that tools/IDEs understand
 6. **Flexible matching** - Full glob pattern support
 7. **DRY configuration** - Inherit options with `extends`
-8. **Migration path** - Can import existing configs
+8. **Modular architecture** - Config packages can be used independently
+9. **Version control** - Each config package has its own version and changelog
 
 ## Implementation Phases
 
-### Phase 1: Core (Week 1)
-- Config schema and validation
-- Config generators for Prettier, Biome, EditorConfig
+### Phase 1: Core Infrastructure (Week 1)
+- Create `@outfitter/remark-config` package
+- Update existing config packages to support generation
+- Config schema and validation in formatting package
+- Package update mechanism (dev mode)
 - Basic remark pipeline with code formatting
 
 ### Phase 2: Features (Week 2)
 - Import existing configs functionality
-- VS Code settings generation
+- Runtime config generation (.editorconfig, VS Code settings)
 - Caching for performance
 - Watch mode
+- Package dependency management
 
 ### Phase 3: Polish (Week 3)
 - VS Code extension
 - Pre-commit hooks
 - GitHub Action
-- Documentation
+- Documentation and migration guide
 
 ## Migration Strategy
 
 ```bash
-# Import existing configs
-outfitter-fmt import --prettier .prettierrc --biome biome.json
+# Import existing configs into formatting.config.yaml
+outfitter-fmt import --prettier .prettierrc --biome biome.jsonc
 
 # Validate new config
 outfitter-fmt validate
 
-# Generate tool configs
+# Update config packages (development only)
+NODE_ENV=development outfitter-fmt update-packages
+
+# Build and publish updated packages
+pnpm build
+pnpm changeset
+pnpm publish
+
+# In consuming projects, update dependencies
+pnpm update @outfitter/prettier-config @outfitter/biome-config @outfitter/remark-config
+
+# Generate runtime configs
 outfitter-fmt generate
 
 # Test formatting
 outfitter-fmt format "**/*.md" --check
-
-# Switch over
-rm .prettierrc biome.json .editorconfig
 ```
 
 ## Relationship to Rightdown
@@ -676,11 +818,13 @@ Recommendation: Option 2 - Keep Rightdown's focused brand/CLI but use this as th
 
 ## Next Steps
 
-1. Validate config schema with team
-2. Prototype remark code formatting plugin
-3. Build config generators
-4. Create migration tooling
-5. Test with real projects
+1. Create `@outfitter/remark-config` package structure
+2. Update existing config packages to support programmatic updates
+3. Validate config schema with team
+4. Prototype remark code formatting plugin
+5. Build package update mechanism
+6. Create migration tooling
+7. Test with real projects
 
 ---
 
