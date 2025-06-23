@@ -37,6 +37,9 @@
       "path": "./packages/packlist"
     },
     {
+      "path": "./packages/remark-config"
+    },
+    {
       "path": "./packages/cli"
     },
     {
