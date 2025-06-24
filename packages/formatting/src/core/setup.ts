@@ -4,9 +4,10 @@
 
 import { readFile, writeFile, access, constants } from 'node:fs/promises';
 import { join } from 'node:path';
-import type { SetupOptions, SetupResult } from '../types/index.js';
-import type { Result } from '@outfitter/contracts';
-import { success, failure, makeError } from '@outfitter/contracts';
+import type { SetupResult } from '../types/index.js';
+import type { Result } from '@outfitter/contracts-zod';
+import { success, failure, makeError } from '@outfitter/contracts-zod';
+import { validateSetupOptions, validatePackageJson } from '../utils/validation.js';
 import { detectAvailableFormatters } from '../utils/detection.js';
 import { getPreset } from './presets.js';
 import { generateConfigs, generatePackageJsonScripts } from './generator.js';
@@ -14,7 +15,14 @@ import { generateConfigs, generatePackageJsonScripts } from './generator.js';
 /**
  * Main setup function - orchestrates the entire formatting setup process
  */
-export async function setup(options: SetupOptions = {}): Promise<Result<SetupResult, Error>> {
+export async function setup(options: unknown = {}): Promise<Result<SetupResult, Error>> {
+  // Validate options first
+  const optionsResult = validateSetupOptions(options);
+  if (!optionsResult.success) {
+    return failure(
+      makeError('VALIDATION_ERROR', 'Invalid setup options', { cause: optionsResult.error }),
+    );
+  }
   const {
     preset = 'standard',
     presetConfig,
@@ -24,7 +32,7 @@ export async function setup(options: SetupOptions = {}): Promise<Result<SetupRes
     targetDir = process.cwd(),
     dryRun = false,
     verbose = false,
-  } = options;
+  } = optionsResult.data;
 
   const result: SetupResult = {
     success: false,
@@ -38,9 +46,7 @@ export async function setup(options: SetupOptions = {}): Promise<Result<SetupRes
   try {
     // Step 1: Get preset configuration
     const basePreset = getPreset(preset);
-    const presetConfigResolved = presetConfig 
-      ? { ...basePreset, ...presetConfig }
-      : basePreset;
+    const presetConfigResolved = presetConfig ? { ...basePreset, ...presetConfig } : basePreset;
     if (verbose) {
       result.info.push(`Using preset: ${presetConfigResolved.name}`);
     }
@@ -53,7 +59,7 @@ export async function setup(options: SetupOptions = {}): Promise<Result<SetupRes
     }
 
     const { available, missing } = detectionResult.data;
-    
+
     if (verbose) {
       result.info.push(`Available formatters: ${available.join(', ') || 'none'}`);
       if (missing.length > 0) {
@@ -62,8 +68,8 @@ export async function setup(options: SetupOptions = {}): Promise<Result<SetupRes
     }
 
     // Step 3: Determine which formatters to configure
-    const formattersToSetup = requestedFormatters 
-      ? requestedFormatters.filter(f => available.includes(f))
+    const formattersToSetup = requestedFormatters
+      ? requestedFormatters.filter((f) => available.includes(f))
       : available;
 
     if (formattersToSetup.length === 0) {
@@ -71,6 +77,7 @@ export async function setup(options: SetupOptions = {}): Promise<Result<SetupRes
       if (missing.length > 0 && !installMissing) {
         result.info.push('Consider installing formatters or use --install-missing flag');
       }
+      result.success = true; // No errors, just no formatters
       return success(result);
     }
 
@@ -88,7 +95,7 @@ export async function setup(options: SetupOptions = {}): Promise<Result<SetupRes
     // Step 5: Write configuration files
     for (const config of configsResult.data) {
       const filePath = join(targetDir, config.path);
-      
+
       // Check if file already exists
       const exists = await fileExists(filePath);
       if (exists) {
@@ -101,7 +108,9 @@ export async function setup(options: SetupOptions = {}): Promise<Result<SetupRes
           await writeFile(filePath, config.content, 'utf-8');
           result.info.push(`Generated: ${config.path}`);
         } catch (error) {
-          result.errors.push(`Failed to write ${config.path}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+          result.errors.push(
+            `Failed to write ${config.path}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          );
           continue;
         }
       } else {
@@ -130,7 +139,7 @@ export async function setup(options: SetupOptions = {}): Promise<Result<SetupRes
 
     // Step 7: Final success check
     result.success = result.errors.length === 0;
-    
+
     if (result.success) {
       result.info.push(`Setup completed successfully for ${formattersToSetup.length} formatter(s)`);
     }
@@ -159,11 +168,11 @@ async function fileExists(path: string): Promise<boolean> {
  */
 async function updatePackageJsonScripts(
   targetDir: string,
-  scripts: Record<string, string>
+  scripts: Record<string, string>,
 ): Promise<Result<void, Error>> {
   try {
     const packageJsonPath = join(targetDir, 'package.json');
-    
+
     // Check if package.json exists
     if (!(await fileExists(packageJsonPath))) {
       return failure(makeError('VALIDATION_ERROR', 'package.json not found'));
@@ -171,7 +180,15 @@ async function updatePackageJsonScripts(
 
     // Read and parse package.json
     const content = await readFile(packageJsonPath, 'utf-8');
-    const packageJson = JSON.parse(content);
+    const parseResult = await validatePackageJson(content);
+
+    if (!parseResult.success) {
+      return failure(
+        makeError('VALIDATION_ERROR', 'Invalid package.json format', { cause: parseResult.error }),
+      );
+    }
+
+    const packageJson = parseResult.data;
 
     // Update scripts
     packageJson.scripts = {
@@ -180,15 +197,11 @@ async function updatePackageJsonScripts(
     };
 
     // Write back to file
-    const updatedContent = JSON.stringify(packageJson, null, 2) + '\n';
+    const updatedContent = `${JSON.stringify(packageJson, null, 2)}\n`;
     await writeFile(packageJsonPath, updatedContent, 'utf-8');
 
     return success(undefined);
   } catch (error) {
-    return failure(makeError(
-      'OPERATION_FAILED',
-      'Failed to update package.json',
-      { cause: error }
-    ));
+    return failure(makeError('INTERNAL_ERROR', 'Failed to update package.json', { cause: error }));
   }
 }

@@ -8,7 +8,8 @@ import { Command } from 'commander';
 import { setup } from './core/setup.js';
 import { detectAvailableFormatters } from './utils/detection.js';
 import { getAllPresets } from './core/presets.js';
-import type { SetupOptions } from './types/index.js';
+import { validateCLISetupOptions } from './utils/validation.js';
+import type { FormatterDetection } from './types/index.js';
 
 const program = new Command();
 
@@ -30,20 +31,20 @@ program
   .option('--target-dir <dir>', 'Target directory for setup', process.cwd())
   .action(async (options) => {
     try {
-      const setupOptions: SetupOptions = {
-        preset: options.preset as any,
-        formatters: options.formatters,
-        updateScripts: options.scripts !== false,
-        installMissing: options.installMissing,
-        dryRun: options.dryRun,
-        verbose: options.verbose,
-        targetDir: options.targetDir,
-      };
+      // Validate CLI options
+      const validationResult = validateCLISetupOptions(options);
+      if (!validationResult.success) {
+        console.error(
+          '❌ Invalid options:',
+          validationResult.error.errors.map((e: { message: string }) => e.message).join(', '),
+        );
+        process.exit(1);
+      }
 
       console.log('🔧 Setting up formatting configuration...\n');
 
-      const result = await setup(setupOptions);
-      
+      const result = await setup(validationResult.data);
+
       if (!result.success) {
         console.error('❌ Setup failed');
         process.exit(1);
@@ -68,7 +69,7 @@ program
 
       if (setupResult.success) {
         console.log('\n✅ Formatting setup completed successfully!');
-        
+
         if (setupResult.configs.length > 0) {
           console.log('\n📄 Generated configuration files:');
           for (const config of setupResult.configs) {
@@ -102,7 +103,7 @@ program
       console.log('🔍 Detecting available formatters...\n');
 
       const result = await detectAvailableFormatters();
-      
+
       if (!result.success) {
         console.error('❌ Detection failed:', result.error.message);
         process.exit(1);
@@ -113,9 +114,11 @@ program
       if (available.length > 0) {
         console.log('✅ Available formatters:');
         for (const formatterType of available) {
-          const formatter = formatters.find(f => f.type === formatterType);
+          const formatter = formatters.find((f: FormatterDetection) => f.type === formatterType);
           if (formatter && options.verbose) {
-            console.log(`   • ${formatter.type} (${formatter.version || 'unknown version'}) - ${formatter.location}`);
+            console.log(
+              `   • ${formatter.type} (${formatter.version || 'unknown version'}) - ${formatter.location}`,
+            );
             if (formatter.path) {
               console.log(`     Path: ${formatter.path}`);
             }
@@ -130,10 +133,10 @@ program
       if (missing.length > 0) {
         console.log('\n⚠️  Missing formatters:');
         for (const formatterType of missing) {
-          const formatter = formatters.find(f => f.type === formatterType);
+          const formatter = formatters.find((f: FormatterDetection) => f.type === formatterType);
           console.log(`   • ${formatterType}${formatter?.error ? ` (${formatter.error})` : ''}`);
         }
-        
+
         console.log('\n💡 To install missing formatters:');
         for (const formatterType of missing) {
           switch (formatterType) {
@@ -150,7 +153,10 @@ program
         }
       }
     } catch (error) {
-      console.error('❌ Detection failed:', error instanceof Error ? error.message : 'Unknown error');
+      console.error(
+        '❌ Detection failed:',
+        error instanceof Error ? error.message : 'Unknown error',
+      );
       process.exit(1);
     }
   });
@@ -161,7 +167,7 @@ program
   .description('List available presets')
   .action(() => {
     console.log('📋 Available presets:\n');
-    
+
     const presets = getAllPresets();
     for (const [name, preset] of Object.entries(presets)) {
       console.log(`• ${name}:`);
