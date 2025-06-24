@@ -2,7 +2,7 @@
  * Main setup orchestration
  */
 
-import { readFile, writeFile, access, constants } from 'node:fs/promises';
+import { readFile, writeFile, access, constants, mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import type { SetupResult } from '../types/index.js';
 import type { Result } from '@outfitter/contracts-zod';
@@ -10,7 +10,7 @@ import { success, failure, makeError } from '@outfitter/contracts-zod';
 import { validateSetupOptions, validatePackageJson } from '../utils/validation.js';
 import { detectAvailableFormatters } from '../utils/detection.js';
 import { getPreset } from './presets.js';
-import { generateConfigs, generatePackageJsonScripts } from './generator.js';
+import { generateConfigs, generatePackageJsonScripts, generateDevContainer } from './generator.js';
 
 /**
  * Main setup function - orchestrates the entire formatting setup process
@@ -137,7 +137,34 @@ export async function setup(options: unknown = {}): Promise<Result<SetupResult, 
       }
     }
 
-    // Step 7: Final success check
+    // Step 7: Generate DevContainer if requested
+    if (options.devcontainer) {
+      const devContainerConfig = generateDevContainer(detectionResult.data, options);
+      if (devContainerConfig) {
+        const devContainerPath = join(targetDir, '.devcontainer', 'devcontainer.json');
+        
+        if (!dryRun) {
+          // Create .devcontainer directory if it doesn't exist
+          const devContainerDir = join(targetDir, '.devcontainer');
+          try {
+            await mkdir(devContainerDir, { recursive: true });
+            await writeFile(devContainerPath, devContainerConfig.content, 'utf-8');
+            result.configs.push({
+              path: '.devcontainer/devcontainer.json',
+              formatter: 'devcontainer' as any,
+              content: devContainerConfig.content,
+            });
+            result.info.push('Created .devcontainer/devcontainer.json');
+          } catch (error) {
+            result.warnings.push(`Failed to create devcontainer config: ${error instanceof Error ? error.message : 'Unknown error'}`);
+          }
+        } else {
+          result.info.push('Would create .devcontainer/devcontainer.json');
+        }
+      }
+    }
+
+    // Step 8: Final success check
     result.success = result.errors.length === 0;
 
     if (result.success) {
