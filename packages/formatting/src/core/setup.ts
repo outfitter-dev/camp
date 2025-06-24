@@ -3,14 +3,15 @@
  */
 
 import { readFile, writeFile, access, constants, mkdir } from 'node:fs/promises';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 import type { SetupResult } from '../types/index.js';
-import type { Result } from '@outfitter/contracts-zod';
-import { success, failure, makeError } from '@outfitter/contracts-zod';
+import type { Result } from '@outfitter/contracts';
+import { success, failure, makeError } from '@outfitter/contracts';
 import { validateSetupOptions, validatePackageJson } from '../utils/validation.js';
 import { detectAvailableFormatters } from '../utils/detection.js';
 import { getPreset } from './presets.js';
 import { generateConfigs, generatePackageJsonScripts, generateDevContainer } from './generator.js';
+import { loadYamlPreset, yamlPresetToConfig, resolvePresetInheritance, type YamlPreset } from '../utils/yaml-presets.js';
 
 /**
  * Main setup function - orchestrates the entire formatting setup process
@@ -45,7 +46,34 @@ export async function setup(options: unknown = {}): Promise<Result<SetupResult, 
 
   try {
     // Step 1: Get preset configuration
-    const basePreset = getPreset(preset);
+    let basePreset: PresetConfig;
+    let yamlPreset: YamlPreset | undefined;
+    
+    // Check if preset is a path to a YAML file
+    if (preset.endsWith('.yaml') || preset.endsWith('.yml')) {
+      // Load YAML preset
+      const presetPath = resolve(targetDir, preset);
+      const loadResult = await loadYamlPreset(presetPath);
+      if (!loadResult.success) {
+        result.errors.push(`Failed to load preset: ${loadResult.error.message}`);
+        return success(result);
+      }
+      
+      // Resolve inheritance
+      const presetsDir = join(targetDir, 'presets');
+      const resolvedResult = await resolvePresetInheritance(loadResult.data, presetsDir);
+      if (!resolvedResult.success) {
+        result.errors.push(`Failed to resolve preset inheritance: ${resolvedResult.error.message}`);
+        return success(result);
+      }
+      
+      yamlPreset = resolvedResult.data;
+      basePreset = yamlPresetToConfig(yamlPreset);
+    } else {
+      // Use built-in preset
+      basePreset = getPreset(preset as 'standard' | 'strict' | 'relaxed');
+    }
+    
     const presetConfigResolved = presetConfig ? { ...basePreset, ...presetConfig } : basePreset;
     if (verbose) {
       result.info.push(`Using preset: ${presetConfigResolved.name}`);
@@ -86,7 +114,7 @@ export async function setup(options: unknown = {}): Promise<Result<SetupResult, 
     }
 
     // Step 4: Generate configuration files
-    const configsResult = await generateConfigs(formattersToSetup, presetConfigResolved);
+    const configsResult = await generateConfigs(formattersToSetup, presetConfigResolved, yamlPreset);
     if (!configsResult.success) {
       result.errors.push(`Failed to generate configs: ${configsResult.error.message}`);
       return success(result);
@@ -138,8 +166,8 @@ export async function setup(options: unknown = {}): Promise<Result<SetupResult, 
     }
 
     // Step 7: Generate DevContainer if requested
-    if (options.devcontainer) {
-      const devContainerConfig = generateDevContainer(detectionResult.data, options);
+    if (optionsResult.data.devcontainer) {
+      const devContainerConfig = generateDevContainer(detectionResult.data, optionsResult.data);
       if (devContainerConfig) {
         const devContainerPath = join(targetDir, '.devcontainer', 'devcontainer.json');
         

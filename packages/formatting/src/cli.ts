@@ -22,10 +22,11 @@ program
 program
   .command('setup')
   .description('Set up formatting configuration for your project')
-  .option('-p, --preset <preset>', 'Preset to use (standard, strict, relaxed)', 'standard')
+  .option('-p, --preset <preset>', 'Preset to use (standard, strict, relaxed) or path to YAML preset file', 'standard')
   .option('-f, --formatters <formatters...>', 'Specific formatters to configure')
   .option('--no-scripts', 'Skip updating package.json scripts')
   .option('--install-missing', 'Attempt to install missing formatters')
+  .option('--devcontainer', 'Generate devcontainer configuration')
   .option('--dry-run', 'Show what would be done without making changes')
   .option('-v, --verbose', 'Verbose output')
   .option('--target-dir <dir>', 'Target directory for setup', process.cwd())
@@ -165,18 +166,26 @@ program
 program
   .command('presets')
   .description('List available presets')
-  .action(() => {
+  .option('--yaml', 'Show YAML preset file locations')
+  .action((options) => {
     console.log('📋 Available presets:\n');
 
     const presets = getAllPresets();
+    console.log('Built-in presets:');
     for (const [name, preset] of Object.entries(presets)) {
-      console.log(`• ${name}:`);
+      console.log(`\n• ${name}:`);
       console.log(`  Line width: ${preset.lineWidth}`);
       console.log(`  Indentation: ${preset.indentation.width} ${preset.indentation.style}s`);
       console.log(`  Quotes: ${preset.quotes.style} (JSX: ${preset.quotes.jsx})`);
       console.log(`  Semicolons: ${preset.semicolons}`);
       console.log(`  Trailing commas: ${preset.trailingComma}`);
-      console.log();
+    }
+    
+    if (options.yaml) {
+      console.log('\n💡 You can also use custom YAML presets:');
+      console.log('   • Create a .yaml file with your custom preset');
+      console.log('   • Use --preset path/to/preset.yaml with the setup command');
+      console.log('   • See presets/ directory for examples');
     }
   });
 

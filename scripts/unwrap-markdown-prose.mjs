@@ -214,7 +214,9 @@ Examples:
     }
   }
 
-  console.log(`🔍 Processing ${filePaths.length} files${isDryRun ? ' (dry run)' : ''}...\n`);
+  console.log(
+    `🔍 Processing ${filePaths.length} files${isDryRun ? ' (dry run)' : ''}...\n`,
+  );
 
   let processedCount = 0;
   let changedCount = 0;
@@ -244,7 +246,9 @@ Examples:
 
   console.log(`\n📊 Summary:`);
   console.log(`   Processed: ${processedCount} files`);
-  console.log(`   ${isDryRun ? 'Would change' : 'Changed'}: ${changedCount} files`);
+  console.log(
+    `   ${isDryRun ? 'Would change' : 'Changed'}: ${changedCount} files`,
+  );
 
   if (isDryRun && changedCount > 0) {
     console.log(`\n💡 Run without --dry-run to apply changes`);

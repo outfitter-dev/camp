@@ -1,6 +1,6 @@
 /**
  * @outfitter/remark-config
- * 
+ *
  * Shared Remark configuration for consistent Markdown processing across Outfitter projects.
  * Exports presets and utilities for generating remark configurations.
  */

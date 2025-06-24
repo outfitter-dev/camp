@@ -110,7 +110,7 @@ describe('@outfitter/biome-config', () => {
 
     it('should not mutate the base config', () => {
       const originalLineWidth = config.formatter.lineWidth;
-      
+
       generate({
         lineWidth: 120,
       });

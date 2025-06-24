@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { getPreset, getAllPresets, standard, strict, relaxed } from '../core/presets.js';
+import type { PresetName } from '../types/index.js';
 
 describe('presets', () => {
   describe('individual presets', () => {
@@ -43,18 +44,18 @@ describe('presets', () => {
     });
 
     it('should throw for unknown preset', () => {
-      expect(() => getPreset('unknown' as any)).toThrow('Unknown preset: unknown');
+      expect(() => getPreset('unknown' as PresetName)).toThrow('Unknown preset: unknown');
     });
   });
 
   describe('getAllPresets', () => {
     it('should return all presets', () => {
       const presets = getAllPresets();
-      
+
       expect(presets).toHaveProperty('standard');
-      expect(presets).toHaveProperty('strict'); 
+      expect(presets).toHaveProperty('strict');
       expect(presets).toHaveProperty('relaxed');
-      
+
       expect(presets.standard).toEqual(standard);
       expect(presets.strict).toEqual(strict);
       expect(presets.relaxed).toEqual(relaxed);

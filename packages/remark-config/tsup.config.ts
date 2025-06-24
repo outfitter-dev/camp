@@ -4,7 +4,7 @@ export default defineConfig({
   entry: [
     'src/index.ts',
     'src/presets/standard.ts',
-    'src/presets/strict.ts', 
+    'src/presets/strict.ts',
     'src/presets/relaxed.ts',
   ],
   format: ['cjs', 'esm'],

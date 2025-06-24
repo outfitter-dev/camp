@@ -16,9 +16,9 @@ import { relaxed } from './relaxed.js';
  */
 export function generate(options: RemarkConfigOptions = {}): RemarkConfig {
   const { preset = 'standard', additionalPlugins = [], settings = {} } = options;
-  
+
   let baseConfig: RemarkConfig;
-  
+
   switch (preset) {
     case 'strict':
       baseConfig = strict;
@@ -31,12 +31,9 @@ export function generate(options: RemarkConfigOptions = {}): RemarkConfig {
       baseConfig = standard;
       break;
   }
-  
+
   return {
-    plugins: [
-      ...(baseConfig.plugins || []),
-      ...additionalPlugins,
-    ],
+    plugins: [...(baseConfig.plugins || []), ...additionalPlugins],
     settings: {
       ...baseConfig.settings,
       ...settings,

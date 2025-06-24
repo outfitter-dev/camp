@@ -6,9 +6,14 @@ import { exec } from 'node:child_process';
 import { promisify } from 'node:util';
 import { access, constants } from 'node:fs/promises';
 import { join } from 'node:path';
-import type { FormatterDetection, FormatterDetectionResult, FormatterType } from '../types/index.js';
+import type {
+  FormatterDetection,
+  FormatterDetectionResult,
+  FormatterType,
+} from '../types/index.js';
 import type { Result } from '@outfitter/contracts';
 import { success, failure, makeError } from '@outfitter/contracts';
+import { FormatterDetectionSchema, FormatterDetectionResultSchema } from '../schemas/index.js';
 
 const execAsync = promisify(exec);
 
@@ -62,20 +67,16 @@ export async function detectFormatter(type: FormatterType): Promise<FormatterDet
 /**
  * Detect all available formatters
  */
-export async function detectAvailableFormatters(): Promise<Result<FormatterDetectionResult, Error>> {
+export async function detectAvailableFormatters(): Promise<
+  Result<FormatterDetectionResult, Error>
+> {
   try {
     const formatters: FormatterType[] = ['prettier', 'biome', 'remark'];
-    const detections = await Promise.all(
-      formatters.map(type => detectFormatter(type))
-    );
+    const detections = await Promise.all(formatters.map((type) => detectFormatter(type)));
 
-    const available = detections
-      .filter(d => d.available)
-      .map(d => d.type);
+    const available = detections.filter((d) => d.available).map((d) => d.type);
 
-    const missing = detections
-      .filter(d => !d.available)
-      .map(d => d.type);
+    const missing = detections.filter((d) => !d.available).map((d) => d.type);
 
     return success({
       formatters: detections,
@@ -83,11 +84,7 @@ export async function detectAvailableFormatters(): Promise<Result<FormatterDetec
       missing,
     });
   } catch (error) {
-    return failure(makeError(
-      'OPERATION_FAILED',
-      'Failed to detect formatters',
-      { cause: error }
-    ));
+    return failure(makeError('INTERNAL_ERROR', 'Failed to detect formatters', { cause: error }));
   }
 }
 
@@ -97,7 +94,7 @@ export async function detectAvailableFormatters(): Promise<Result<FormatterDetec
 async function findLocalFormatter(type: FormatterType): Promise<string | null> {
   const binName = getFormatterBinName(type);
   const localBinPath = join(process.cwd(), 'node_modules', '.bin', binName);
-  
+
   try {
     await access(localBinPath, constants.F_OK);
     return localBinPath;
@@ -109,27 +106,25 @@ async function findLocalFormatter(type: FormatterType): Promise<string | null> {
 /**
  * Find formatter in global/system PATH
  */
-async function findGlobalFormatter(type: FormatterType): Promise<Result<{ path: string; version?: string }, Error>> {
+async function findGlobalFormatter(
+  type: FormatterType,
+): Promise<Result<{ path: string; version?: string }, Error>> {
   const binName = getFormatterBinName(type);
-  
+
   try {
     // Use 'which' on Unix-like systems, 'where' on Windows
     const command = process.platform === 'win32' ? `where ${binName}` : `which ${binName}`;
     const { stdout } = await execAsync(command);
     const path = stdout.trim().split('\n')[0];
-    
+
     if (path) {
       const version = await getFormatterVersion(type, path);
       return success({ path, ...(version && { version }) });
     }
-    
+
     return failure(makeError('VALIDATION_ERROR', `${binName} not found in PATH`));
   } catch (error) {
-    return failure(makeError(
-      'OPERATION_FAILED',
-      `Failed to detect ${type}`,
-      { cause: error }
-    ));
+    return failure(makeError('INTERNAL_ERROR', `Failed to detect ${type}`, { cause: error }));
   }
 }
 
@@ -183,14 +178,15 @@ function getFormatterVersionFlag(type: FormatterType): string {
  */
 function parseVersionOutput(type: FormatterType, output: string): string {
   const cleanOutput = output.trim();
-  
+
   switch (type) {
     case 'prettier':
       // Prettier outputs just the version number
       return cleanOutput;
     case 'biome':
       // Biome outputs "Version: 1.8.3" or similar
-      const biomeMatch = cleanOutput.match(/Version:\s*(.+)/i) || cleanOutput.match(/(\d+\.\d+\.\d+)/);
+      const biomeMatch =
+        cleanOutput.match(/Version:\s*(.+)/i) || cleanOutput.match(/(\d+\.\d+\.\d+)/);
       return biomeMatch ? biomeMatch[1] : cleanOutput;
     case 'remark':
       // Remark outputs version info, extract the number

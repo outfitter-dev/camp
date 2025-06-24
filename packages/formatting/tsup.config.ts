@@ -1,10 +1,7 @@
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
-  entry: [
-    'src/index.ts',
-    'src/cli.ts',
-  ],
+  entry: ['src/index.ts', 'src/cli.ts'],
   format: ['cjs', 'esm'],
   dts: true,
   clean: true,
@@ -13,4 +10,11 @@ export default defineConfig({
   minify: false,
   target: 'node18',
   tsconfig: './tsconfig.json',
+  external: [
+    '@outfitter/contracts',
+    '@outfitter/contracts-zod',
+    '@outfitter/prettier-config',
+    '@outfitter/biome-config',
+    '@outfitter/remark-config',
+  ],
 });
