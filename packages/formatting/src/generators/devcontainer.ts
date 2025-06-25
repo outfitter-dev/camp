@@ -9,8 +9,7 @@ import { getImageForFormatters } from '../utils/devcontainer.js';
  * Generate devcontainer.json configuration
  */
 export function generateDevContainerConfig(
-  formatters: FormatterDetection,
-  preset: string = 'standard',
+  formatters: { prettier: boolean; biome: boolean; remark: boolean },
 ): DevContainerConfig {
   const features: Record<string, Record<string, any>> = {};
   const extensions: string[] = [];

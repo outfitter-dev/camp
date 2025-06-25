@@ -32,11 +32,11 @@ export interface DevContainerConfig {
   features?: Record<string, Record<string, any>>;
   customizations?: {
     vscode?: {
-      extensions?: string[];
+      extensions?: Array<string>;
       settings?: Record<string, any>;
     };
   };
   postCreateCommand?: string;
   remoteUser?: string;
-  mounts?: string[];
+  mounts?: Array<string>;
 }

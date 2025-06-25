@@ -10,6 +10,7 @@ import { success, failure, makeError } from '@outfitter/contracts';
 import { validateSetupOptions, validatePackageJson } from '../utils/validation.js';
 import { detectAvailableFormatters } from '../utils/detection.js';
 import { getPreset } from './presets.js';
+import type { PresetConfig } from '../types/index.js';
 import { generateConfigs, generatePackageJsonScripts, generateDevContainer } from './generator.js';
 import { loadYamlPreset, yamlPresetToConfig, resolvePresetInheritance, type YamlPreset } from '../utils/yaml-presets.js';
 
@@ -179,8 +180,9 @@ export async function setup(options: unknown = {}): Promise<Result<SetupResult, 
             await writeFile(devContainerPath, devContainerConfig.content, 'utf-8');
             result.configs.push({
               path: '.devcontainer/devcontainer.json',
-              formatter: 'devcontainer' as any,
+              formatter: 'prettier', // DevContainer files are JSON, format with Prettier
               content: devContainerConfig.content,
+              generated: true,
             });
             result.info.push('Created .devcontainer/devcontainer.json');
           } catch (error) {

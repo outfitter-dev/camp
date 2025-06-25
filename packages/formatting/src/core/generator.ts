@@ -46,12 +46,12 @@ const generateBiomeConfig: ConfigGenerator<{
  * Generate configuration files for available formatters
  */
 export async function generateConfigs(
-  formatters: FormatterType[],
+  formatters: Array<FormatterType>,
   preset: PresetConfig,
   yamlPreset?: YamlPreset,
 ): Promise<Result<GeneratedConfig[], Error>> {
   try {
-    const configs: GeneratedConfig[] = [];
+    const configs: Array<GeneratedConfig> = [];
 
     for (const formatter of formatters) {
       const configResult = await generateFormatterConfig(formatter, preset, yamlPreset);
@@ -204,7 +204,7 @@ function generateRemarkConfigFile(preset: PresetConfig, yamlPreset?: YamlPreset)
     // Apply raw overrides from YAML preset if available
     if (yamlPreset?.raw?.remark) {
       // For remark, we need to handle plugins array specially
-      const rawConfig = yamlPreset.raw.remark as { plugins?: unknown[]; settings?: Record<string, unknown> };
+      const rawConfig = yamlPreset.raw.remark as { plugins?: Array<unknown>; settings?: Record<string, unknown> };
       if (rawConfig.plugins) {
         config.plugins = [...(config.plugins || []), ...(rawConfig.plugins || [])];
       }
@@ -237,7 +237,7 @@ function generateRemarkConfigFile(preset: PresetConfig, yamlPreset?: YamlPreset)
 /**
  * Generate package.json scripts for formatters
  */
-export function generatePackageJsonScripts(formatters: FormatterType[]): Record<string, string> {
+export function generatePackageJsonScripts(formatters: Array<FormatterType>): Record<string, string> {
   const scripts: Record<string, string> = {};
 
   // Generate individual formatter scripts
@@ -337,7 +337,7 @@ export function generateDevContainer(
     remark: detectionResult.available.includes('remark'),
   };
 
-  const config = generateDevContainerConfig(formatters, options.preset);
+  const config = generateDevContainerConfig(formatters);
   const content = formatDevContainerConfig(config);
 
   return {

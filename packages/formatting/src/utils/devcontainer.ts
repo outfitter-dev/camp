@@ -32,8 +32,8 @@ export function needsNodeJS(formatters: FormatterDetection): boolean {
 /**
  * Get recommended VS Code extensions for formatters
  */
-export function getExtensionsForFormatters(formatters: FormatterDetection): string[] {
-  const extensions: string[] = [];
+export function getExtensionsForFormatters(formatters: FormatterDetection): Array<string> {
+  const extensions: Array<string> = [];
   
   if (formatters.prettier) {
     extensions.push('esbenp.prettier-vscode');

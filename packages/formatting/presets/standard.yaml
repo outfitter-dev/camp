@@ -6,29 +6,29 @@ description: Balanced formatting rules suitable for most JavaScript/TypeScript p
 common:
   # Line length for wrapping
   lineWidth: 80
-  
+
   # Indentation settings
   indentation:
     style: space
     width: 2
-  
+
   # Quote preferences
   quotes:
     style: single
     jsx: double
-  
+
   # Semicolon usage
   semicolons: always
-  
+
   # Trailing comma placement
   trailingComma: all
-  
+
   # Spaces inside brackets
   bracketSpacing: true
-  
+
   # Parentheses around arrow functions
   arrowParens: always
-  
+
   # Line ending style
   endOfLine: lf
 
@@ -39,7 +39,7 @@ raw:
     proseWrap: preserve
     htmlWhitespaceSensitivity: css
     embeddedLanguageFormatting: auto
-    
+
   biome:
     # Biome-specific linting rules
     linter:
@@ -48,10 +48,11 @@ raw:
           noExcessiveCognitiveComplexity: warn
         style:
           useConsistentArrayType: error
-          
+
   remark:
     # Remark-specific plugins
     plugins:
       - remark-lint-no-duplicate-headings
       - - remark-lint-maximum-heading-length
         - 60
+

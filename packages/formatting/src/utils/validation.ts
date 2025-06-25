@@ -92,7 +92,7 @@ export function validatePresetName(name: string): SetupOptions['preset'] {
 /**
  * Validate formatter types
  */
-export function validateFormatterTypes(types: string[]): SetupOptions['formatters'] {
+export function validateFormatterTypes(types: Array<string>): SetupOptions['formatters'] {
   const validTypes: SetupOptions['formatters'] = [];
 
   for (const type of types) {

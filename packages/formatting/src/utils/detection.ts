@@ -13,7 +13,6 @@ import type {
 } from '../types/index.js';
 import type { Result } from '@outfitter/contracts';
 import { success, failure, makeError } from '@outfitter/contracts';
-import { FormatterDetectionSchema, FormatterDetectionResultSchema } from '../schemas/index.js';
 
 const execAsync = promisify(exec);
 
@@ -71,7 +70,7 @@ export async function detectAvailableFormatters(): Promise<
   Result<FormatterDetectionResult, Error>
 > {
   try {
-    const formatters: FormatterType[] = ['prettier', 'biome', 'remark'];
+    const formatters: Array<FormatterType> = ['prettier', 'biome', 'remark'];
     const detections = await Promise.all(formatters.map((type) => detectFormatter(type)));
 
     const available = detections.filter((d) => d.available).map((d) => d.type);
@@ -183,15 +182,17 @@ function parseVersionOutput(type: FormatterType, output: string): string {
     case 'prettier':
       // Prettier outputs just the version number
       return cleanOutput;
-    case 'biome':
+    case 'biome': {
       // Biome outputs "Version: 1.8.3" or similar
       const biomeMatch =
         cleanOutput.match(/Version:\s*(.+)/i) || cleanOutput.match(/(\d+\.\d+\.\d+)/);
       return biomeMatch ? biomeMatch[1] : cleanOutput;
-    case 'remark':
+    }
+    case 'remark': {
       // Remark outputs version info, extract the number
       const remarkMatch = cleanOutput.match(/(\d+\.\d+\.\d+)/);
       return remarkMatch ? remarkMatch[1] : cleanOutput;
+    }
     default:
       return cleanOutput;
   }

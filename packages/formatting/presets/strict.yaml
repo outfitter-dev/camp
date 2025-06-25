@@ -7,15 +7,12 @@ extends: standard  # Inherit from standard and override specific settings
 common:
   # Stricter line length
   lineWidth: 80
-  
   # Consistent quotes everywhere
   quotes:
     style: single
     jsx: single  # Even JSX uses single quotes
-  
   # Always use semicolons
   semicolons: always
-  
   # Maximum trailing commas
   trailingComma: all
 
@@ -24,7 +21,6 @@ raw:
   prettier:
     # Strict prose wrapping for markdown
     proseWrap: always
-    
   biome:
     # Stricter linting rules
     linter:
@@ -37,7 +33,6 @@ raw:
         style:
           useConsistentArrayType: error
           noNonNullAssertion: error
-          
   remark:
     # More remark-lint rules for documentation
     plugins:
@@ -51,3 +46,4 @@ raw:
       - remark-lint-list-item-indent
       - - remark-lint-list-item-spacing
         - checkBlanks: true
+
