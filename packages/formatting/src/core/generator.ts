@@ -28,10 +28,14 @@ function hasGenerateFunction(module: unknown): module is { generate: ConfigGener
 }
 
 // Extract generator functions with proper typing
-const prettierModule = prettierConfigModule as any;
-const generatePrettierConfig: ConfigGenerator = prettierModule.generate || prettierModule.default?.generate || (() => {
-  throw new Error('Prettier config module does not have a generate function');
-});
+const prettierModule = prettierConfigModule as { generate?: ConfigGenerator } | { default?: { generate?: ConfigGenerator } };
+
+const generatePrettierConfig: ConfigGenerator = 
+  ('generate' in prettierModule && prettierModule.generate) ||
+  (prettierModule.default && 'generate' in prettierModule.default && prettierModule.default.generate) ||
+  (() => {
+    throw new Error('Prettier config module does not have a generate function');
+  });
 
 const generateBiomeConfig: ConfigGenerator<{
   indentation?: { style: 'space' | 'tab'; width: number };

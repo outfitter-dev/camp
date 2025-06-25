@@ -2,7 +2,7 @@
  * DevContainer configuration generator
  */
 
-import type { FormatterDetection, DevContainerConfig } from '../types/index.js';
+import type { DevContainerConfig } from '../types/index.js';
 import { getImageForFormatters } from '../utils/devcontainer.js';
 
 /**
@@ -12,7 +12,7 @@ export function generateDevContainerConfig(
   formatters: { prettier: boolean; biome: boolean; remark: boolean },
 ): DevContainerConfig {
   const features: Record<string, Record<string, any>> = {};
-  const extensions: string[] = [];
+  const extensions: Array<string> = [];
   const settings: Record<string, any> = {};
 
   // Add formatter-specific features
@@ -77,7 +77,7 @@ export function generateDevContainerConfig(
   };
 
   // Add mounts for formatter configs
-  const mounts: string[] = [];
+  const mounts: Array<string> = [];
   if (formatters.prettier) {
     mounts.push('source=${localWorkspaceFolder}/.prettierrc.yaml,target=/workspace/.prettierrc.yaml,type=bind,consistency=cached');
   }
