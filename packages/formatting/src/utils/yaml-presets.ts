@@ -69,7 +69,9 @@ export function yamlPresetToConfig(preset: YamlPreset): PresetConfig {
   const { common = {} } = preset;
   
   return {
-    name: preset.name as 'standard' | 'strict' | 'relaxed',
+    name: (['standard', 'strict', 'relaxed'].includes(preset.name) 
+      ? preset.name as 'standard' | 'strict' | 'relaxed'
+      : 'standard'),
     lineWidth: common.lineWidth ?? 80,
     indentation: {
       style: common.indentation?.style ?? 'space',

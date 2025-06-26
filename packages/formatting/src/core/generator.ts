@@ -6,8 +6,7 @@ import { stringify as stringifyYaml } from 'yaml';
 import type { PresetConfig, FormatterType, GeneratedConfig, FormatterDetectionResult, SetupOptions, FormatterDetection } from '../types/index.js';
 import type { Result } from '@outfitter/contracts';
 import { success, failure, makeError } from '@outfitter/contracts';
-import { GeneratedConfigSchema, FormatterTypeSchema } from '../schemas/index.js';
-import { loadYamlPreset, mergeRawConfig, type YamlPreset } from '../utils/yaml-presets.js';
+import { mergeRawConfig, type YamlPreset } from '../utils/yaml-presets.js';
 
 // Import config generators
 import prettierConfigModule from '@outfitter/prettier-config';
@@ -16,16 +15,6 @@ import { generate as generateRemarkConfig } from '@outfitter/remark-config';
 
 // Type for config generator functions
 type ConfigGenerator<TOptions = PresetConfig> = (options: TOptions) => unknown;
-
-// Type guard for modules with generate function
-function hasGenerateFunction(module: unknown): module is { generate: ConfigGenerator } {
-  return (
-    typeof module === 'object' &&
-    module !== null &&
-    'generate' in module &&
-    typeof (module as { generate: unknown }).generate === 'function'
-  );
-}
 
 // Extract generator functions with proper typing
 const prettierModule = prettierConfigModule as { generate?: ConfigGenerator } | { default?: { generate?: ConfigGenerator } };

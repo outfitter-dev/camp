@@ -85,7 +85,8 @@ export function validatePresetName(name: string): SetupOptions['preset'] {
   if (result.success) {
     return result.data;
   }
-  // Default to standard if invalid
+  // Log warning and default to standard if invalid
+  console.warn(`Invalid preset name "${name}", falling back to "standard"`);
   return 'standard';
 }
 
