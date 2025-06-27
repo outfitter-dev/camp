@@ -7,9 +7,9 @@ import type { FormatterDetection } from '../types/index.js';
 /**
  * Get the appropriate base image based on available formatters
  */
-export function getImageForFormatters(formatters: FormatterDetection): string {
+export function getImageForFormatters(formatters: { prettier: boolean; biome: boolean; remark: boolean; eslint: boolean }): string {
   // If we have Node.js-based tools, use Node image
-  if (formatters.prettier || formatters.remark) {
+  if (formatters.prettier || formatters.remark || formatters.eslint) {
     return 'mcr.microsoft.com/devcontainers/javascript-node:1-20-bullseye';
   }
   
@@ -25,14 +25,14 @@ export function getImageForFormatters(formatters: FormatterDetection): string {
 /**
  * Determine if formatters need Node.js
  */
-export function needsNodeJS(formatters: FormatterDetection): boolean {
-  return !!(formatters.prettier || formatters.remark);
+export function needsNodeJS(formatters: { prettier: boolean; biome: boolean; remark: boolean; eslint: boolean }): boolean {
+  return !!(formatters.prettier || formatters.remark || formatters.eslint);
 }
 
 /**
  * Get recommended VS Code extensions for formatters
  */
-export function getExtensionsForFormatters(formatters: FormatterDetection): Array<string> {
+export function getExtensionsForFormatters(formatters: { prettier: boolean; biome: boolean; remark: boolean; eslint: boolean }): Array<string> {
   const extensions: Array<string> = [];
   
   if (formatters.prettier) {
@@ -47,11 +47,14 @@ export function getExtensionsForFormatters(formatters: FormatterDetection): Arra
     extensions.push('unifiedjs.vscode-remark');
   }
   
+  if (formatters.eslint) {
+    extensions.push('dbaeumer.vscode-eslint');
+  }
+  
   // Always include these
   extensions.push(
     'editorconfig.editorconfig',
     'davidanson.vscode-markdownlint',
-    'dbaeumer.vscode-eslint',
   );
   
   return extensions;

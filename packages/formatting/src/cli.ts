@@ -150,6 +150,9 @@ program
             case 'remark':
               console.log('   • pnpm add -D remark-cli');
               break;
+            case 'eslint':
+              console.log('   • pnpm add -D eslint');
+              break;
           }
         }
       }
@@ -186,6 +189,42 @@ program
       console.log('   • Create a .yaml file with your custom preset');
       console.log('   • Use --preset path/to/preset.yaml with the setup command');
       console.log('   • See presets/ directory for examples');
+    }
+  });
+
+// Migration command
+program
+  .command('migrate')
+  .description('Analyze ESLint config for migration to Biome')
+  .option('-c, --config <path>', 'Path to ESLint config file', '.eslintrc.js')
+  .option('-o, --output <path>', 'Output path for migration report')
+  .action(async (options) => {
+    const { analyzeEslintConfig, generateMigrationReport } = await import('./utils/migration.js');
+    
+    console.log('🔄 Analyzing ESLint configuration for Biome migration...\n');
+    
+    try {
+      const analysisResult = await analyzeEslintConfig(options.config);
+      
+      if (!analysisResult.success) {
+        console.error('❌ Analysis failed:', analysisResult.error.message);
+        process.exit(1);
+      }
+      
+      const report = generateMigrationReport(analysisResult.data);
+      
+      if (options.output) {
+        const { writeFile } = await import('node:fs/promises');
+        await writeFile(options.output, report, 'utf-8');
+        console.log(`✅ Migration report saved to: ${options.output}`);
+      } else {
+        console.log(report);
+      }
+      
+      console.log('\n💡 Run `outfitter-formatting setup --formatters biome` to generate Biome config');
+    } catch (error) {
+      console.error('❌ Migration analysis failed:', error instanceof Error ? error.message : 'Unknown error');
+      process.exit(1);
     }
   });
 

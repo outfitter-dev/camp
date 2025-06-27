@@ -70,7 +70,7 @@ export async function detectAvailableFormatters(): Promise<
   Result<FormatterDetectionResult, Error>
 > {
   try {
-    const formatters: Array<FormatterType> = ['prettier', 'biome', 'remark'];
+    const formatters: Array<FormatterType> = ['prettier', 'biome', 'remark', 'eslint'];
     const detections = await Promise.all(formatters.map((type) => detectFormatter(type)));
 
     const available = detections.filter((d) => d.available).map((d) => d.type);
@@ -151,6 +151,8 @@ function getFormatterBinName(type: FormatterType): string {
       return 'biome';
     case 'remark':
       return 'remark';
+    case 'eslint':
+      return 'eslint';
     default:
       throw new Error(`Unknown formatter type: ${type}`);
   }
@@ -166,6 +168,8 @@ function getFormatterVersionFlag(type: FormatterType): string {
     case 'biome':
       return '--version';
     case 'remark':
+      return '--version';
+    case 'eslint':
       return '--version';
     default:
       throw new Error(`Unknown formatter type: ${type}`);
@@ -192,6 +196,11 @@ function parseVersionOutput(type: FormatterType, output: string): string {
       // Remark outputs version info, extract the number
       const remarkMatch = cleanOutput.match(/(\d+\.\d+\.\d+)/);
       return remarkMatch?.[1] ?? cleanOutput;
+    }
+    case 'eslint': {
+      // ESLint outputs "v8.57.0" or similar
+      const eslintMatch = cleanOutput.match(/v?(\d+\.\d+\.\d+)/);
+      return eslintMatch?.[1] ?? cleanOutput;
     }
     default:
       return cleanOutput;

@@ -9,7 +9,7 @@ import { getImageForFormatters } from '../utils/devcontainer.js';
  * Generate devcontainer.json configuration
  */
 export function generateDevContainerConfig(
-  formatters: { prettier: boolean; biome: boolean; remark: boolean },
+  formatters: { prettier: boolean; biome: boolean; remark: boolean; eslint: boolean },
 ): DevContainerConfig {
   const features: Record<string, Record<string, any>> = {};
   const extensions: Array<string> = [];
@@ -43,6 +43,20 @@ export function generateDevContainerConfig(
     extensions.push('unifiedjs.vscode-remark');
     settings['[markdown]'] = {
       'editor.defaultFormatter': 'unifiedjs.vscode-remark',
+    };
+  }
+
+  if (formatters.eslint) {
+    extensions.push('dbaeumer.vscode-eslint');
+    settings['eslint.validate'] = [
+      'javascript',
+      'javascriptreact',
+      'typescript',
+      'typescriptreact',
+    ];
+    settings['editor.codeActionsOnSave'] = {
+      ...settings['editor.codeActionsOnSave'],
+      'source.fixAll.eslint': 'explicit',
     };
   }
 

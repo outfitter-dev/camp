@@ -7,7 +7,7 @@ import { z } from 'zod';
 /**
  * Formatter types enum
  */
-export const FormatterTypeSchema = z.enum(['prettier', 'biome', 'remark']);
+export const FormatterTypeSchema = z.enum(['prettier', 'biome', 'remark', 'eslint']);
 export type FormatterType = z.infer<typeof FormatterTypeSchema>;
 
 /**
