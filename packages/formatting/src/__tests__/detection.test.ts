@@ -128,6 +128,8 @@ describe('detection utilities', () => {
           callback(null, { stdout: 'Version: 1.8.3', stderr: '' });
         } else if (cmd.includes('remark') && cmd.includes('--version')) {
           callback(null, { stdout: 'remark: 15.0.1', stderr: '' });
+        } else if (cmd.includes('eslint') && cmd.includes('--version')) {
+          callback(null, { stdout: 'v8.57.0', stderr: '' });
         }
       });
 
@@ -138,8 +140,9 @@ describe('detection utilities', () => {
         expect(result.data.available).toContain('prettier');
         expect(result.data.available).toContain('biome');
         expect(result.data.available).toContain('remark');
+        expect(result.data.available).toContain('eslint');
         expect(result.data.missing).toHaveLength(0);
-        expect(result.data.formatters).toHaveLength(3);
+        expect(result.data.formatters).toHaveLength(4);
       }
     });
 
@@ -149,7 +152,8 @@ describe('detection utilities', () => {
       mockAccess
         .mockResolvedValueOnce(undefined) // prettier exists
         .mockRejectedValueOnce(new Error('Not found')) // biome not found
-        .mockRejectedValueOnce(new Error('Not found')); // remark not found
+        .mockRejectedValueOnce(new Error('Not found')) // remark not found
+        .mockRejectedValueOnce(new Error('Not found')); // eslint not found
 
       const mockExec = vi.mocked(exec);
       // @ts-ignore - Mocking callback style
@@ -168,7 +172,8 @@ describe('detection utilities', () => {
         expect(result.data.available).toEqual(['prettier']);
         expect(result.data.missing).toContain('biome');
         expect(result.data.missing).toContain('remark');
-        expect(result.data.formatters).toHaveLength(3);
+        expect(result.data.missing).toContain('eslint');
+        expect(result.data.formatters).toHaveLength(4);
       }
     });
 
@@ -187,7 +192,7 @@ describe('detection utilities', () => {
       expect(result.success).toBe(true); // Still succeeds but with no formatters
       if (result.success) {
         expect(result.data.available).toHaveLength(0);
-        expect(result.data.missing).toHaveLength(3);
+        expect(result.data.missing).toHaveLength(4);
       }
     });
   });

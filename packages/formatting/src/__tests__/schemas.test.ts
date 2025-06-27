@@ -13,12 +13,13 @@ describe('schemas', () => {
       expect(FormatterTypeSchema.parse('prettier')).toBe('prettier');
       expect(FormatterTypeSchema.parse('biome')).toBe('biome');
       expect(FormatterTypeSchema.parse('remark')).toBe('remark');
+      expect(FormatterTypeSchema.parse('eslint')).toBe('eslint');
     });
 
     it('should reject invalid formatter types', () => {
-      expect(() => FormatterTypeSchema.parse('eslint')).toThrow();
       expect(() => FormatterTypeSchema.parse('unknown')).toThrow();
       expect(() => FormatterTypeSchema.parse('')).toThrow();
+      expect(() => FormatterTypeSchema.parse('typescript')).toThrow();
     });
   });
 

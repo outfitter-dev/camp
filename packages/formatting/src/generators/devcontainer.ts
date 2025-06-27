@@ -8,9 +8,12 @@ import { getImageForFormatters } from '../utils/devcontainer.js';
 /**
  * Generate devcontainer.json configuration
  */
-export function generateDevContainerConfig(
-  formatters: { prettier: boolean; biome: boolean; remark: boolean; eslint: boolean },
-): DevContainerConfig {
+export function generateDevContainerConfig(formatters: {
+  prettier: boolean;
+  biome: boolean;
+  remark: boolean;
+  eslint: boolean;
+}): DevContainerConfig {
   const features: Record<string, Record<string, any>> = {};
   const extensions: Array<string> = [];
   const settings: Record<string, any> = {};
@@ -25,7 +28,7 @@ export function generateDevContainerConfig(
   if (formatters.biome) {
     features['ghcr.io/devcontainers-contrib/features/biome:1'] = {};
     extensions.push('biomejs.biome');
-    
+
     // Set Biome as default for supported languages
     const biomeLanguages = ['javascript', 'typescript', 'json', 'jsonc'];
     for (const lang of biomeLanguages) {
@@ -61,10 +64,7 @@ export function generateDevContainerConfig(
   }
 
   // Add common extensions
-  extensions.push(
-    'editorconfig.editorconfig',
-    'davidanson.vscode-markdownlint',
-  );
+  extensions.push('editorconfig.editorconfig', 'davidanson.vscode-markdownlint');
 
   // Base devcontainer configuration
   const config: DevContainerConfig = {
@@ -93,13 +93,19 @@ export function generateDevContainerConfig(
   // Add mounts for formatter configs
   const mounts: Array<string> = [];
   if (formatters.prettier) {
-    mounts.push('source=${localWorkspaceFolder}/.prettierrc.yaml,target=/workspace/.prettierrc.yaml,type=bind,consistency=cached');
+    mounts.push(
+      'source=${localWorkspaceFolder}/.prettierrc.yaml,target=/workspace/.prettierrc.yaml,type=bind,consistency=cached',
+    );
   }
   if (formatters.biome) {
-    mounts.push('source=${localWorkspaceFolder}/biome.jsonc,target=/workspace/biome.jsonc,type=bind,consistency=cached');
+    mounts.push(
+      'source=${localWorkspaceFolder}/biome.jsonc,target=/workspace/biome.jsonc,type=bind,consistency=cached',
+    );
   }
   if (formatters.remark) {
-    mounts.push('source=${localWorkspaceFolder}/.remarkrc.yaml,target=/workspace/.remarkrc.yaml,type=bind,consistency=cached');
+    mounts.push(
+      'source=${localWorkspaceFolder}/.remarkrc.yaml,target=/workspace/.remarkrc.yaml,type=bind,consistency=cached',
+    );
   }
 
   if (mounts.length > 0) {
@@ -118,6 +124,6 @@ export function formatDevContainerConfig(config: DevContainerConfig): string {
     '// For format details, see https://aka.ms/devcontainer.json',
     JSON.stringify(config, null, 2),
   ];
-  
+
   return lines.join('\n');
 }

@@ -105,14 +105,16 @@ export const legacyConfig: Linter.Config = {
 /**
  * Generate ESLint configuration based on preset options
  */
-export function generate(presetConfig: {
-  typescript?: boolean;
-  react?: boolean;
-  node?: boolean;
-  strictness?: 'relaxed' | 'standard' | 'strict';
-  imports?: boolean;
-  accessibility?: boolean;
-} = {}) {
+export function generate(
+  presetConfig: {
+    typescript?: boolean;
+    react?: boolean;
+    node?: boolean;
+    strictness?: 'relaxed' | 'standard' | 'strict';
+    imports?: boolean;
+    accessibility?: boolean;
+  } = {},
+) {
   const {
     typescript = true,
     react = true,
@@ -151,12 +153,12 @@ export function generate(presetConfig: {
       config.extends.push('plugin:@typescript-eslint/recommended');
     }
     config.plugins = ['@typescript-eslint'];
-    
+
     // TypeScript rules based on strictness
     const tsRules: Record<string, unknown> = {
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     };
-    
+
     if (strictness === 'strict') {
       tsRules['@typescript-eslint/no-explicit-any'] = 'error';
       tsRules['@typescript-eslint/no-non-null-assertion'] = 'error';
@@ -171,7 +173,7 @@ export function generate(presetConfig: {
       tsRules['@typescript-eslint/no-non-null-assertion'] = 'error';
       config.rules!['no-console'] = 'warn';
     }
-    
+
     Object.assign(config.rules!, tsRules);
   }
 
@@ -181,13 +183,10 @@ export function generate(presetConfig: {
       react: { version: 'detect' },
     };
     if (Array.isArray(config.extends)) {
-      config.extends.push(
-        'plugin:react/recommended',
-        'plugin:react-hooks/recommended'
-      );
+      config.extends.push('plugin:react/recommended', 'plugin:react-hooks/recommended');
     }
     config.plugins = [...(config.plugins || []), 'react', 'react-hooks'];
-    
+
     const reactRules = {
       'react/react-in-jsx-scope': 'off', // Not needed in React 17+
       'react/prop-types': 'off', // Using TypeScript instead
@@ -196,17 +195,14 @@ export function generate(presetConfig: {
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
     };
-    
+
     Object.assign(config.rules!, reactRules);
   }
 
   // Import organization
   if (imports && typescript) {
     if (Array.isArray(config.extends)) {
-      config.extends.push(
-        'plugin:import/recommended',
-        'plugin:import/typescript'
-      );
+      config.extends.push('plugin:import/recommended', 'plugin:import/typescript');
     }
     config.plugins = [...(config.plugins || []), 'import'];
     config.settings = {
@@ -218,7 +214,7 @@ export function generate(presetConfig: {
         },
       },
     };
-    
+
     config.rules!['import/no-unresolved'] = 'error';
     config.rules!['import/order'] = [
       'warn',
@@ -239,7 +235,7 @@ export function generate(presetConfig: {
       config.extends.push('plugin:jsx-a11y/recommended');
     }
     config.plugins = [...(config.plugins || []), 'jsx-a11y'];
-    
+
     const a11yRules = {
       'jsx-a11y/alt-text': 'error',
       'jsx-a11y/aria-props': 'error',
@@ -248,7 +244,7 @@ export function generate(presetConfig: {
       'jsx-a11y/role-has-required-aria-props': 'error',
       'jsx-a11y/role-supports-aria-props': 'error',
     };
-    
+
     Object.assign(config.rules!, a11yRules);
   }
 

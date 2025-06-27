@@ -84,7 +84,9 @@ function unwrapMarkdownProse(content) {
       const markerMatch = firstLine.match(/^([\s]*([-*+]\s|\d+\.\s))/);
       const marker = markerMatch ? markerMatch[1] : '';
       const content = listItemLines
-        .map((l, idx) => (idx === 0 ? l.replace(/^([\s]*([-*+]\s|\d+\.\s))/, '') : l))
+        .map((l, idx) =>
+          idx === 0 ? l.replace(/^([\s]*([-*+]\s|\d+\.\s))/, '') : l,
+        )
         .join(' ')
         .replace(/\s+/g, ' ')
         .trim();
@@ -260,7 +262,9 @@ Examples:
     }
   }
 
-  console.log(`🔍 Processing ${filePaths.length} files${isDryRun ? ' (dry run)' : ''}...\n`);
+  console.log(
+    `🔍 Processing ${filePaths.length} files${isDryRun ? ' (dry run)' : ''}...\n`,
+  );
 
   let processedCount = 0;
   let changedCount = 0;
@@ -290,7 +294,9 @@ Examples:
 
   console.log(`\n📊 Summary:`);
   console.log(`   Processed: ${processedCount} files`);
-  console.log(`   ${isDryRun ? 'Would change' : 'Changed'}: ${changedCount} files`);
+  console.log(
+    `   ${isDryRun ? 'Would change' : 'Changed'}: ${changedCount} files`,
+  );
 
   if (isDryRun && changedCount > 0) {
     console.log(`\n💡 Run without --dry-run to apply changes`);

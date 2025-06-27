@@ -55,4 +55,3 @@ raw:
       - remark-lint-no-duplicate-headings
       - - remark-lint-maximum-heading-length
         - 60
-

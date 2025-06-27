@@ -12,7 +12,12 @@ import { detectAvailableFormatters } from '../utils/detection.js';
 import { getPreset } from './presets.js';
 import type { PresetConfig } from '../types/index.js';
 import { generateConfigs, generatePackageJsonScripts, generateDevContainer } from './generator.js';
-import { loadYamlPreset, yamlPresetToConfig, resolvePresetInheritance, type YamlPreset } from '../utils/yaml-presets.js';
+import {
+  loadYamlPreset,
+  yamlPresetToConfig,
+  resolvePresetInheritance,
+  type YamlPreset,
+} from '../utils/yaml-presets.js';
 
 /**
  * Main setup function - orchestrates the entire formatting setup process
@@ -49,7 +54,7 @@ export async function setup(options: unknown = {}): Promise<Result<SetupResult, 
     // Step 1: Get preset configuration
     let basePreset: PresetConfig;
     let yamlPreset: YamlPreset | undefined;
-    
+
     // Check if preset is a path to a YAML file
     if (preset.endsWith('.yaml') || preset.endsWith('.yml')) {
       // Load YAML preset
@@ -59,7 +64,7 @@ export async function setup(options: unknown = {}): Promise<Result<SetupResult, 
         result.errors.push(`Failed to load preset: ${loadResult.error.message}`);
         return success(result);
       }
-      
+
       // Resolve inheritance
       const presetsDir = join(targetDir, 'presets');
       const resolvedResult = await resolvePresetInheritance(loadResult.data, presetsDir);
@@ -67,15 +72,33 @@ export async function setup(options: unknown = {}): Promise<Result<SetupResult, 
         result.errors.push(`Failed to resolve preset inheritance: ${resolvedResult.error.message}`);
         return success(result);
       }
-      
+
       yamlPreset = resolvedResult.data;
       basePreset = yamlPresetToConfig(yamlPreset);
     } else {
       // Use built-in preset
       basePreset = getPreset(preset as 'standard' | 'strict' | 'relaxed');
     }
-    
-    const presetConfigResolved = presetConfig ? { ...basePreset, ...presetConfig } : basePreset;
+
+    // Merge preset config with base preset
+    const presetConfigResolved: PresetConfig = presetConfig
+      ? {
+          ...basePreset,
+          ...(presetConfig.name !== undefined && { name: presetConfig.name }),
+          ...(presetConfig.lineWidth !== undefined && { lineWidth: presetConfig.lineWidth }),
+          ...(presetConfig.indentation !== undefined && { indentation: presetConfig.indentation }),
+          ...(presetConfig.quotes !== undefined && { quotes: presetConfig.quotes }),
+          ...(presetConfig.semicolons !== undefined && { semicolons: presetConfig.semicolons }),
+          ...(presetConfig.trailingComma !== undefined && {
+            trailingComma: presetConfig.trailingComma,
+          }),
+          ...(presetConfig.bracketSpacing !== undefined && {
+            bracketSpacing: presetConfig.bracketSpacing,
+          }),
+          ...(presetConfig.arrowParens !== undefined && { arrowParens: presetConfig.arrowParens }),
+          ...(presetConfig.endOfLine !== undefined && { endOfLine: presetConfig.endOfLine }),
+        }
+      : basePreset;
     if (verbose) {
       result.info.push(`Using preset: ${presetConfigResolved.name}`);
     }
@@ -115,7 +138,11 @@ export async function setup(options: unknown = {}): Promise<Result<SetupResult, 
     }
 
     // Step 4: Generate configuration files
-    const configsResult = await generateConfigs(formattersToSetup, presetConfigResolved, yamlPreset);
+    const configsResult = await generateConfigs(
+      formattersToSetup,
+      presetConfigResolved,
+      yamlPreset,
+    );
     if (!configsResult.success) {
       result.errors.push(`Failed to generate configs: ${configsResult.error.message}`);
       return success(result);
@@ -171,7 +198,7 @@ export async function setup(options: unknown = {}): Promise<Result<SetupResult, 
       const devContainerConfig = generateDevContainer(detectionResult.data, optionsResult.data);
       if (devContainerConfig) {
         const devContainerPath = join(targetDir, '.devcontainer', 'devcontainer.json');
-        
+
         if (!dryRun) {
           // Create .devcontainer directory if it doesn't exist
           const devContainerDir = join(targetDir, '.devcontainer');
@@ -186,7 +213,9 @@ export async function setup(options: unknown = {}): Promise<Result<SetupResult, 
             });
             result.info.push('Created .devcontainer/devcontainer.json');
           } catch (error) {
-            result.warnings.push(`Failed to create devcontainer config: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            result.warnings.push(
+              `Failed to create devcontainer config: ${error instanceof Error ? error.message : 'Unknown error'}`,
+            );
           }
         } else {
           result.info.push('Would create .devcontainer/devcontainer.json');

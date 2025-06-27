@@ -2,7 +2,7 @@
 # Rigorous formatting for documentation-heavy projects
 name: strict
 description: Strict formatting rules optimized for documentation and long-term maintenance
-extends: standard  # Inherit from standard and override specific settings
+extends: standard # Inherit from standard and override specific settings
 
 common:
   # Stricter line length
@@ -10,7 +10,7 @@ common:
   # Consistent quotes everywhere
   quotes:
     style: single
-    jsx: single  # Even JSX uses single quotes
+    jsx: single # Even JSX uses single quotes
   # Always use semicolons
   semicolons: always
   # Maximum trailing commas
@@ -38,7 +38,7 @@ raw:
     plugins:
       - remark-lint-no-duplicate-headings
       - - remark-lint-maximum-heading-length
-        - 50  # Stricter heading length
+        - 50 # Stricter heading length
       - - remark-lint-maximum-line-length
         - 80
       - remark-lint-no-heading-punctuation
@@ -46,4 +46,3 @@ raw:
       - remark-lint-list-item-indent
       - - remark-lint-list-item-spacing
         - checkBlanks: true
-

@@ -1,5 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import { generateDevContainerConfig, formatDevContainerConfig } from '../generators/devcontainer.js';
+import {
+  generateDevContainerConfig,
+  formatDevContainerConfig,
+} from '../generators/devcontainer.js';
 import type { FormatterDetection } from '../types/index.js';
 
 describe('DevContainer Generator', () => {

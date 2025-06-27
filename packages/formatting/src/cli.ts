@@ -22,7 +22,11 @@ program
 program
   .command('setup')
   .description('Set up formatting configuration for your project')
-  .option('-p, --preset <preset>', 'Preset to use (standard, strict, relaxed) or path to YAML preset file', 'standard')
+  .option(
+    '-p, --preset <preset>',
+    'Preset to use (standard, strict, relaxed) or path to YAML preset file',
+    'standard',
+  )
   .option('-f, --formatters <formatters...>', 'Specific formatters to configure')
   .option('--no-scripts', 'Skip updating package.json scripts')
   .option('--install-missing', 'Attempt to install missing formatters')
@@ -183,7 +187,7 @@ program
       console.log(`  Semicolons: ${preset.semicolons}`);
       console.log(`  Trailing commas: ${preset.trailingComma}`);
     }
-    
+
     if (options.yaml) {
       console.log('\n💡 You can also use custom YAML presets:');
       console.log('   • Create a .yaml file with your custom preset');
@@ -200,19 +204,19 @@ program
   .option('-o, --output <path>', 'Output path for migration report')
   .action(async (options) => {
     const { analyzeEslintConfig, generateMigrationReport } = await import('./utils/migration.js');
-    
+
     console.log('🔄 Analyzing ESLint configuration for Biome migration...\n');
-    
+
     try {
       const analysisResult = await analyzeEslintConfig(options.config);
-      
+
       if (!analysisResult.success) {
         console.error('❌ Analysis failed:', analysisResult.error.message);
         process.exit(1);
       }
-      
+
       const report = generateMigrationReport(analysisResult.data);
-      
+
       if (options.output) {
         const { writeFile } = await import('node:fs/promises');
         await writeFile(options.output, report, 'utf-8');
@@ -220,10 +224,15 @@ program
       } else {
         console.log(report);
       }
-      
-      console.log('\n💡 Run `outfitter-formatting setup --formatters biome` to generate Biome config');
+
+      console.log(
+        '\n💡 Run `outfitter-formatting setup --formatters biome` to generate Biome config',
+      );
     } catch (error) {
-      console.error('❌ Migration analysis failed:', error instanceof Error ? error.message : 'Unknown error');
+      console.error(
+        '❌ Migration analysis failed:',
+        error instanceof Error ? error.message : 'Unknown error',
+      );
       process.exit(1);
     }
   });

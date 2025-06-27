@@ -16,13 +16,13 @@ const eslintToBiomeRules: Record<string, string | { rule: string; severity?: str
   '@typescript-eslint/no-unused-vars': 'correctness/noUnusedVariables',
   '@typescript-eslint/no-explicit-any': 'suspicious/noExplicitAny',
   '@typescript-eslint/no-non-null-assertion': 'style/noNonNullAssertion',
-  
+
   // General rules
   'no-console': 'suspicious/noConsole',
   'no-debugger': 'suspicious/noDebugger',
   'prefer-const': 'style/useConst',
   'no-var': 'style/noVar',
-  
+
   // React rules (Biome has limited React support)
   'react-hooks/rules-of-hooks': 'correctness/useHookAtTopLevel',
   'react-hooks/exhaustive-deps': 'correctness/useExhaustiveDependencies',
@@ -42,7 +42,7 @@ function mapSeverity(eslintSeverity: string | number): 'error' | 'warn' | 'off' 
  */
 export function extractPresetFromEslint(eslintConfig: any): Partial<PresetConfig> {
   const preset: Partial<PresetConfig> = {};
-  
+
   // Try to determine formatting preferences from rules
   if (eslintConfig.rules) {
     // Check for quotes preference
@@ -53,13 +53,13 @@ export function extractPresetFromEslint(eslintConfig: any): Partial<PresetConfig
         jsx: quotesRule[1] as 'single' | 'double',
       };
     }
-    
+
     // Check for semicolons
     const semiRule = eslintConfig.rules['semi'];
     if (Array.isArray(semiRule)) {
       preset.semicolons = semiRule[1] === 'never' ? 'asNeeded' : 'always';
     }
-    
+
     // Check for trailing commas
     const commaRule = eslintConfig.rules['comma-dangle'];
     if (Array.isArray(commaRule) && typeof commaRule[1] === 'string') {
@@ -67,7 +67,7 @@ export function extractPresetFromEslint(eslintConfig: any): Partial<PresetConfig
       else if (commaRule[1].includes('always')) preset.trailingComma = 'all';
     }
   }
-  
+
   return preset;
 }
 
@@ -90,7 +90,7 @@ export async function analyzeEslintConfig(
   try {
     // Read ESLint config
     const configContent = await readFile(eslintConfigPath, 'utf-8');
-    
+
     // Parse config (handle both module.exports and export default)
     let eslintConfig: any;
     if (configContent.includes('module.exports')) {
@@ -105,23 +105,25 @@ export async function analyzeEslintConfig(
       // This is a simplified approach
       return failure(makeError('NOT_IMPLEMENTED', 'ES module ESLint configs not yet supported'));
     }
-    
+
     const analysis: MigrationAnalysis = {
       mappableRules: [],
       unmappableRules: [],
       suggestedPreset: extractPresetFromEslint(eslintConfig),
       warnings: [],
     };
-    
+
     // Analyze rules
     if (eslintConfig.rules) {
       for (const [rule, config] of Object.entries(eslintConfig.rules)) {
         const biomeMapping = eslintToBiomeRules[rule];
-        
+
         if (biomeMapping) {
-          const severity = Array.isArray(config) ? mapSeverity(config[0]) : mapSeverity(config as any);
+          const severity = Array.isArray(config)
+            ? mapSeverity(config[0])
+            : mapSeverity(config as any);
           const biomeRule = typeof biomeMapping === 'string' ? biomeMapping : biomeMapping.rule;
-          
+
           analysis.mappableRules.push({
             eslint: rule,
             biome: biomeRule,
@@ -132,30 +134,30 @@ export async function analyzeEslintConfig(
         }
       }
     }
-    
+
     // Add warnings
     if (eslintConfig.extends?.includes('plugin:react')) {
       analysis.warnings.push(
-        'Biome has limited React support. Some React-specific rules may not have equivalents.'
+        'Biome has limited React support. Some React-specific rules may not have equivalents.',
       );
     }
-    
+
     if (eslintConfig.extends?.includes('plugin:@typescript-eslint')) {
       analysis.warnings.push(
-        'Biome TypeScript support differs from @typescript-eslint. Review type checking carefully.'
+        'Biome TypeScript support differs from @typescript-eslint. Review type checking carefully.',
       );
     }
-    
+
     if (eslintConfig.overrides?.length > 0) {
       analysis.warnings.push(
-        'ESLint overrides detected. Biome uses different configuration for file-specific rules.'
+        'ESLint overrides detected. Biome uses different configuration for file-specific rules.',
       );
     }
-    
+
     return success(analysis);
   } catch (error) {
     return failure(
-      makeError('INTERNAL_ERROR', 'Failed to analyze ESLint config', { cause: error })
+      makeError('INTERNAL_ERROR', 'Failed to analyze ESLint config', { cause: error }),
     );
   }
 }
@@ -172,15 +174,15 @@ export function generateMigrationReport(analysis: MigrationAnalysis): string {
     `- Unmappable rules: ${analysis.unmappableRules.length}`,
     '',
   ];
-  
+
   if (analysis.warnings.length > 0) {
     lines.push('## ⚠️ Warnings', '');
-    analysis.warnings.forEach(warning => {
+    analysis.warnings.forEach((warning) => {
       lines.push(`- ${warning}`);
     });
     lines.push('');
   }
-  
+
   if (analysis.mappableRules.length > 0) {
     lines.push('## ✅ Mappable Rules', '');
     lines.push('| ESLint Rule | Biome Rule | Severity |');
@@ -190,17 +192,17 @@ export function generateMigrationReport(analysis: MigrationAnalysis): string {
     });
     lines.push('');
   }
-  
+
   if (analysis.unmappableRules.length > 0) {
     lines.push('## ❌ Unmappable Rules', '');
     lines.push('These ESLint rules do not have direct Biome equivalents:');
     lines.push('');
-    analysis.unmappableRules.forEach(rule => {
+    analysis.unmappableRules.forEach((rule) => {
       lines.push(`- ${rule}`);
     });
     lines.push('');
   }
-  
+
   if (Object.keys(analysis.suggestedPreset).length > 0) {
     lines.push('## 📋 Suggested Formatting Preset', '');
     lines.push('Based on your ESLint config, we suggest these formatting options:');
@@ -210,7 +212,7 @@ export function generateMigrationReport(analysis: MigrationAnalysis): string {
     lines.push('```');
     lines.push('');
   }
-  
+
   lines.push('## 🚀 Next Steps', '');
   lines.push('1. Run `outfitter-formatting setup --formatters biome` to generate Biome config');
   lines.push('2. Review the generated `biome.jsonc` file');
@@ -218,6 +220,6 @@ export function generateMigrationReport(analysis: MigrationAnalysis): string {
   lines.push('4. Adjust rules as needed based on your project requirements');
   lines.push('');
   lines.push('Note: This is an automated analysis. Manual review is recommended.');
-  
+
   return lines.join('\n');
 }

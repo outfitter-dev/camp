@@ -2,7 +2,7 @@
 # Shows how to create organization-specific formatting rules
 name: custom-example
 description: Example of a custom preset with organization-specific rules
-extends: standard  # Start from standard and customize
+extends: standard # Start from standard and customize
 
 common:
   # Organization prefers 100 character lines
@@ -22,7 +22,7 @@ common:
 raw:
   prettier:
     # Organization-specific overrides
-    printWidth: 100  # Ensure consistency
+    printWidth: 100 # Ensure consistency
     useTabs: true
     tabWidth: 4
 
@@ -33,13 +33,13 @@ raw:
 
     # File-specific overrides
     overrides:
-      - files: "*.test.{js,ts}"
+      - files: '*.test.{js,ts}'
         options:
-          printWidth: 120  # More space for test descriptions
+          printWidth: 120 # More space for test descriptions
 
-      - files: "*.{yml,yaml}"
+      - files: '*.{yml,yaml}'
         options:
-          tabWidth: 2  # YAML files always use 2 spaces
+          tabWidth: 2 # YAML files always use 2 spaces
           useTabs: false
 
   biome:
@@ -56,7 +56,7 @@ raw:
         naming:
           - error
           - format:
-              - camelCase  # variables, functions
+              - camelCase # variables, functions
               - PascalCase # types, classes
               - CONSTANT_CASE # constants
 
@@ -74,18 +74,18 @@ raw:
     # Documentation standards
     settings:
       # Force specific list markers
-      bullet: "-"
-      bulletOrdered: "."
+      bullet: '-'
+      bulletOrdered: '.'
 
     plugins:
       # Standard plugins
       - remark-lint-no-duplicate-headings
       - - remark-lint-ordered-list-marker-style
-        - "."
+        - '.'
 
       # Custom documentation rules
       - - remark-lint-heading-style
-        - atx  # Always use # style headings
+        - atx # Always use # style headings
 
       # Enforce code block language specification
       - remark-lint-fenced-code-flag
@@ -93,7 +93,7 @@ raw:
       # Custom plugin for organization's docs
       - - ./plugins/remark-company-terms.js
         - terms:
-            - from: "e-mail"
-              to: "email"
-            - from: "dev ops"
-              to: "DevOps"
+            - from: 'e-mail'
+              to: 'email'
+            - from: 'dev ops'
+              to: 'DevOps'
