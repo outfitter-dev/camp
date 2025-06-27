@@ -186,12 +186,12 @@ function parseVersionOutput(type: FormatterType, output: string): string {
       // Biome outputs "Version: 1.8.3" or similar
       const biomeMatch =
         cleanOutput.match(/Version:\s*(.+)/i) || cleanOutput.match(/(\d+\.\d+\.\d+)/);
-      return biomeMatch ? biomeMatch[1] : cleanOutput;
+      return biomeMatch?.[1] ?? cleanOutput;
     }
     case 'remark': {
       // Remark outputs version info, extract the number
       const remarkMatch = cleanOutput.match(/(\d+\.\d+\.\d+)/);
-      return remarkMatch ? remarkMatch[1] : cleanOutput;
+      return remarkMatch?.[1] ?? cleanOutput;
     }
     default:
       return cleanOutput;

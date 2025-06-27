@@ -17,11 +17,10 @@ import { generate as generateRemarkConfig } from '@outfitter/remark-config';
 type ConfigGenerator<TOptions = PresetConfig> = (options: TOptions) => unknown;
 
 // Extract generator functions with proper typing
-const prettierModule = prettierConfigModule as { generate?: ConfigGenerator } | { default?: { generate?: ConfigGenerator } };
+const prettierModule = prettierConfigModule as any;
 
 const generatePrettierConfig: ConfigGenerator = 
-  ('generate' in prettierModule && prettierModule.generate) ||
-  (prettierModule.default && 'generate' in prettierModule.default && prettierModule.default.generate) ||
+  prettierModule.generate ||
   (() => {
     throw new Error('Prettier config module does not have a generate function');
   });
@@ -42,7 +41,7 @@ export async function generateConfigs(
   formatters: Array<FormatterType>,
   preset: PresetConfig,
   yamlPreset?: YamlPreset,
-): Promise<Result<GeneratedConfig[], Error>> {
+): Promise<Result<Array<GeneratedConfig>, Error>> {
   try {
     const configs: Array<GeneratedConfig> = [];
 
@@ -103,9 +102,12 @@ function generatePrettierConfigFile(preset: PresetConfig, yamlPreset?: YamlPrese
       config = mergeRawConfig(config, yamlPreset.raw.prettier);
     }
 
+    // Remove any functions from the config (CommonJS module issue)
+    const cleanConfig = JSON.parse(JSON.stringify(config));
+
     // Generate as YAML for better comment support
     const yamlConfig = {
-      ...config,
+      ...cleanConfig,
       // Ensure proper formatting for YAML
       _preset: preset.name,
     };
@@ -192,7 +194,7 @@ function generateRemarkConfigFile(preset: PresetConfig, yamlPreset?: YamlPreset)
   try {
     // Map preset to remark preset name
     const remarkPresetName = mapPresetToRemarkPreset(preset.name);
-    let config = generateRemarkConfig({ preset: remarkPresetName });
+    const config = generateRemarkConfig({ preset: remarkPresetName });
     
     // Apply raw overrides from YAML preset if available
     if (yamlPreset?.raw?.remark) {

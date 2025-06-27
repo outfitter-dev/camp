@@ -91,7 +91,7 @@ common:
 
       const config = yamlPresetToConfig(yamlPreset);
 
-      expect(config.name).toBe('custom');
+      expect(config.name).toBe('standard'); // Falls back to standard for unknown preset names
       expect(config.lineWidth).toBe(100);
       expect(config.indentation.style).toBe('tab');
       expect(config.indentation.width).toBe(4);

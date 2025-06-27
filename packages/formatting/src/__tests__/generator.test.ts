@@ -8,6 +8,9 @@ describe('generator', () => {
     it('should generate prettier config', async () => {
       const result = await generateFormatterConfig('prettier', standard);
 
+      if (!result.success) {
+        console.error('Failed to generate prettier config:', result.error);
+      }
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.data.path).toBe('.prettierrc.yaml');
