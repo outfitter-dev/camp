@@ -10,6 +10,18 @@ import { success, failure, makeError } from '@outfitter/contracts';
 import type { PresetConfig } from '../types/index.js';
 
 /**
+ * ESLint configuration interface
+ */
+interface ESLintConfig {
+  rules?: Record<string, unknown>;
+  extends?: string | Array<string>;
+  overrides?: Array<{
+    files: string | Array<string>;
+    rules?: Record<string, unknown>;
+  }>;
+}
+
+/**
  * ESLint rule mapping to Biome rules
  */
 const eslintToBiomeRules: Record<string, string | { rule: string; severity?: string }> = {
@@ -41,14 +53,14 @@ function mapSeverity(eslintSeverity: string | number): 'error' | 'warn' | 'off' 
 /**
  * Extract preset-like config from ESLint config
  */
-export function extractPresetFromEslint(eslintConfig: any): Partial<PresetConfig> {
+export function extractPresetFromEslint(eslintConfig: ESLintConfig): Partial<PresetConfig> {
   const preset: Partial<PresetConfig> = {};
 
   // Try to determine formatting preferences from rules
   if (eslintConfig.rules) {
     // Check for quotes preference
     const quotesRule = eslintConfig.rules['quotes'];
-    if (Array.isArray(quotesRule) && quotesRule[1]) {
+    if (Array.isArray(quotesRule) && quotesRule.length > 1 && quotesRule[1]) {
       const quoteStyle = quotesRule[1];
       if (quoteStyle === 'single' || quoteStyle === 'double') {
         preset.quotes = {
@@ -60,13 +72,13 @@ export function extractPresetFromEslint(eslintConfig: any): Partial<PresetConfig
 
     // Check for semicolons
     const semiRule = eslintConfig.rules['semi'];
-    if (Array.isArray(semiRule)) {
+    if (Array.isArray(semiRule) && semiRule.length > 1) {
       preset.semicolons = semiRule[1] === 'never' ? 'asNeeded' : 'always';
     }
 
     // Check for trailing commas
     const commaRule = eslintConfig.rules['comma-dangle'];
-    if (Array.isArray(commaRule) && typeof commaRule[1] === 'string') {
+    if (Array.isArray(commaRule) && commaRule.length > 1 && typeof commaRule[1] === 'string') {
       if (commaRule[1] === 'never') preset.trailingComma = 'none';
       else if (commaRule[1].includes('always')) preset.trailingComma = 'all';
     }
@@ -96,7 +108,7 @@ export async function analyzeEslintConfig(
     const absolutePath = resolve(eslintConfigPath);
 
     // Parse config based on file extension
-    let eslintConfig: any;
+    let eslintConfig: ESLintConfig;
 
     if (eslintConfigPath.endsWith('.json')) {
       // JSON configs can be safely parsed

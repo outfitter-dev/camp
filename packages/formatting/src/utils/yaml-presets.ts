@@ -243,10 +243,20 @@ function mergeCommonSections(
 export async function resolvePresetInheritance(
   preset: YamlPreset,
   presetsDir: string,
+  visited = new Set<string>(),
 ): Promise<Result<YamlPreset, Error>> {
   if (!preset.extends) {
     return success(preset);
   }
+
+  // Check for circular dependencies
+  if (visited.has(preset.extends)) {
+    return failure(
+      makeError('VALIDATION_ERROR', `Circular dependency detected: ${Array.from(visited).join(' -> ')} -> ${preset.extends}`),
+    );
+  }
+
+  visited.add(preset.extends);
 
   // Load parent preset
   const parentPath = join(presetsDir, `${preset.extends}.yaml`);
@@ -261,7 +271,7 @@ export async function resolvePresetInheritance(
   }
 
   // Recursively resolve parent's inheritance
-  const resolvedParentResult = await resolvePresetInheritance(parentResult.data, presetsDir);
+  const resolvedParentResult = await resolvePresetInheritance(parentResult.data, presetsDir, visited);
   if (!resolvedParentResult.success) {
     return resolvedParentResult;
   }
@@ -269,16 +279,15 @@ export async function resolvePresetInheritance(
   const parent = resolvedParentResult.data;
 
   // Merge with parent (child takes precedence)
-  const merged = {} as YamlPreset;
-
-  // Always set required properties
-  merged.name = preset.name || parent.name;
-  merged.raw = {
-    prettier: deepMerge(parent.raw?.prettier || {}, preset.raw?.prettier || {}),
-    biome: deepMerge(parent.raw?.biome || {}, preset.raw?.biome || {}),
-    remark: deepMerge(parent.raw?.remark || {}, preset.raw?.remark || {}),
-    eslint: deepMerge(parent.raw?.eslint || {}, preset.raw?.eslint || {}),
-    markdownlint: deepMerge(parent.raw?.markdownlint || {}, preset.raw?.markdownlint || {}),
+  const merged: YamlPreset = {
+    name: preset.name || parent.name,
+    raw: {
+      prettier: deepMerge(parent.raw?.prettier || {}, preset.raw?.prettier || {}),
+      biome: deepMerge(parent.raw?.biome || {}, preset.raw?.biome || {}),
+      remark: deepMerge(parent.raw?.remark || {}, preset.raw?.remark || {}),
+      eslint: deepMerge(parent.raw?.eslint || {}, preset.raw?.eslint || {}),
+      markdownlint: deepMerge(parent.raw?.markdownlint || {}, preset.raw?.markdownlint || {}),
+    },
   };
 
   // Add optional properties only if they exist
@@ -287,10 +296,7 @@ export async function resolvePresetInheritance(
     merged.description = description;
   }
 
-  const extendsValue = preset.extends || parent.extends;
-  if (extendsValue !== undefined) {
-    merged.extends = extendsValue;
-  }
+  // Note: extends field is intentionally omitted as inheritance has been resolved
 
   // Merge common section if either parent or child has it
   const mergedCommon = mergeCommonSections(parent.common, preset.common);
