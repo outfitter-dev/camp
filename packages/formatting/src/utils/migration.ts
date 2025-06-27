@@ -94,10 +94,10 @@ export async function analyzeEslintConfig(
   try {
     // Get absolute path for dynamic import
     const absolutePath = resolve(eslintConfigPath);
-    
+
     // Parse config based on file extension
     let eslintConfig: any;
-    
+
     if (eslintConfigPath.endsWith('.json')) {
       // JSON configs can be safely parsed
       const configContent = await readFile(eslintConfigPath, 'utf-8');
@@ -109,18 +109,26 @@ export async function analyzeEslintConfig(
         const fileUrl = pathToFileURL(absolutePath).href;
         const module = await import(fileUrl);
         eslintConfig = module.default || module;
-      } catch (importError) {
+      } catch {
         // Fallback: try require for CommonJS modules
         try {
           // Clear require cache first
           delete require.cache[require.resolve(absolutePath)];
           eslintConfig = require(absolutePath);
         } catch (requireError) {
-          return failure(makeError('VALIDATION_ERROR', 'Failed to load ESLint config - ensure it exports a valid configuration', { cause: requireError }));
+          return failure(
+            makeError(
+              'VALIDATION_ERROR',
+              'Failed to load ESLint config - ensure it exports a valid configuration',
+              { cause: requireError },
+            ),
+          );
         }
       }
     } else {
-      return failure(makeError('NOT_SUPPORTED', `ESLint config format not supported: ${eslintConfigPath}`));
+      return failure(
+        makeError('NOT_SUPPORTED', `ESLint config format not supported: ${eslintConfigPath}`),
+      );
     }
 
     const analysis: MigrationAnalysis = {
@@ -136,9 +144,7 @@ export async function analyzeEslintConfig(
         const biomeMapping = eslintToBiomeRules[rule];
 
         if (biomeMapping) {
-          const severity = Array.isArray(config)
-            ? mapSeverity(config[0])
-            : mapSeverity(config);
+          const severity = Array.isArray(config) ? mapSeverity(config[0]) : mapSeverity(config);
           const biomeRule = typeof biomeMapping === 'string' ? biomeMapping : biomeMapping.rule;
 
           analysis.mappableRules.push({

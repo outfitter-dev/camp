@@ -49,12 +49,12 @@ export async function loadYamlPreset(path: string): Promise<Result<YamlPreset, E
   try {
     const content = await readFile(path, 'utf-8');
     const parsedContent = parseYaml(content);
-    
+
     // Basic validation
     if (!parsedContent || typeof parsedContent !== 'object') {
       return failure(makeError('VALIDATION_ERROR', 'Invalid YAML structure'));
     }
-    
+
     const preset = parsedContent as YamlPreset;
 
     if (!preset.name) {
@@ -147,9 +147,9 @@ function mergePrimitive<T>(child: T | undefined, parent: T | undefined): T | und
  * Merge object values with custom merger function
  */
 function mergeObject<T extends Record<string, unknown>>(
-  child: T | undefined, 
+  child: T | undefined,
   parent: T | undefined,
-  merger: (c: T, p: T) => T
+  merger: (c: T, p: T) => T,
 ): T | undefined {
   if (!child && !parent) return undefined;
   if (!child) return parent;
@@ -189,25 +189,21 @@ function mergeCommonSections(
       const width = mergePrimitive(child.width, parent.width);
       if (width !== undefined) result.width = width;
       return Object.keys(result).length > 0 ? result : {};
-    }
+    },
   );
   if (indentation && Object.keys(indentation).length > 0) {
     merged.indentation = indentation;
   }
 
   // Merge quotes object
-  const quotes = mergeObject(
-    childCommon.quotes,
-    parentCommon.quotes,
-    (child, parent) => {
-      const result: NonNullable<typeof merged.quotes> = {};
-      const style = mergePrimitive(child.style, parent.style);
-      if (style !== undefined) result.style = style;
-      const jsx = mergePrimitive(child.jsx, parent.jsx);
-      if (jsx !== undefined) result.jsx = jsx;
-      return Object.keys(result).length > 0 ? result : {};
-    }
-  );
+  const quotes = mergeObject(childCommon.quotes, parentCommon.quotes, (child, parent) => {
+    const result: NonNullable<typeof merged.quotes> = {};
+    const style = mergePrimitive(child.style, parent.style);
+    if (style !== undefined) result.style = style;
+    const jsx = mergePrimitive(child.jsx, parent.jsx);
+    if (jsx !== undefined) result.jsx = jsx;
+    return Object.keys(result).length > 0 ? result : {};
+  });
   if (quotes && Object.keys(quotes).length > 0) {
     merged.quotes = quotes;
   }

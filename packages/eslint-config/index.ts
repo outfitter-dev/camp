@@ -162,19 +162,27 @@ export function generate(
     if (strictness === 'strict') {
       tsRules['@typescript-eslint/no-explicit-any'] = 'error';
       tsRules['@typescript-eslint/no-non-null-assertion'] = 'error';
-      config.rules!['no-console'] = 'error';
+      if (config.rules) {
+        config.rules['no-console'] = 'error';
+      }
     } else if (strictness === 'relaxed') {
       tsRules['@typescript-eslint/no-explicit-any'] = 'warn';
       tsRules['@typescript-eslint/no-non-null-assertion'] = 'warn';
-      config.rules!['no-console'] = 'off';
+      if (config.rules) {
+        config.rules['no-console'] = 'off';
+      }
     } else {
       // standard
       tsRules['@typescript-eslint/no-explicit-any'] = 'error';
       tsRules['@typescript-eslint/no-non-null-assertion'] = 'error';
-      config.rules!['no-console'] = 'warn';
+      if (config.rules) {
+        config.rules['no-console'] = 'warn';
+      }
     }
 
-    Object.assign(config.rules!, tsRules);
+    if (config.rules) {
+      Object.assign(config.rules, tsRules);
+    }
   }
 
   // React configuration
@@ -196,7 +204,9 @@ export function generate(
       'react-hooks/exhaustive-deps': 'warn',
     };
 
-    Object.assign(config.rules!, reactRules);
+    if (config.rules) {
+      Object.assign(config.rules, reactRules);
+    }
   }
 
   // Import organization
@@ -215,18 +225,20 @@ export function generate(
       },
     };
 
-    config.rules!['import/no-unresolved'] = 'error';
-    config.rules!['import/order'] = [
-      'warn',
-      {
-        groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
-        'newlines-between': 'always',
-        alphabetize: {
-          order: 'asc',
-          caseInsensitive: true,
+    if (config.rules) {
+      config.rules['import/no-unresolved'] = 'error';
+      config.rules['import/order'] = [
+        'warn',
+        {
+          groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
+          'newlines-between': 'always',
+          alphabetize: {
+            order: 'asc',
+            caseInsensitive: true,
+          },
         },
-      },
-    ];
+      ];
+    }
   }
 
   // Accessibility
@@ -245,7 +257,9 @@ export function generate(
       'jsx-a11y/role-supports-aria-props': 'error',
     };
 
-    Object.assign(config.rules!, a11yRules);
+    if (config.rules) {
+      Object.assign(config.rules, a11yRules);
+    }
   }
 
   // Test file overrides
