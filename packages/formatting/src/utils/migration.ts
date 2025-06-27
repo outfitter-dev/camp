@@ -3,7 +3,8 @@
  */
 
 import { readFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import type { Result } from '@outfitter/contracts';
 import { success, failure, makeError } from '@outfitter/contracts';
 import type { PresetConfig } from '../types/index.js';
@@ -48,10 +49,13 @@ export function extractPresetFromEslint(eslintConfig: any): Partial<PresetConfig
     // Check for quotes preference
     const quotesRule = eslintConfig.rules['quotes'];
     if (Array.isArray(quotesRule) && quotesRule[1]) {
-      preset.quotes = {
-        style: quotesRule[1] as 'single' | 'double',
-        jsx: quotesRule[1] as 'single' | 'double',
-      };
+      const quoteStyle = quotesRule[1];
+      if (quoteStyle === 'single' || quoteStyle === 'double') {
+        preset.quotes = {
+          style: quoteStyle,
+          jsx: quoteStyle,
+        };
+      }
     }
 
     // Check for semicolons
@@ -88,22 +92,35 @@ export async function analyzeEslintConfig(
   eslintConfigPath: string,
 ): Promise<Result<MigrationAnalysis, Error>> {
   try {
-    // Read ESLint config
-    const configContent = await readFile(eslintConfigPath, 'utf-8');
-
-    // Parse config (handle both module.exports and export default)
+    // Get absolute path for dynamic import
+    const absolutePath = resolve(eslintConfigPath);
+    
+    // Parse config based on file extension
     let eslintConfig: any;
-    if (configContent.includes('module.exports')) {
-      // Use eval in a controlled way for CommonJS configs
-      // In production, you'd want a proper parser
-      const moduleObj = { exports: {} };
-      const func = new Function('module', 'exports', configContent);
-      func(moduleObj, moduleObj.exports);
-      eslintConfig = moduleObj.exports;
+    
+    if (eslintConfigPath.endsWith('.json')) {
+      // JSON configs can be safely parsed
+      const configContent = await readFile(eslintConfigPath, 'utf-8');
+      eslintConfig = JSON.parse(configContent);
+    } else if (eslintConfigPath.endsWith('.js') || eslintConfigPath.endsWith('.cjs')) {
+      // For JavaScript configs, use dynamic import with file URL
+      try {
+        // Convert to file URL for proper module loading
+        const fileUrl = pathToFileURL(absolutePath).href;
+        const module = await import(fileUrl);
+        eslintConfig = module.default || module;
+      } catch (importError) {
+        // Fallback: try require for CommonJS modules
+        try {
+          // Clear require cache first
+          delete require.cache[require.resolve(absolutePath)];
+          eslintConfig = require(absolutePath);
+        } catch (requireError) {
+          return failure(makeError('VALIDATION_ERROR', 'Failed to load ESLint config - ensure it exports a valid configuration', { cause: requireError }));
+        }
+      }
     } else {
-      // For ES modules, we'd need a proper parser
-      // This is a simplified approach
-      return failure(makeError('NOT_IMPLEMENTED', 'ES module ESLint configs not yet supported'));
+      return failure(makeError('NOT_SUPPORTED', `ESLint config format not supported: ${eslintConfigPath}`));
     }
 
     const analysis: MigrationAnalysis = {
@@ -121,7 +138,7 @@ export async function analyzeEslintConfig(
         if (biomeMapping) {
           const severity = Array.isArray(config)
             ? mapSeverity(config[0])
-            : mapSeverity(config as any);
+            : mapSeverity(config);
           const biomeRule = typeof biomeMapping === 'string' ? biomeMapping : biomeMapping.rule;
 
           analysis.mappableRules.push({

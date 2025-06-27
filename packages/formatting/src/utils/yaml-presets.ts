@@ -48,7 +48,14 @@ export interface YamlPreset {
 export async function loadYamlPreset(path: string): Promise<Result<YamlPreset, Error>> {
   try {
     const content = await readFile(path, 'utf-8');
-    const preset = parseYaml(content) as YamlPreset;
+    const parsedContent = parseYaml(content);
+    
+    // Basic validation
+    if (!parsedContent || typeof parsedContent !== 'object') {
+      return failure(makeError('VALIDATION_ERROR', 'Invalid YAML structure'));
+    }
+    
+    const preset = parsedContent as YamlPreset;
 
     if (!preset.name) {
       return failure(makeError('VALIDATION_ERROR', 'Preset must have a name'));
@@ -130,6 +137,27 @@ function deepMerge(
 }
 
 /**
+ * Merge primitive values from parent and child
+ */
+function mergePrimitive<T>(child: T | undefined, parent: T | undefined): T | undefined {
+  return child ?? parent;
+}
+
+/**
+ * Merge object values with custom merger function
+ */
+function mergeObject<T extends Record<string, unknown>>(
+  child: T | undefined, 
+  parent: T | undefined,
+  merger: (c: T, p: T) => T
+): T | undefined {
+  if (!child && !parent) return undefined;
+  if (!child) return parent;
+  if (!parent) return child;
+  return merger(child, parent);
+}
+
+/**
  * Merge common sections specifically
  */
 function mergeCommonSections(
@@ -144,73 +172,68 @@ function mergeCommonSections(
   const parentCommon = parent || {};
   const childCommon = child || {};
 
-  // Merge each property explicitly to maintain type safety
-  const lineWidth = childCommon.lineWidth ?? parentCommon.lineWidth;
+  // Merge primitive properties
+  const lineWidth = mergePrimitive(childCommon.lineWidth, parentCommon.lineWidth);
   if (lineWidth !== undefined) {
     merged.lineWidth = lineWidth;
   }
 
-  if (parentCommon.indentation || childCommon.indentation) {
-    const indentation: NonNullable<typeof merged.indentation> = {};
-    const parentIndent = parentCommon.indentation || {};
-    const childIndent = childCommon.indentation || {};
-
-    const style = childIndent.style ?? parentIndent.style;
-    if (style !== undefined) {
-      indentation.style = style;
+  // Merge indentation object
+  const indentation = mergeObject(
+    childCommon.indentation,
+    parentCommon.indentation,
+    (child, parent) => {
+      const result: NonNullable<typeof merged.indentation> = {};
+      const style = mergePrimitive(child.style, parent.style);
+      if (style !== undefined) result.style = style;
+      const width = mergePrimitive(child.width, parent.width);
+      if (width !== undefined) result.width = width;
+      return Object.keys(result).length > 0 ? result : {};
     }
-
-    const width = childIndent.width ?? parentIndent.width;
-    if (width !== undefined) {
-      indentation.width = width;
-    }
-
-    if (Object.keys(indentation).length > 0) {
-      merged.indentation = indentation;
-    }
+  );
+  if (indentation && Object.keys(indentation).length > 0) {
+    merged.indentation = indentation;
   }
 
-  if (parentCommon.quotes || childCommon.quotes) {
-    const quotes: NonNullable<typeof merged.quotes> = {};
-    const parentQuotes = parentCommon.quotes || {};
-    const childQuotes = childCommon.quotes || {};
-
-    const style = childQuotes.style ?? parentQuotes.style;
-    if (style !== undefined) {
-      quotes.style = style;
+  // Merge quotes object
+  const quotes = mergeObject(
+    childCommon.quotes,
+    parentCommon.quotes,
+    (child, parent) => {
+      const result: NonNullable<typeof merged.quotes> = {};
+      const style = mergePrimitive(child.style, parent.style);
+      if (style !== undefined) result.style = style;
+      const jsx = mergePrimitive(child.jsx, parent.jsx);
+      if (jsx !== undefined) result.jsx = jsx;
+      return Object.keys(result).length > 0 ? result : {};
     }
-
-    const jsx = childQuotes.jsx ?? parentQuotes.jsx;
-    if (jsx !== undefined) {
-      quotes.jsx = jsx;
-    }
-
-    if (Object.keys(quotes).length > 0) {
-      merged.quotes = quotes;
-    }
+  );
+  if (quotes && Object.keys(quotes).length > 0) {
+    merged.quotes = quotes;
   }
 
-  const semicolons = childCommon.semicolons ?? parentCommon.semicolons;
+  // Merge remaining primitive properties
+  const semicolons = mergePrimitive(childCommon.semicolons, parentCommon.semicolons);
   if (semicolons !== undefined) {
     merged.semicolons = semicolons;
   }
 
-  const trailingComma = childCommon.trailingComma ?? parentCommon.trailingComma;
+  const trailingComma = mergePrimitive(childCommon.trailingComma, parentCommon.trailingComma);
   if (trailingComma !== undefined) {
     merged.trailingComma = trailingComma;
   }
 
-  const bracketSpacing = childCommon.bracketSpacing ?? parentCommon.bracketSpacing;
+  const bracketSpacing = mergePrimitive(childCommon.bracketSpacing, parentCommon.bracketSpacing);
   if (bracketSpacing !== undefined) {
     merged.bracketSpacing = bracketSpacing;
   }
 
-  const arrowParens = childCommon.arrowParens ?? parentCommon.arrowParens;
+  const arrowParens = mergePrimitive(childCommon.arrowParens, parentCommon.arrowParens);
   if (arrowParens !== undefined) {
     merged.arrowParens = arrowParens;
   }
 
-  const endOfLine = childCommon.endOfLine ?? parentCommon.endOfLine;
+  const endOfLine = mergePrimitive(childCommon.endOfLine, parentCommon.endOfLine);
   if (endOfLine !== undefined) {
     merged.endOfLine = endOfLine;
   }

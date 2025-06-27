@@ -2,8 +2,6 @@
  * DevContainer utilities
  */
 
-import type { FormatterDetection } from '../types/index.js';
-
 /**
  * Get the appropriate base image based on available formatters
  */
