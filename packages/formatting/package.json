@@ -1,7 +1,6 @@
 {
   "name": "@outfitter/formatting",
   "version": "0.1.0",
-  "private": true,
   "type": "module",
   "description": "Lightweight formatting setup tool that orchestrates Prettier, Biome, and Remark configurations",
   "main": "./dist/index.js",
@@ -78,5 +77,14 @@
     "outfitter"
   ],
   "author": "Outfitter",
-  "license": "ISC"
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/outfitter-dev/monorepo.git",
+    "directory": "packages/formatting"
+  },
+  "bugs": {
+    "url": "https://github.com/outfitter-dev/monorepo/issues"
+  },
+  "homepage": "https://github.com/outfitter-dev/monorepo/tree/main/packages/formatting"
 }
