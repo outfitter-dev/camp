@@ -16,8 +16,13 @@ Lightweight formatting setup tool that orchestrates Prettier, Biome, ESLint, and
 # Install the formatting tool
 pnpm add -D @outfitter/formatting
 
-# Install formatters (choose what you need)
-pnpm add -D prettier @biomejs/biome eslint remark-cli
+# Then choose your setup:
+
+# Option A: Traditional setup (Prettier + ESLint)
+pnpm add -D prettier eslint remark-cli
+
+# Option B: Modern all-in-one (Biome replaces Prettier + ESLint)
+pnpm add -D @biomejs/biome remark-cli
 ```
 
 ## Quick Start
@@ -120,6 +125,28 @@ List available formatting presets.
 ```bash
 outfitter-formatting presets
 ```
+
+## Formatter Roles
+
+Understanding what each tool does:
+
+| Tool | Purpose | Handles |
+|------|---------|---------|
+| **Prettier** | Code formatting | Spacing, line breaks, quotes |
+| **ESLint** | Code linting | Code quality, bugs, patterns |
+| **Biome** | All-in-one | Both formatting AND linting |
+| **Remark** | Markdown formatting | Markdown files only |
+
+### Recommended Combinations
+
+1. **Modern Setup** (Recommended)
+   - Biome (handles all JS/TS formatting and linting)
+   - Remark (for Markdown)
+
+2. **Traditional Setup**
+   - Prettier (formatting)
+   - ESLint (linting)
+   - Remark (for Markdown)
 
 ## Generated Files
 
@@ -238,18 +265,20 @@ Generated configurations work automatically with VS Code extensions:
 
 ### No Formatters Detected
 
-If no formatters are detected, install them:
+If no formatters are detected, choose your preferred setup:
 
 ```bash
-# Install all formatters
-pnpm add -D prettier @biomejs/biome eslint remark-cli
+# Option A: Traditional setup
+pnpm add -D prettier           # For code formatting
+pnpm add -D eslint             # For code linting
+pnpm add -D remark-cli         # For Markdown
 
-# Or install individually
-pnpm add -D prettier           # For JavaScript/TypeScript formatting
-pnpm add -D eslint             # For JavaScript/TypeScript linting
-pnpm add -D @biomejs/biome     # Alternative to Prettier + ESLint
+# Option B: Modern setup (recommended)
+pnpm add -D @biomejs/biome     # Replaces both Prettier + ESLint
 pnpm add -D remark-cli         # For Markdown
 ```
+
+**Note**: Biome is an all-in-one tool that handles both formatting and linting, making it a modern alternative to using Prettier and ESLint together.
 
 ### Configuration Conflicts
 
