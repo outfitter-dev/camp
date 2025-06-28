@@ -55,7 +55,7 @@ export function generatePackageJsonScripts(
     }
 
     if (formatCommands.length > 0) {
-      scripts['format'] = formatCommands.join(' && ');
+      scripts.format = formatCommands.join(' && ');
       scripts['format:check'] = checkCommands.join(' && ');
     }
   } else if (formatters.length === 1) {
@@ -63,17 +63,17 @@ export function generatePackageJsonScripts(
     const formatter = formatters[0];
     switch (formatter) {
       case 'prettier':
-        scripts['format'] = 'prettier --write .';
+        scripts.format = 'prettier --write .';
         scripts['format:check'] = 'prettier --check .';
         break;
       case 'biome':
-        scripts['format'] = 'biome format --write .';
+        scripts.format = 'biome format --write .';
         scripts['format:check'] = 'biome format .';
-        scripts['lint'] = 'biome lint .';
+        scripts.lint = 'biome lint .';
         scripts['lint:fix'] = 'biome lint --write .';
         break;
       case 'remark':
-        scripts['format'] = 'remark . --output';
+        scripts.format = 'remark . --output';
         scripts['format:check'] = 'remark . --frail';
         break;
       case 'eslint':

@@ -7,7 +7,7 @@ import { access } from 'node:fs/promises';
 vi.mock('node:child_process');
 vi.mock('node:fs/promises');
 vi.mock('node:util', () => ({
-  promisify: vi.fn((fn: Function) => {
+  promisify: vi.fn((fn: (...args: any[]) => void) => {
     // Return a promisified version of the mocked exec
     return (...args: unknown[]) => {
       return new Promise((resolve, reject) => {

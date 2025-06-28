@@ -79,4 +79,4 @@ terminology:
 # Additional custom rules to load
 # Paths to JavaScript files exporting markdownlint rules
 customRules:
-  - './consistent-terminology.js'
+  - './packages/rightdown/dist/rules/consistent-terminology.js'
