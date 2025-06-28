@@ -4,7 +4,7 @@
 
 Initial release of @outfitter/formatting package
 
-- Lightweight formatting setup tool for Prettier, Biome, and Remark
+- Lightweight formatting setup tool for Prettier, Biome, ESLint, and Remark
 - Auto-detection of available formatters
 - Preset-based configuration (standard, strict, relaxed)
 - CLI and programmatic API
@@ -12,3 +12,4 @@ Initial release of @outfitter/formatting package
 - Configuration file generation
 - Package.json script integration
 - DevContainer support
+- Migration utilities for converting between formatters

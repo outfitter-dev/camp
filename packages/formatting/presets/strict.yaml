@@ -33,6 +33,17 @@ raw:
         style:
           useConsistentArrayType: error
           noNonNullAssertion: error
+  eslint:
+    # Stricter ESLint rules
+    extends:
+      - eslint:recommended
+    rules:
+      no-console: error
+      no-debugger: error
+      no-unused-vars: error
+      eqeqeq: error
+      curly: error
+      no-var: error
   remark:
     # More remark-lint rules for documentation
     plugins:

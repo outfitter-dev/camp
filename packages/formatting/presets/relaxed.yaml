@@ -43,6 +43,14 @@ raw:
         style:
           # Allow flexibility in coding style
           useConsistentArrayType: off
+  eslint:
+    # Minimal ESLint rules
+    extends:
+      - eslint:recommended
+    rules:
+      no-console: warn
+      no-debugger: error
+      no-unused-vars: warn
   remark:
     # Minimal remark rules
     plugins:

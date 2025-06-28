@@ -15,7 +15,7 @@ const program = new Command();
 
 program
   .name('outfitter-formatting')
-  .description('Lightweight formatting setup tool for Prettier, Biome, and Remark')
+  .description('Lightweight formatting setup tool for Prettier, Biome, ESLint, and Remark')
   .version('0.1.0');
 
 // Setup command

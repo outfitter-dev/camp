@@ -2,7 +2,7 @@
   "name": "@outfitter/formatting",
   "version": "0.1.0",
   "type": "module",
-  "description": "Lightweight formatting setup tool that orchestrates Prettier, Biome, and Remark configurations",
+  "description": "Lightweight formatting setup tool that orchestrates Prettier, Biome, ESLint, and Remark configurations",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -53,6 +53,7 @@
   },
   "peerDependencies": {
     "@biomejs/biome": ">=1.8.0",
+    "eslint": ">=8.0.0",
     "prettier": ">=3.0.0",
     "remark-cli": ">=12.0.0"
   },
@@ -63,6 +64,9 @@
     "@biomejs/biome": {
       "optional": true
     },
+    "eslint": {
+      "optional": true
+    },
     "remark-cli": {
       "optional": true
     }
@@ -71,6 +75,7 @@
     "formatting",
     "prettier",
     "biome",
+    "eslint",
     "remark",
     "config",
     "setup",

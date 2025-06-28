@@ -49,6 +49,14 @@ raw:
         style:
           useConsistentArrayType: error
 
+  eslint:
+    # ESLint-specific rules
+    extends:
+      - eslint:recommended
+    rules:
+      no-console: error
+      no-debugger: error
+
   remark:
     # Remark-specific plugins
     plugins:

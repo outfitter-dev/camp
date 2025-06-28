@@ -1,6 +1,6 @@
 # @outfitter/formatting
 
-Lightweight formatting setup tool that orchestrates Prettier, Biome, and Remark configurations for consistent code formatting across projects.
+Lightweight formatting setup tool that orchestrates Prettier, Biome, ESLint, and Remark configurations for consistent code formatting across projects.
 
 ## Features
 
@@ -17,7 +17,7 @@ Lightweight formatting setup tool that orchestrates Prettier, Biome, and Remark 
 pnpm add -D @outfitter/formatting
 
 # Install formatters (choose what you need)
-pnpm add -D prettier @biomejs/biome remark-cli
+pnpm add -D prettier @biomejs/biome eslint remark-cli
 ```
 
 ## Quick Start
@@ -129,6 +129,7 @@ The tool generates appropriate configuration files based on detected formatters:
 |-----------|-------------|---------------|
 | Prettier | `.prettierrc.json` | `format:prettier`, `format:prettier:check` |
 | Biome | `biome.json` | `format:biome`, `lint:biome`, etc. |
+| ESLint | `.eslintrc.json` | `lint:eslint`, `lint:eslint:fix` |
 | Remark | `.remarkrc.yaml` | `format:markdown`, `format:markdown:check` |
 
 When multiple formatters are available, combined scripts are created:
@@ -241,10 +242,11 @@ If no formatters are detected, install them:
 
 ```bash
 # Install all formatters
-pnpm add -D prettier @biomejs/biome remark-cli
+pnpm add -D prettier @biomejs/biome eslint remark-cli
 
 # Or install individually
-pnpm add -D prettier           # For JavaScript/TypeScript
+pnpm add -D prettier           # For JavaScript/TypeScript formatting
+pnpm add -D eslint             # For JavaScript/TypeScript linting
 pnpm add -D @biomejs/biome     # Alternative to Prettier + ESLint
 pnpm add -D remark-cli         # For Markdown
 ```
