@@ -142,6 +142,7 @@ export async function setup(options: unknown = {}): Promise<Result<SetupResult, 
       formattersToSetup,
       presetConfigResolved,
       yamlPreset,
+      detectionResult.data,
     );
     if (!configsResult.success) {
       result.errors.push(`Failed to generate configs: ${configsResult.error.message}`);

@@ -4,10 +4,11 @@
 
 import { stringify as stringifyYaml } from 'yaml';
 import { generate as generateRemarkConfig } from '@outfitter/remark-config';
-import type { PresetConfig, GeneratedConfig } from '../types/index.js';
+import type { PresetConfig, GeneratedConfig, FormatterDetectionResult } from '../types/index.js';
 import type { Result } from '@outfitter/contracts';
 import { success, failure, makeError } from '@outfitter/contracts';
 import { mergeRawConfig, type YamlPreset } from '../utils/yaml-presets.js';
+import { detectCodeBlockRouting } from './remark-advanced.js';
 
 /**
  * Map formatting preset to remark preset
@@ -22,11 +23,42 @@ function mapPresetToRemarkPreset(preset: PresetConfig['name']): 'standard' | 'st
 export function generateRemarkConfigFile(
   preset: PresetConfig,
   yamlPreset?: YamlPreset,
+  detection?: FormatterDetectionResult,
 ): Result<GeneratedConfig, Error> {
   try {
     // Map preset to remark preset name
     const remarkPresetName = mapPresetToRemarkPreset(preset.name);
     const config = generateRemarkConfig({ preset: remarkPresetName });
+
+    // Add code block formatting if appropriate formatters are available
+    if (detection) {
+      const routing = detectCodeBlockRouting(detection);
+      if (routing && Object.keys(routing).length > 0) {
+        // Only include languages where the formatter is actually available
+        const availableRouting: Record<string, string> = {};
+        const { available } = detection;
+        
+        for (const [lang, formatter] of Object.entries(routing)) {
+          if (formatter === 'biome' && available.includes('biome')) {
+            availableRouting[lang] = formatter;
+          } else if (formatter === 'prettier' && available.includes('prettier')) {
+            availableRouting[lang] = formatter;
+          }
+        }
+        
+        if (Object.keys(availableRouting).length > 0) {
+          config.plugins = config.plugins || [];
+          config.plugins.push([
+            '@outfitter/formatting/remark-plugins/format-code-blocks',
+            { 
+              routing: availableRouting,
+              preserveIndentation: true,
+              verbose: false 
+            }
+          ]);
+        }
+      }
+    }
 
     // Apply raw overrides from YAML preset if available
     if (yamlPreset?.raw?.remark) {

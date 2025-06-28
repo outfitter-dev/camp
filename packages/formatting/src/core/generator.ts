@@ -28,12 +28,13 @@ export async function generateConfigs(
   formatters: Array<FormatterType>,
   preset: PresetConfig,
   yamlPreset?: YamlPreset,
+  detection?: FormatterDetectionResult,
 ): Promise<Result<Array<GeneratedConfig>, Error>> {
   try {
     const configs: Array<GeneratedConfig> = [];
 
     for (const formatter of formatters) {
-      const configResult = await generateFormatterConfig(formatter, preset, yamlPreset);
+      const configResult = await generateFormatterConfig(formatter, preset, yamlPreset, detection);
       if (configResult.success) {
         configs.push(configResult.data);
       } else {
@@ -56,6 +57,7 @@ export async function generateFormatterConfig(
   formatter: FormatterType,
   preset: PresetConfig,
   yamlPreset?: YamlPreset,
+  detection?: FormatterDetectionResult,
 ): Promise<Result<GeneratedConfig, Error>> {
   try {
     switch (formatter) {
@@ -64,7 +66,7 @@ export async function generateFormatterConfig(
       case 'biome':
         return generateBiomeConfigFile(preset, yamlPreset);
       case 'remark':
-        return generateRemarkConfigFile(preset, yamlPreset);
+        return generateRemarkConfigFile(preset, yamlPreset, detection);
       case 'eslint':
         return generateEslintConfigFile(preset, yamlPreset);
       default:

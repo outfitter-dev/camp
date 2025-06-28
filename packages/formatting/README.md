@@ -157,7 +157,17 @@ Understanding what each tool does:
 - **Biome**: Does NOT process markdown files or their code blocks
 - **Remark**: Only handles markdown structure, not code block contents
 
-If your markdown files contain code examples, consider using Prettier even in the "Modern Setup" for comprehensive formatting.
+If your markdown files contain code examples, the tool intelligently configures code block formatting based on available formatters:
+
+#### Automatic Code Block Formatting
+
+When both Remark and code formatters are available, the tool automatically configures code block formatting:
+
+- **TypeScript/JavaScript blocks** → Formatted with Biome (if available) or Prettier
+- **JSON/YAML/CSS/HTML blocks** → Formatted with Prettier (if available)
+- **Other language blocks** → Left untouched
+
+This happens automatically during `remark . --output` when the generated config includes the formatting plugin.
 
 ## Generated Files
 
