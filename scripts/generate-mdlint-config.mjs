@@ -133,10 +133,11 @@ const config = generateConfig({
   preset: 'standard',
   terminology: defaultTerminology,
   ignores: ['CHANGELOG.md'],
+  customRules: ['./packages/rightdown/dist/rules/consistent-terminology.js'],
 });
 
-const outputPath = join(process.cwd(), '.markdownlint-cli2.jsonc');
+const outputPath = join(process.cwd(), '.markdownlint.json');
 
 writeFileSync(outputPath, config);
 
-console.log(`✅ Generated .markdownlint-cli2.jsonc with 'standard' preset.`);
+console.log(`✅ Generated .markdownlint.json with 'standard' preset.`);
