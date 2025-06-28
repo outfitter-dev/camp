@@ -252,7 +252,10 @@ export async function resolvePresetInheritance(
   // Check for circular dependencies
   if (visited.has(preset.extends)) {
     return failure(
-      makeError('VALIDATION_ERROR', `Circular dependency detected: ${Array.from(visited).join(' -> ')} -> ${preset.extends}`),
+      makeError(
+        'VALIDATION_ERROR',
+        `Circular dependency detected: ${Array.from(visited).join(' -> ')} -> ${preset.extends}`,
+      ),
     );
   }
 
@@ -271,7 +274,11 @@ export async function resolvePresetInheritance(
   }
 
   // Recursively resolve parent's inheritance
-  const resolvedParentResult = await resolvePresetInheritance(parentResult.data, presetsDir, visited);
+  const resolvedParentResult = await resolvePresetInheritance(
+    parentResult.data,
+    presetsDir,
+    visited,
+  );
   if (!resolvedParentResult.success) {
     return resolvedParentResult;
   }

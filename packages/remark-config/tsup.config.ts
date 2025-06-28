@@ -1,12 +1,7 @@
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
-  entry: [
-    'src/index.ts',
-    'src/presets/standard.ts',
-    'src/presets/strict.ts',
-    'src/presets/relaxed.ts',
-  ],
+  entry: ['src/index.ts'],
   format: ['cjs', 'esm'],
   dts: true,
   clean: true,
@@ -14,5 +9,5 @@ export default defineConfig({
   sourcemap: true,
   minify: false,
   target: 'node18',
-  tsconfig: './tsconfig.json',
+  tsconfig: './tsconfig.build.json',
 });
