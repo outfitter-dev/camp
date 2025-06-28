@@ -132,21 +132,32 @@ Understanding what each tool does:
 
 | Tool | Purpose | Handles |
 |------|---------|---------|
-| **Prettier** | Code formatting | Spacing, line breaks, quotes |
+| **Prettier** | Code formatting | JS/TS files, JSON, YAML, Markdown (including code blocks) |
 | **ESLint** | Code linting | Code quality, bugs, patterns |
-| **Biome** | All-in-one | Both formatting AND linting |
-| **Remark** | Markdown formatting | Markdown files only |
+| **Biome** | All-in-one | JS/TS formatting AND linting (not Markdown) |
+| **Remark** | Markdown formatting | Markdown structure only (not code blocks) |
 
 ### Recommended Combinations
 
-1. **Modern Setup** (Recommended)
+1. **Modern Setup** (Recommended for JS/TS-only projects)
    - Biome (handles all JS/TS formatting and linting)
-   - Remark (for Markdown)
+   - Remark (for Markdown structure)
+   - Note: Code blocks in Markdown won't be formatted
 
-2. **Traditional Setup**
-   - Prettier (formatting)
+2. **Traditional Setup** (Better for mixed-language documentation)
+   - Prettier (formats code AND Markdown with code blocks)
    - ESLint (linting)
-   - Remark (for Markdown)
+   - Remark (for Markdown structure)
+
+### Code Blocks in Markdown
+
+**Important**: How code blocks in markdown files are handled depends on your setup:
+
+- **Prettier**: Formats code blocks for supported languages (JS, TS, JSON, YAML, CSS, HTML, etc.)
+- **Biome**: Does NOT process markdown files or their code blocks
+- **Remark**: Only handles markdown structure, not code block contents
+
+If your markdown files contain code examples, consider using Prettier even in the "Modern Setup" for comprehensive formatting.
 
 ## Generated Files
 
