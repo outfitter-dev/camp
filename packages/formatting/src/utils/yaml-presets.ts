@@ -204,6 +204,21 @@ function mergeObject<T extends Record<string, unknown>>(
 }
 
 /**
+ * Helper to merge primitive properties into a target object
+ */
+function mergePrimitiveProperty<T extends Record<string, unknown>, K extends keyof T>(
+  target: T,
+  key: K,
+  childValue: T[K] | undefined,
+  parentValue: T[K] | undefined,
+): void {
+  const value = mergePrimitive(childValue, parentValue);
+  if (value !== undefined) {
+    target[key] = value;
+  }
+}
+
+/**
  * Merge common sections specifically
  */
 function mergeCommonSections(
@@ -219,10 +234,12 @@ function mergeCommonSections(
   const childCommon = child || {};
 
   // Merge primitive properties
-  const lineWidth = mergePrimitive(childCommon.lineWidth, parentCommon.lineWidth);
-  if (lineWidth !== undefined) {
-    merged.lineWidth = lineWidth;
-  }
+  mergePrimitiveProperty(merged, 'lineWidth', childCommon.lineWidth, parentCommon.lineWidth);
+  mergePrimitiveProperty(merged, 'semicolons', childCommon.semicolons, parentCommon.semicolons);
+  mergePrimitiveProperty(merged, 'trailingComma', childCommon.trailingComma, parentCommon.trailingComma);
+  mergePrimitiveProperty(merged, 'bracketSpacing', childCommon.bracketSpacing, parentCommon.bracketSpacing);
+  mergePrimitiveProperty(merged, 'arrowParens', childCommon.arrowParens, parentCommon.arrowParens);
+  mergePrimitiveProperty(merged, 'endOfLine', childCommon.endOfLine, parentCommon.endOfLine);
 
   // Merge indentation object
   const indentation = mergeObject(
@@ -230,10 +247,8 @@ function mergeCommonSections(
     parentCommon.indentation,
     (child, parent) => {
       const result: NonNullable<typeof merged.indentation> = {};
-      const style = mergePrimitive(child.style, parent.style);
-      if (style !== undefined) result.style = style;
-      const width = mergePrimitive(child.width, parent.width);
-      if (width !== undefined) result.width = width;
+      mergePrimitiveProperty(result, 'style', child.style, parent.style);
+      mergePrimitiveProperty(result, 'width', child.width, parent.width);
       return Object.keys(result).length > 0 ? result : {};
     },
   );
@@ -244,40 +259,12 @@ function mergeCommonSections(
   // Merge quotes object
   const quotes = mergeObject(childCommon.quotes, parentCommon.quotes, (child, parent) => {
     const result: NonNullable<typeof merged.quotes> = {};
-    const style = mergePrimitive(child.style, parent.style);
-    if (style !== undefined) result.style = style;
-    const jsx = mergePrimitive(child.jsx, parent.jsx);
-    if (jsx !== undefined) result.jsx = jsx;
+    mergePrimitiveProperty(result, 'style', child.style, parent.style);
+    mergePrimitiveProperty(result, 'jsx', child.jsx, parent.jsx);
     return Object.keys(result).length > 0 ? result : {};
   });
   if (quotes && Object.keys(quotes).length > 0) {
     merged.quotes = quotes;
-  }
-
-  // Merge remaining primitive properties
-  const semicolons = mergePrimitive(childCommon.semicolons, parentCommon.semicolons);
-  if (semicolons !== undefined) {
-    merged.semicolons = semicolons;
-  }
-
-  const trailingComma = mergePrimitive(childCommon.trailingComma, parentCommon.trailingComma);
-  if (trailingComma !== undefined) {
-    merged.trailingComma = trailingComma;
-  }
-
-  const bracketSpacing = mergePrimitive(childCommon.bracketSpacing, parentCommon.bracketSpacing);
-  if (bracketSpacing !== undefined) {
-    merged.bracketSpacing = bracketSpacing;
-  }
-
-  const arrowParens = mergePrimitive(childCommon.arrowParens, parentCommon.arrowParens);
-  if (arrowParens !== undefined) {
-    merged.arrowParens = arrowParens;
-  }
-
-  const endOfLine = mergePrimitive(childCommon.endOfLine, parentCommon.endOfLine);
-  if (endOfLine !== undefined) {
-    merged.endOfLine = endOfLine;
   }
 
   return Object.keys(merged).length > 0 ? merged : undefined;
