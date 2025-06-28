@@ -6,6 +6,8 @@
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { parse as parseYaml } from 'yaml';
+import { z } from 'zod';
+import { fromZod } from '@outfitter/contracts-zod';
 import type { PresetConfig } from '../types/index.js';
 import type { Result } from '@outfitter/contracts';
 import { success, failure, makeError } from '@outfitter/contracts';
@@ -43,6 +45,49 @@ export interface YamlPreset {
 }
 
 /**
+ * Zod schema for YamlPreset validation
+ */
+const YamlPresetSchema = z.object({
+  name: z.string({
+    required_error: 'Preset must have a name',
+    invalid_type_error: 'Preset name must be a string',
+  }),
+  description: z.string().optional(),
+  extends: z.string().optional(),
+  common: z
+    .object({
+      indentation: z
+        .object({
+          style: z.enum(['space', 'tab']).optional(),
+          width: z.number().optional(),
+        })
+        .optional(),
+      lineWidth: z.number().optional(),
+      quotes: z
+        .object({
+          style: z.enum(['single', 'double']).optional(),
+          jsx: z.enum(['single', 'double']).optional(),
+        })
+        .optional(),
+      semicolons: z.enum(['always', 'asNeeded']).optional(),
+      trailingComma: z.enum(['all', 'es5', 'none']).optional(),
+      bracketSpacing: z.boolean().optional(),
+      arrowParens: z.enum(['always', 'asNeeded']).optional(),
+      endOfLine: z.enum(['lf', 'crlf', 'cr', 'auto']).optional(),
+    })
+    .optional(),
+  raw: z
+    .object({
+      prettier: z.record(z.unknown()).optional(),
+      biome: z.record(z.unknown()).optional(),
+      remark: z.record(z.unknown()).optional(),
+      eslint: z.record(z.unknown()).optional(),
+      markdownlint: z.record(z.unknown()).optional(),
+    })
+    .optional(),
+});
+
+/**
  * Load a YAML preset file
  */
 export async function loadYamlPreset(path: string): Promise<Result<YamlPreset, Error>> {
@@ -50,18 +95,19 @@ export async function loadYamlPreset(path: string): Promise<Result<YamlPreset, E
     const content = await readFile(path, 'utf-8');
     const parsedContent = parseYaml(content);
 
-    // Basic validation
-    if (!parsedContent || typeof parsedContent !== 'object') {
-      return failure(makeError('VALIDATION_ERROR', 'Invalid YAML structure'));
+    // Validate with Zod schema
+    const parseResult = YamlPresetSchema.safeParse(parsedContent);
+
+    if (!parseResult.success) {
+      // Get the first error message for better user experience
+      const firstError = parseResult.error.issues[0];
+      if (firstError && firstError.message.includes('must have a name')) {
+        return failure(makeError('VALIDATION_ERROR', firstError.message));
+      }
+      return failure(fromZod(parseResult.error));
     }
 
-    const preset = parsedContent as YamlPreset;
-
-    if (!preset.name) {
-      return failure(makeError('VALIDATION_ERROR', 'Preset must have a name'));
-    }
-
-    return success(preset);
+    return success(parseResult.data);
   } catch (error) {
     return failure(makeError('INTERNAL_ERROR', `Failed to load preset: ${path}`, { cause: error }));
   }
