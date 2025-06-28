@@ -70,5 +70,7 @@
       "correct": "React Native"
     }
   ],
-  "customRules": ["./packages/rightdown/dist/rules/consistent-terminology.js"]
+  "customRules": [
+    "./packages/rightdown/dist/rules/consistent-terminology.js"
+  ]
 }
