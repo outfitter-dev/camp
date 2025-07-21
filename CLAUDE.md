@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-About you: @.agents/prompts/mode-max-eng.md
+About you: @ai/prompts/mode-max-eng.md
 
 ## Repository Overview
 

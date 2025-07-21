@@ -7,8 +7,7 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "import": "./dist/index.js"
     }
   },
   "files": [
@@ -16,7 +15,7 @@
     "vitest.config.ts"
   ],
   "scripts": {
-    "build": "tsup && tsc --emitDeclarationOnly",
+    "build": "tsup",
     "dev": "tsup --watch",
     "test": "vitest",
     "type-check": "tsc --noEmit"

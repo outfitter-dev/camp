@@ -2,8 +2,8 @@ import { defineConfig } from 'tsup';
 
 export default defineConfig({
   entry: ['src/index.ts', 'src/cli.ts', 'src/remark-plugins/format-code-blocks.ts'],
-  format: ['cjs', 'esm'],
-  dts: true,
+  format: ['esm'],
+  dts: false,
   clean: true,
   splitting: false,
   sourcemap: true,
