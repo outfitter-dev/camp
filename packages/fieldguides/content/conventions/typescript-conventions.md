@@ -481,7 +481,8 @@ export default tseslint.config(
         },
       ],
       '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
-      '@typescript-eslint/array-type': ['error', { default: 'generic' }],
+      // Allow either array syntax but enforce consistency within the project
+      // '@typescript-eslint/array-type': ['error', { default: 'generic' }], // Removed - let Ultracite handle this
 
       // Modern Naming Conventions (no I prefix)
       '@typescript-eslint/naming-convention': [

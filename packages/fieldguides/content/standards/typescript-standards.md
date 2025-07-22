@@ -42,6 +42,23 @@ utility, and import attributes)
 - **Leverage type narrowing** - Use guards over casting
 - **Fail at compile time** - Catch errors before runtime
 
+### Array Type Syntax
+
+Both `T[]` and `Array<T>` syntaxes are acceptable. Choose one style and use it consistently throughout your project:
+
+```typescript
+// Both styles are valid - pick one for your project
+const numbers: number[] = [1, 2, 3];
+const users: User[] = [];
+
+// OR
+
+const numbers: Array<number> = [1, 2, 3];
+const users: Array<User> = [];
+```
+
+Consistency within a codebase is more important than which style you choose.
+
 ### Quick Heuristics
 
 Use utility types that match your semantic intent:

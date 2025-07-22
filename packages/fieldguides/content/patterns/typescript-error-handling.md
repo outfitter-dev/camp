@@ -9,9 +9,12 @@ type: pattern
 
 Modern type-safe error handling patterns using Result types, Effect patterns, custom error types, and TypeScript 5.7+ features.
 
+> **Note**: All examples assume you have configured a logger instance as described in [Logging Standards](../standards/logging-standards.md). Replace `console.*` with appropriate logger methods.
+
 ## Related Documentation
 
 - [TypeScript Standards](../standards/typescript-standards.md) - Core TypeScript configuration
+- [Logging Standards](../standards/logging-standards.md) - Structured logging with tslog
 - [Validation Patterns](./typescript-validation.md) - Input validation with error handling
 - [Unit Testing Patterns](./testing-unit.md) - Testing error scenarios
 - [React Query Guide](../guides/react-query.md) - Error handling in data fetching
@@ -52,10 +55,10 @@ export function isFailure<T, E>(
 function processResult<T, E>(result: Result<T, E>) {
   if (isSuccess(result)) {
     // TypeScript knows result.data is available
-    console.log(result.data);
+    logger.info('Operation succeeded', { data: result.data });
   } else {
     // TypeScript knows result.error is available
-    console.error(result.error);
+    logger.error('Operation failed', { error: result.error });
   }
 }
 ```
@@ -225,6 +228,118 @@ export async function flatMapAsync<T, U, E>(
   return resolved.ok ? fn(resolved.data) : resolved;
 }
 ```
+
+## Logging Integration
+
+Combine Result patterns with structured logging for comprehensive error handling that provides both type safety and operational visibility.
+
+### Basic Integration
+
+```typescript
+import { logger } from '@/lib/logger';
+import { Result, success, failure } from '@/types/result';
+
+export async function fetchUserData(id: string): Promise<Result<User, AppError>> {
+  logger.debug('Fetching user', { userId: id });
+  
+  try {
+    const response = await fetch(`/api/users/${id}`);
+    
+    if (!response.ok) {
+      const error = createApiError(response.status, 'User fetch failed');
+      logger.error('API error', { 
+        userId: id, 
+        status: response.status,
+        error: error.message 
+      });
+      return failure(error);
+    }
+    
+    const data = await response.json();
+    logger.info('User fetched successfully', { userId: id });
+    return success(data);
+  } catch (error) {
+    logger.error('Network error', { 
+      userId: id,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
+    return failure(
+      createNetworkError(
+        error instanceof Error ? error.message : 'Unknown error'
+      )
+    );
+  }
+}
+```
+
+### Enhanced tryCatch with Logging
+
+```typescript
+export async function tryCatchWithLogging<T>(
+  fn: () => Promise<T>,
+  context?: Record<string, any>
+): AsyncResult<T, Error> {
+  try {
+    const data = await fn();
+    logger.debug('Operation succeeded', context);
+    return success(data);
+  } catch (error) {
+    logger.error('Operation failed', {
+      ...context,
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined
+    });
+    return failure(error instanceof Error ? error : new Error(String(error)));
+  }
+}
+
+// Usage
+const result = await tryCatchWithLogging(
+  () => fetchUserData('123'),
+  { operation: 'fetchUser', userId: '123' }
+);
+```
+
+### Logging Result Handlers
+
+```typescript
+export function logResultError<E>(
+  result: Result<any, E>,
+  context?: Record<string, any>
+): void {
+  if (!result.ok) {
+    logger.error('Operation failed', {
+      ...context,
+      error: result.error
+    });
+  }
+}
+
+export function processWithLogging<T, E>(
+  result: Result<T, E>,
+  onSuccess: (data: T) => void,
+  context?: Record<string, any>
+): void {
+  if (result.ok) {
+    logger.info('Processing successful result', context);
+    onSuccess(result.data);
+  } else {
+    logger.error('Processing failed result', {
+      ...context,
+      error: result.error
+    });
+  }
+}
+```
+
+### Benefits
+
+This combined approach provides:
+- **Type safety**: Callers receive typed errors they can handle appropriately
+- **Observability**: All errors are logged with context for debugging
+- **No silent failures**: Every error path is explicit and tracked
+- **Better debugging**: Structured logs make it easy to trace issues in production
+- **Compliance**: Meets both Ultracite's logging requirements and Outfitter's type safety standards
 
 ## Advanced Patterns
 
@@ -515,17 +630,17 @@ const program = pipe(
 
 // Running Effects
 Effect.runPromise(program)
-  .then(console.log)
+  .then(result => logger.info('Program completed', { result }))
   .catch(error => {
     switch (error._tag) {
       case 'NetworkError':
-        console.error(`Network error: ${error.message}`);
+        logger.error('Network error', { message: error.message });
         break;
       case 'ValidationError':
-        console.error(`Validation error in ${error.field}: ${error.message}`);
+        logger.error('Validation error', { field: error.field, message: error.message });
         break;
       case 'ParseError':
-        console.error(`Parse error: ${error.message}`);
+        logger.error('Parse error', { message: error.message });
         break;
     }
   });
