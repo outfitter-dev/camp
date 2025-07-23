@@ -53,6 +53,9 @@
     },
     {
       "path": "./packages/baselayer"
+    },
+    {
+      "path": "./packages/flint"
     }
   ],
   "exclude": [

@@ -1,0 +1,95 @@
+{
+  "name": "@outfitter/flint",
+  "version": "0.0.0",
+  "description": "Unified formatting and linting setup for JavaScript/TypeScript projects",
+  "keywords": [
+    "formatter",
+    "linter",
+    "biome",
+    "oxlint",
+    "prettier",
+    "stylelint",
+    "markdownlint",
+    "developer-tools",
+    "code-quality"
+  ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "bin": {
+    "flint": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "configs"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "type-check": "tsc --noEmit",
+    "lint": "oxlint",
+    "format": "biome format --write .",
+    "ci": "pnpm run type-check && pnpm run test:run",
+    "prepublishOnly": "pnpm run build",
+    "changeset": "changeset",
+    "version": "changeset version && pnpm install --lockfile-only",
+    "release": "pnpm run build && changeset publish"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^3.3.0",
+    "@outfitter/contracts": "workspace:*",
+    "commander": "^12.0.0",
+    "glob": "^10.3.10",
+    "picocolors": "^1.1.0",
+    "yaml": "^2.8.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@changesets/cli": "^2.27.1",
+    "@commitlint/cli": "^19.0.0",
+    "@commitlint/config-conventional": "^19.0.0",
+    "@outfitter/typescript-config": "workspace:*",
+    "@types/node": "^20.14.0",
+    "lefthook": "^1.8.0",
+    "markdownlint-cli2": "^0.14.0",
+    "oxlint": "^0.10.0",
+    "prettier": "^3.3.3",
+    "stylelint": "^16.0.0",
+    "stylelint-config-tailwindcss": "^0.0.7",
+    "tsup": "^8.1.0",
+    "typescript": "^5.4.5",
+    "ultracite": "^4.1.1",
+    "vitest": "^2.0.0"
+  },
+  "peerDependencies": {
+    "bun": ">=1.0.0"
+  },
+  "author": "Matt Galligan",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/outfitter-dev/monorepo.git",
+    "directory": "packages/flint"
+  },
+  "bugs": {
+    "url": "https://github.com/outfitter-dev/monorepo/issues"
+  },
+  "homepage": "https://github.com/outfitter-dev/monorepo/tree/main/packages/flint",
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18.12"
+  }
+}
