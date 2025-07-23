@@ -2,7 +2,9 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "ESNext",
-    "lib": ["ES2022"],
+    "lib": [
+      "ES2022"
+    ],
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "allowJs": true,
@@ -14,7 +16,8 @@
     "declarationMap": true,
     "composite": true,
     "incremental": true,
-    "noEmit": true
+    "noEmit": true,
+    "strictNullChecks": true
   },
   "files": [],
   "references": [

@@ -1,4 +1,4 @@
-# Bun Migration Analysis - 2025-01-21
+# Bun Migration Analysis - 2025-07-21
 
 ## Overview
 
@@ -7,12 +7,14 @@ This document analyzes the feasibility and requirements for migrating the @outfi
 ## Current Setup
 
 ### Package Manager: pnpm
+
 - Version: 10.11.1 (specified in package.json)
 - Workspace configuration in `pnpm-workspace.yaml`
 - Lock file: `pnpm-lock.yaml`
 - Engine requirement: pnpm >=9
 
 ### Workspace Structure
+
 ```yaml
 packages:
   - 'packages/*'
@@ -21,6 +23,7 @@ packages:
 ```
 
 ### Key pnpm Features in Use
+
 1. **Workspaces**: Managing multiple packages in monorepo
 2. **Filtering**: `--filter` flag for selective operations
 3. **Parallel execution**: `--parallel` flag
@@ -30,6 +33,7 @@ packages:
 ## Bun Capabilities (from documentation)
 
 ### ✅ Supported Features
+
 1. **Workspaces**: Full support via `workspaces` in package.json
 2. **workspace:* protocol**: Fully compatible
 3. **Filtering**: `--filter` flag works similarly
@@ -39,6 +43,7 @@ packages:
 7. **Bundler**: Built-in, could replace tsup
 
 ### ⚠️ Differences
+
 1. **Lock file**: Uses `bun.lock` (binary format by default)
 2. **Global install paths**: Different defaults
 3. **Script execution**: Some differences in environment handling
@@ -47,6 +52,7 @@ packages:
 ## Migration Steps
 
 ### Phase 1: Basic Setup
+
 ```bash
 # 1. Install Bun
 curl -fsSL https://bun.sh/install | bash
@@ -65,6 +71,7 @@ bun pm migrate
 ### Phase 2: Configuration Files
 
 #### bunfig.toml
+
 ```toml
 [install]
 # Match pnpm's behavior
@@ -76,6 +83,7 @@ globalBinDir = "~/.bun/bin"
 ```
 
 #### package.json updates
+
 ```json
 {
   "packageManager": "bun@1.1.x",
@@ -94,6 +102,7 @@ globalBinDir = "~/.bun/bin"
 ### Phase 3: Script Updates
 
 #### Before (pnpm)
+
 ```json
 {
   "scripts": {
@@ -107,6 +116,7 @@ globalBinDir = "~/.bun/bin"
 ```
 
 #### After (bun)
+
 ```json
 {
   "scripts": {
@@ -122,12 +132,14 @@ globalBinDir = "~/.bun/bin"
 ### Phase 4: TypeScript Execution
 
 Replace tsx/ts-node usage:
+
 - `tsx ./scripts/check-contracts-imports.ts` → `bun ./scripts/check-contracts-imports.ts`
 - Remove tsx dependency
 
 ### Phase 5: Testing Migration
 
 Consider migrating from Vitest to Bun's built-in test runner:
+
 - Faster execution
 - No additional dependencies
 - Similar API
@@ -135,6 +147,7 @@ Consider migrating from Vitest to Bun's built-in test runner:
 ### Phase 6: CI/CD Updates
 
 #### GitHub Actions
+
 ```yaml
 - uses: oven-sh/setup-bun@v2
   with:
