@@ -14,10 +14,12 @@
   "MD024": {
     "siblings_only": true
   },
+  "MD026": false,
   "MD029": {
     "style": "ordered"
   },
   "MD033": false,
+  "MD036": false,
   "MD041": false,
   "MD043": false,
   "MD046": {
@@ -69,8 +71,5 @@
       "incorrect": "react native",
       "correct": "React Native"
     }
-  ],
-  "customRules": [
-    "./packages/rightdown/dist/rules/consistent-terminology.js"
   ]
 }

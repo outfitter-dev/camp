@@ -10,23 +10,19 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "default": "./dist/index.js"
     },
     "./presets/standard": {
       "types": "./dist/presets/standard.d.ts",
-      "import": "./dist/presets/standard.js",
-      "require": "./dist/presets/standard.cjs"
+      "default": "./dist/presets/standard.js"
     },
     "./presets/strict": {
       "types": "./dist/presets/strict.d.ts",
-      "import": "./dist/presets/strict.js",
-      "require": "./dist/presets/strict.cjs"
+      "default": "./dist/presets/strict.js"
     },
     "./presets/relaxed": {
       "types": "./dist/presets/relaxed.d.ts",
-      "import": "./dist/presets/relaxed.js",
-      "require": "./dist/presets/relaxed.cjs"
+      "default": "./dist/presets/relaxed.js"
     }
   },
   "files": [

@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { glob } from 'glob';
 import matter from 'gray-matter';
+
 // ANSI color codes for output
 const colors = {
   reset: '\x1b[0m',
@@ -33,7 +34,8 @@ const validationRules = {
     required: true,
     validate: (value) => {
       if (typeof value !== 'string') return 'Must be a string';
-      if (value.length > 60) return `Too long (${value.length} chars) - max 60 characters`;
+      if (value.length > 60)
+        return `Too long (${value.length} chars) - max 60 characters`;
       if (!/^[A-Z]/.test(value)) return 'Should start with a capital letter';
       return null;
     },
@@ -42,7 +44,8 @@ const validationRules = {
     required: true,
     validate: (value) => {
       if (typeof value !== 'string') return 'Must be a string';
-      if (value.length > 72) return `Too long (${value.length} chars) - max 72 characters`;
+      if (value.length > 72)
+        return `Too long (${value.length} chars) - max 72 characters`;
       if (!value.endsWith('.')) return 'Should end with a period';
       return null;
     },
@@ -71,7 +74,8 @@ const validationRules = {
     validate: (value) => {
       if (value !== undefined && value !== null) {
         if (!Array.isArray(value)) return 'Must be an array';
-        if (value.some((tag) => typeof tag !== 'string')) return 'All tags must be strings';
+        if (value.some((tag) => typeof tag !== 'string'))
+          return 'All tags must be strings';
       }
       return null;
     },
@@ -157,7 +161,8 @@ function validateFile(filePath) {
         errors: [
           {
             field: 'frontmatter',
-            error: 'No frontmatter found - all non-standards files must have frontmatter',
+            error:
+              'No frontmatter found - all non-standards files must have frontmatter',
           },
         ],
         isStandardsFile: false,
@@ -210,7 +215,9 @@ function validateFile(filePath) {
   }
 }
 async function main() {
-  console.log(`${colors.blue}Validating frontmatter in fieldguides...${colors.reset}\n`);
+  console.log(
+    `${colors.blue}Validating frontmatter in fieldguides...${colors.reset}\n`
+  );
   // Find all markdown files in fieldguides
   const files = await glob('fieldguides/**/*.md', {
     ignore: ['**/node_modules/**', '**/.git/**'],
@@ -222,18 +229,24 @@ async function main() {
   const skippedFiles = results.filter((r) => r.skipped);
   // Display results
   if (validFiles.length > 0) {
-    console.log(`${colors.green}✓ Valid files (${validFiles.length}):${colors.reset}`);
+    console.log(
+      `${colors.green}✓ Valid files (${validFiles.length}):${colors.reset}`
+    );
     validFiles.forEach((result) => {
       console.log(`  ${colors.dim}${result.file}${colors.reset}`);
     });
     console.log();
   }
   if (invalidFiles.length > 0) {
-    console.log(`${colors.red}✗ Invalid files (${invalidFiles.length}):${colors.reset}`);
+    console.log(
+      `${colors.red}✗ Invalid files (${invalidFiles.length}):${colors.reset}`
+    );
     invalidFiles.forEach((result) => {
       console.log(`  ${colors.red}${result.file}${colors.reset}`);
       result.errors.forEach((error) => {
-        console.log(`    ${colors.yellow}• ${error.field}: ${error.error}${colors.reset}`);
+        console.log(
+          `    ${colors.yellow}• ${error.field}: ${error.error}${colors.reset}`
+        );
       });
       console.log();
     });

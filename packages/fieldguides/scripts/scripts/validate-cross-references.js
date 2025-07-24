@@ -6,12 +6,17 @@
 import { existsSync } from 'node:fs';
 import { readdir, readFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
+
 async function findMarkdownFiles(dir) {
   const files = [];
   const entries = await readdir(dir, { withFileTypes: true });
   for (const entry of entries) {
     const fullPath = join(dir, entry.name);
-    if (entry.isDirectory() && !entry.name.startsWith('.') && entry.name !== 'node_modules') {
+    if (
+      entry.isDirectory() &&
+      !entry.name.startsWith('.') &&
+      entry.name !== 'node_modules'
+    ) {
       files.push(...(await findMarkdownFiles(fullPath)));
     } else if (entry.isFile() && entry.name.endsWith('.md')) {
       files.push(fullPath);
@@ -36,7 +41,7 @@ function extractLinks(content, filePath) {
         link.startsWith('http') ||
         link.startsWith('#') ||
         link.startsWith('mailto:') ||
-        (!link.endsWith('.md') && !link.includes('.md#'))
+        !(link.endsWith('.md') || link.includes('.md#'))
       ) {
         continue;
       }
@@ -84,16 +89,16 @@ async function validateCrossReferences() {
         console.log(`  Line ${link.line}: [${link.link}] -> File not found`);
       }
     }
-    console.log(`\n\n📊 Summary:`);
+    console.log('\n\n📊 Summary:');
     console.log(`  Total links checked: ${allLinks.length}`);
     console.log(`  ✅ Valid links: ${validLinks.length}`);
     console.log(`  ❌ Broken links: ${brokenLinks.length}`);
     process.exit(1);
   } else {
     console.log('✅ All cross-references are valid!\n');
-    console.log(`📊 Summary:`);
+    console.log('📊 Summary:');
     console.log(`  Total links checked: ${allLinks.length}`);
-    console.log(`  All links point to existing files`);
+    console.log('  All links point to existing files');
   }
   // Optional: Check for bidirectional references
   console.log('\n🔄 Checking for missing bidirectional references...\n');
@@ -112,7 +117,7 @@ async function validateCrossReferences() {
   for (const [source, targets] of fileReferences.entries()) {
     for (const target of targets) {
       const targetRefs = fileReferences.get(target);
-      if (!targetRefs || !targetRefs.has(source)) {
+      if (!(targetRefs && targetRefs.has(source))) {
         // Only suggest bidirectional refs for files in same directory level
         const sourceDir = dirname(source).split('/')[0];
         const targetDir = dirname(target).split('/')[0];

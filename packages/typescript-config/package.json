@@ -2,6 +2,7 @@
   "name": "@outfitter/typescript-config",
   "version": "1.0.4",
   "description": "Shared TypeScript configurations for Outfitter projects",
+  "type": "module",
   "main": "./base.json",
   "exports": {
     "./base": "./base.json",

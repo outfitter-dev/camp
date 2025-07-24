@@ -25,25 +25,10 @@
       "path": "./packages/typescript-config"
     },
     {
-      "path": "./packages/eslint-config"
-    },
-    {
       "path": "./packages/contracts/typescript"
     },
     {
-      "path": "./packages/husky-config"
-    },
-    {
-      "path": "./packages/changeset-config"
-    },
-    {
       "path": "./packages/packlist"
-    },
-    {
-      "path": "./packages/remark-config"
-    },
-    {
-      "path": "./packages/formatting"
     },
     {
       "path": "./packages/cli"

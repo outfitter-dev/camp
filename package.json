@@ -5,7 +5,7 @@
   "private": true,
   "engines": {
     "node": ">=20",
-    "bun": ">=1.2.0"
+    "bun": "1.2.19"
   },
   "packageManager": "bun@1.2.19",
   "workspaces": [
@@ -40,16 +40,12 @@
   "devDependencies": {
     "@biomejs/biome": "^2.1.2",
     "@changesets/cli": "^2.27.1",
-    "@stylelint/postcss-css-in-js": "^0.38.0",
     "@types/bun": "latest",
     "@types/glob": "^8.1.0",
     "@types/node": "^20.10.4",
     "glob": "^11.0.2",
     "lefthook": "^1.12.2",
     "markdownlint-cli2": "^0.15.0",
-    "postcss": "^8.5.6",
-    "stylelint": "^16.22.0",
-    "stylelint-config-tailwindcss": "^1.0.0",
     "turbo": "^2.5.5",
     "typescript": "^5.8.3",
     "ultracite": "5.0.47",

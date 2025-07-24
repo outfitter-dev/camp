@@ -94,7 +94,9 @@ temp/
 .claude/settings.local.json.local
 **/.claude/settings.local.json
 
-# Lock files for other package managers (we use pnpm)
+# Lock files for other package managers (we use Bun)
 package-lock.json
 yarn.lock
-bun.lockb
+
+# Bun
+.bun/

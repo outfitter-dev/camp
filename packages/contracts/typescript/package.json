@@ -44,8 +44,8 @@
     "vitest.config.ts"
   ],
   "scripts": {
-    "build": "tsup && tsc --emitDeclarationOnly",
-    "dev": "tsup --watch",
+    "build": "./build.mjs",
+    "dev": "bun build src/index.ts src/error.ts src/result.ts src/assert.ts src/types/index.ts src/types/branded.ts --outdir=dist --format=esm --sourcemap=external --watch",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "type-check": "tsc --noEmit"
@@ -53,7 +53,6 @@
   "dependencies": {},
   "devDependencies": {
     "@outfitter/typescript-config": "workspace:*",
-    "tsup": "^8.0.1",
     "typescript": "^5.3.3",
     "vitest": "^1.0.4"
   },

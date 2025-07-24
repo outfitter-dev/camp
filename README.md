@@ -1,5 +1,10 @@
 # @outfitter/monorepo
 
+[![Built with Bun](https://img.shields.io/badge/Built%20with-Bun-pink?logo=bun)](https://bun.sh)
+[![Powered by Turborepo](https://img.shields.io/badge/Powered%20by-Turborepo-blue?logo=turborepo)](https://turbo.build/repo)
+[![Cached by Cloudflare](https://img.shields.io/badge/Cached%20by-Cloudflare-orange?logo=cloudflare)](https://workers.cloudflare.com)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+
 Core shared configurations and utilities for Outfitter projects.
 
 ## Packages
@@ -8,37 +13,61 @@ This monorepo contains the following packages:
 
 ### Core Libraries
 
-- **[@outfitter/packlist](./packages/packlist)** - Unified development configuration manager
-- **[@outfitter/contracts](./packages/contracts/typescript)** - Type-safe utility functions and error handling
+- **[@outfitter/contracts](./packages/contracts/typescript)** - Result pattern utilities with zero dependencies (Bun build, 18ms)
+- **[@outfitter/baselayer](./packages/baselayer)** - Consolidated configurations with sub-path exports
+- **[@outfitter/typescript-config](./packages/typescript-config)** - Base TypeScript configurations
 
-### Development Configurations
+### Tools & CLI
 
-- **[@outfitter/eslint-config](./packages/eslint-config)** - Shared ESLint configuration
-- **[@outfitter/typescript-config](./packages/typescript-config)** - Shared TypeScript configurations
-- **[@outfitter/husky-config](./packages/husky-config)** - Git hooks configuration
-- **[@outfitter/changeset-config](./packages/changeset-config)** - Release management configuration
-- **[@outfitter/formatting](./packages/formatting)** - Unified formatting setup for Prettier, Biome, and Remark
+- **[outfitter (CLI)](./packages/cli)** - Globally installable command-line tool  
+- **[@outfitter/flint](./packages/flint)** - Unified formatting/linting setup
+- **[@outfitter/packlist](./packages/packlist)** - Development setup orchestration
 
-### Tools & Documentation
+### Documentation & Utilities
 
-- **[@outfitter/cli](./packages/cli)** - Command-line tool for project setup and management
-- **[@outfitter/fieldguides](./packages/fieldguides)** - Comprehensive coding guidelines and best practices
+- **[@outfitter/fieldguides](./packages/fieldguides)** - Living documentation system
+- **[@outfitter/contracts-zod](./packages/contracts-zod)** - Zod integration utilities
+
+### Configuration Usage
+
+```typescript
+// Modern sub-path export pattern
+import { biomeConfig } from '@outfitter/baselayer/biome-config';
+import { prettierConfig } from '@outfitter/baselayer/prettier-config';
+import { changesetConfig } from '@outfitter/baselayer/changeset-config';
+```
 
 ## Development
 
+**Requirements:**
+- Bun 1.2.19+ 
+- Node.js 18+ LTS
+
 ```bash
 # Install dependencies
-pnpm install
+bun install
 
-# Build all packages
-pnpm build
+# Build all packages (contracts builds first, then everything else)
+bun run build
 
 # Run tests
-pnpm test
+bun test
 
 # Lint and format
-pnpm ci:local
+bun run ci:local
+
+# Development with watch mode
+bun run dev  # In specific package directory
 ```
+
+## Performance
+
+This monorepo is optimized for speed:
+
+- **Full build**: ~626ms (5-6x faster than baseline)
+- **Individual packages**: 18-24ms bundling (8-10x faster)  
+- **Turborepo + Cloudflare caching**: Intelligent build acceleration
+- **Bun hybrid builds**: JavaScript bundling + TypeScript declarations
 
 ## Publishing
 
@@ -46,13 +75,13 @@ This monorepo uses [Changesets](https://github.com/changesets/changesets) for ve
 
 ```bash
 # Add a changeset
-pnpm changeset
+bun run changeset
 
 # Version packages
-pnpm changeset:version
+bun run changeset:version
 
 # Publish to npm
-pnpm changeset:publish
+bun run changeset:publish
 ```
 
 ## License

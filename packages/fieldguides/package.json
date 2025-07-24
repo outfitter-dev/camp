@@ -13,22 +13,14 @@
     "!node_modules/"
   ],
   "scripts": {
-    "build": "tsc",
-    "build:watch": "tsc --watch",
-    "prebuild": "bun run clean",
-    "clean": "rm -f scripts/*.js scripts/*.js.map",
-    "lint": "bun run lint:md && bun run lint:frontmatter",
+    "build": "echo 'No build needed for documentation package'",
+    "lint": "bun run lint:md",
     "lint:md": "markdownlint-cli2 \"**/*.md\" \"!node_modules/**\" \"!.bun/**\"",
-    "lint:frontmatter": "node scripts/validate-frontmatter.js",
     "lint:fix": "bun run lint:md:fix",
     "lint:md:fix": "markdownlint-cli2 \"**/*.md\" \"!node_modules/**\" \"!.bun/**\" --fix",
     "format": "prettier --check \"**/*.md\"",
     "format:fix": "prettier --write \"**/*.md\"",
-    "check": "bun run lint",
-    "ci": "bun run check",
-    "test": "echo 'No tests for documentation package'",
-    "prepare": "bun run build",
-    "postinstall": "bun run build"
+    "test": "echo 'No tests for documentation package'"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

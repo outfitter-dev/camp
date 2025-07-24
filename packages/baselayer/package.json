@@ -1,15 +1,27 @@
 {
   "name": "@outfitter/baselayer",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Declarative development toolchain configuration orchestrator - everything you need, nothing you don't",
+  "type": "module",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "default": "./dist/index.mjs"
+    },
+    "./biome-config": {
+      "types": "./dist/configs/biome.d.ts",
+      "import": "./dist/configs/biome.js"
+    },
+    "./prettier-config": {
+      "types": "./dist/configs/prettier.d.ts",
+      "import": "./dist/configs/prettier.js"
+    },
+    "./changeset-config": {
+      "types": "./dist/configs/changeset.d.ts",
+      "import": "./dist/configs/changeset.js"
     }
   },
   "files": [
@@ -17,8 +29,8 @@
     "README.md"
   ],
   "scripts": {
-    "build": "tsup && tsc --emitDeclarationOnly",
-    "dev": "tsup --watch",
+    "build": "bun build src/index.ts src/configs/biome.ts src/configs/prettier.ts src/configs/changeset.ts --outdir=dist --format=esm --sourcemap=external && tsc --emitDeclarationOnly",
+    "dev": "bun build src/index.ts src/configs/biome.ts src/configs/prettier.ts src/configs/changeset.ts --outdir=dist --format=esm --sourcemap=external --watch",
     "test": "vitest",
     "test:run": "vitest --run",
     "type-check": "tsc --noEmit"
@@ -31,14 +43,14 @@
   "devDependencies": {
     "@outfitter/typescript-config": "workspace:*",
     "@types/node": "^20.10.4",
-    "tsup": "^8.0.1",
     "typescript": "^5.8.3",
     "vitest": "^1.6.1"
   },
   "peerDependencies": {
-    "@biomejs/biome": "^2.0.0",
-    "prettier": "^3.5.3",
-    "@outfitter/rightdown": "workspace:*",
+    "@biomejs/biome": ">=2.1.2",
+    "prettier": ">=3.0.0",
+    "@changesets/cli": ">=2.26.0",
+    "ultracite": ">=5.0.0",
     "zod": "^3.23.8"
   },
   "keywords": [

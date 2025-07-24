@@ -6,7 +6,7 @@ This report provides a comprehensive analysis of the `@outfitter/monorepo` struc
 
 ## Directory Structure
 
-```
+```text
 .
 ├── ai/                     # AI agent prompts, memory, and rules
 │   ├── memory/            # Migration and update analysis docs
@@ -55,12 +55,14 @@ This report provides a comprehensive analysis of the `@outfitter/monorepo` struc
 ### Core Packages
 
 #### 1. **@outfitter/contracts** (v1.1.0) - ✅ Stable
+
 - **Purpose**: Zero-dependency core utilities providing Result pattern for error handling, branded types, and assertions
 - **State**: Production-ready, well-tested, foundational package
 - **Key exports**: Result, AppError, success, failure, makeError, assert functions
 - **Why**: Ensures type-safe error handling across all packages without external dependencies
 
 #### 2. **@outfitter/contracts-zod** (v1.1.0) - ✅ Stable
+
 - **Purpose**: Bridges Zod validation with the Result pattern from contracts
 - **State**: Production-ready, integrates Zod validation into the Result pattern
 - **Key features**: fromZod, validateEnv, schema validation utilities
@@ -69,32 +71,38 @@ This report provides a comprehensive analysis of the `@outfitter/monorepo` struc
 ### Configuration Packages
 
 #### 3. **@outfitter/typescript-config** (v1.0.2) - ✅ Stable
+
 - **Purpose**: Shared TypeScript configurations for different project types
 - **State**: Mature, provides base, next, and vite configurations
 - **Files**: base.json, next.json, vite.json
 - **Why**: Ensures consistent TypeScript settings across all packages
 
 #### 4. **@outfitter/biome-config** (v0.1.0) - 🟡 Private/Experimental
+
 - **Purpose**: Shared Biome linter/formatter configuration
 - **State**: Private package, experimental
 - **Why**: Centralizes Biome configuration for the monorepo
 
 #### 5. **@outfitter/eslint-config** (v1.0.2) - ⚠️ Deprecated
+
 - **Purpose**: ESLint configuration (being replaced by Biome)
 - **State**: Deprecated, scheduled for removal
 - **Why**: Legacy, being replaced by Biome for better performance
 
 #### 6. **@outfitter/prettier-config** (v0.1.0) - 🟡 Private
+
 - **Purpose**: Prettier formatter configuration
 - **State**: Private package, basic config only
 - **Why**: Provides consistent code formatting (may be replaced by Biome)
 
 #### 7. **@outfitter/changeset-config** (v1.0.1) - ✅ Stable
+
 - **Purpose**: Configuration for changesets version management
 - **State**: Stable, used for coordinated releases
 - **Why**: Manages versioning and changelogs across packages
 
 #### 8. **@outfitter/husky-config** (v1.0.1) - ✅ Stable
+
 - **Purpose**: Git hooks configuration using Husky
 - **State**: Stable, provides pre-commit and commit-msg hooks
 - **Why**: Ensures code quality checks before commits
@@ -102,38 +110,45 @@ This report provides a comprehensive analysis of the `@outfitter/monorepo` struc
 ### Tool Packages
 
 #### 9. **@outfitter/cli** (v1.0.6) - ✅ Stable
+
 - **Purpose**: Main command-line interface for Outfitter tools
 - **State**: Production-ready, actively maintained
 - **Key commands**: init, update, doctor, git-prune
 - **Why**: User-facing tool for managing Outfitter configurations
 
 #### 10. **@outfitter/packlist** (v1.0.5) - ✅ Stable
+
 - **Purpose**: Configuration manager that orchestrates package installation
 - **State**: Stable, core library used by CLI
 - **Why**: Handles the complex logic of setting up development environments
 
 #### 11. **@outfitter/flint** (v0.1.0) - 🟢 New/Active
+
 - **Purpose**: Unified formatter and linter setup tool
 - **State**: New package, actively being developed
 - **Key features**: Orchestrates Biome, Oxlint, Prettier, and other tools
 - **Why**: Simplifies the complex landscape of formatting/linting tools
 
 #### 12. **@outfitter/formatting** (v1.2.2) - ✅ Stable
+
 - **Purpose**: Intelligent Markdown formatting with code block preservation
 - **State**: Stable, specialized for markdown processing
 - **Why**: Handles complex markdown formatting scenarios
 
 #### 13. **@outfitter/rightdown** (v0.1.0) - 🟢 Active Development
+
 - **Purpose**: Opinionated Markdown linter with terminology enforcement
 - **State**: Under development, growing feature set
 - **Why**: Enforces consistent writing style and terminology
 
 #### 14. **@outfitter/remark-config** (v0.1.0) - 🟢 New
+
 - **Purpose**: Remark processor configuration for markdown
 - **State**: New package, part of markdown processing pipeline
 - **Why**: Provides advanced markdown processing capabilities
 
 #### 15. **@outfitter/baselayer** (v1.0.0) - 🟢 New
+
 - **Purpose**: Declarative toolchain configuration orchestrator
 - **State**: New package, aims to simplify tool configuration
 - **Why**: Provides a higher-level abstraction for development setup
@@ -141,6 +156,7 @@ This report provides a comprehensive analysis of the `@outfitter/monorepo` struc
 ### Documentation
 
 #### 16. **@outfitter/fieldguides** (v1.0.4) - ✅ Stable
+
 - **Purpose**: Living documentation system for AI agents and developers
 - **State**: Stable, contains extensive guides and standards
 - **Key content**: Coding standards, patterns, guides, templates
@@ -159,11 +175,7 @@ This report provides a comprehensive analysis of the `@outfitter/monorepo` struc
     "bun": ">=1.2.0"
   },
   "packageManager": "bun@1.2.19",
-  "workspaces": [
-    "packages/*",
-    "packages/contracts/*",
-    "shared"
-  ],
+  "workspaces": ["packages/*", "packages/contracts/*", "shared"],
   "scripts": {
     "dev": "echo 'Use bun run dev in specific package directory'",
     "build": "bun run -F '@outfitter/contracts' build && bun run -F '@outfitter/*' build",
@@ -259,10 +271,7 @@ This report provides a comprehensive analysis of the `@outfitter/monorepo` struc
     "./package.json": "./package.json"
   },
   "sideEffects": false,
-  "files": [
-    "dist/**",
-    "vitest.config.ts"
-  ],
+  "files": ["dist/**", "vitest.config.ts"],
   "scripts": {
     "build": "tsup && tsc --emitDeclarationOnly",
     "dev": "tsup --watch",
@@ -311,10 +320,7 @@ This report provides a comprehensive analysis of the `@outfitter/monorepo` struc
       "import": "./dist/index.js"
     }
   },
-  "files": [
-    "dist/**",
-    "vitest.config.ts"
-  ],
+  "files": ["dist/**", "vitest.config.ts"],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -368,9 +374,7 @@ This report provides a comprehensive analysis of the `@outfitter/monorepo` struc
     "./vite.json": "./vite.json",
     "./package.json": "./package.json"
   },
-  "files": [
-    "*.json"
-  ],
+  "files": ["*.json"],
   "scripts": {
     "build": "echo 'No build needed for JSON configs'",
     "type-check": "tsc --noEmit"
@@ -400,9 +404,7 @@ This report provides a comprehensive analysis of the `@outfitter/monorepo` struc
   "description": "Shared ESLint configuration for Outfitter projects",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": [
-    "dist/**"
-  ],
+  "files": ["dist/**"],
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
@@ -452,18 +454,11 @@ This report provides a comprehensive analysis of the `@outfitter/monorepo` struc
   "exports": {
     ".": "./index.js"
   },
-  "files": [
-    "index.js"
-  ],
+  "files": ["index.js"],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [
-    "prettier",
-    "config",
-    "outfitter",
-    "format"
-  ],
+  "keywords": ["prettier", "config", "outfitter", "format"],
   "author": "Outfitter",
   "license": "ISC"
 }
@@ -489,10 +484,7 @@ This report provides a comprehensive analysis of the `@outfitter/monorepo` struc
     },
     "./biome.json": "./biome.config.json"
   },
-  "files": [
-    "dist",
-    "biome.config.json"
-  ],
+  "files": ["dist", "biome.config.json"],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -508,13 +500,7 @@ This report provides a comprehensive analysis of the `@outfitter/monorepo` struc
     "typescript": "^5.6.3",
     "vitest": "^2.1.5"
   },
-  "keywords": [
-    "biome",
-    "config",
-    "outfitter",
-    "lint",
-    "format"
-  ],
+  "keywords": ["biome", "config", "outfitter", "lint", "format"],
   "author": "Outfitter",
   "license": "ISC"
 }
@@ -539,11 +525,7 @@ This report provides a comprehensive analysis of the `@outfitter/monorepo` struc
     "./config": "./config/config.json",
     "./package.json": "./package.json"
   },
-  "files": [
-    "dist",
-    "config",
-    "src"
-  ],
+  "files": ["dist", "config", "src"],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -591,11 +573,7 @@ This report provides a comprehensive analysis of the `@outfitter/monorepo` struc
     "./hooks/*": "./hooks/*",
     "./package.json": "./package.json"
   },
-  "files": [
-    "dist",
-    "hooks",
-    "src"
-  ],
+  "files": ["dist", "hooks", "src"],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -658,9 +636,7 @@ This report provides a comprehensive analysis of the `@outfitter/monorepo` struc
       "require": "./dist/presets/relaxed.cjs"
     }
   },
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -682,13 +658,7 @@ This report provides a comprehensive analysis of the `@outfitter/monorepo` struc
     "typescript": "^5.6.3",
     "vitest": "^2.1.5"
   },
-  "keywords": [
-    "remark",
-    "config",
-    "outfitter",
-    "markdown",
-    "lint"
-  ],
+  "keywords": ["remark", "config", "outfitter", "markdown", "lint"],
   "author": "Outfitter",
   "license": "ISC"
 }
@@ -707,10 +677,7 @@ This report provides a comprehensive analysis of the `@outfitter/monorepo` struc
   "bin": {
     "outfitter": "./dist/index.js"
   },
-  "files": [
-    "dist",
-    "templates"
-  ],
+  "files": ["dist", "templates"],
   "scripts": {
     "build": "tsc",
     "dev": "bun src/index.ts",
@@ -787,9 +754,7 @@ This report provides a comprehensive analysis of the `@outfitter/monorepo` struc
       "require": "./dist/index.js"
     }
   },
-  "files": [
-    "dist/**"
-  ],
+  "files": ["dist/**"],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -854,9 +819,7 @@ This report provides a comprehensive analysis of the `@outfitter/monorepo` struc
       "import": "./dist/cli.js"
     }
   },
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -950,10 +913,7 @@ This report provides a comprehensive analysis of the `@outfitter/monorepo` struc
   "bin": {
     "flint": "./dist/cli.js"
   },
-  "files": [
-    "dist",
-    "configs"
-  ],
+  "files": ["dist", "configs"],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -1040,10 +1000,7 @@ This report provides a comprehensive analysis of the `@outfitter/monorepo` struc
   "bin": {
     "rightdown": "./dist/cli.js"
   },
-  "files": [
-    "dist",
-    "configs"
-  ],
+  "files": ["dist", "configs"],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -1101,10 +1058,7 @@ This report provides a comprehensive analysis of the `@outfitter/monorepo` struc
       "require": "./dist/index.js"
     }
   },
-  "files": [
-    "dist/**",
-    "README.md"
-  ],
+  "files": ["dist/**", "README.md"],
   "scripts": {
     "build": "tsup && tsc --emitDeclarationOnly",
     "dev": "tsup --watch",
@@ -1130,13 +1084,7 @@ This report provides a comprehensive analysis of the `@outfitter/monorepo` struc
     "@outfitter/rightdown": "workspace:*",
     "zod": "^3.23.8"
   },
-  "keywords": [
-    "toolchain",
-    "configuration",
-    "biome",
-    "prettier",
-    "outfitter"
-  ],
+  "keywords": ["toolchain", "configuration", "biome", "prettier", "outfitter"],
   "author": "Outfitter",
   "license": "MIT",
   "repository": {
@@ -1163,14 +1111,7 @@ This report provides a comprehensive analysis of the `@outfitter/monorepo` struc
   "description": "Living documentation system that equips AI agents with consistent development practices",
   "type": "module",
   "main": "./src/index.ts",
-  "files": [
-    "src/",
-    "content/",
-    "docs/",
-    "scripts/",
-    "*.md",
-    "!node_modules/"
-  ],
+  "files": ["src/", "content/", "docs/", "scripts/", "*.md", "!node_modules/"],
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",
@@ -1235,6 +1176,7 @@ This report provides a comprehensive analysis of the `@outfitter/monorepo` struc
 ## Build Tools and Scripts Analysis
 
 ### Primary Build Tools
+
 1. **TypeScript Compiler (tsc)**
    - Used for: Type checking (`tsc --noEmit`), building type definitions (`tsc --emitDeclarationOnly`)
    - Packages using tsc: Most packages for type checking, some for building
@@ -1257,11 +1199,13 @@ This report provides a comprehensive analysis of the `@outfitter/monorepo` struc
    - Packages with tests: contracts, contracts-zod, biome-config, packlist, formatting, flint, rightdown, remark-config, baselayer
 
 ### Package Management
+
 - **Package Manager**: Bun (v1.2.19)
 - **Workspace Structure**: Bun workspaces with packages in `packages/*`, `packages/contracts/*`, and `shared`
 - **Version Management**: Changesets for coordinated releases
 
 ### Common Scripts Patterns
+
 1. **build**: Usually runs tsup, sometimes with additional tsc for type definitions
 2. **dev**: Usually runs tsup in watch mode
 3. **test**: Runs vitest
@@ -1271,6 +1215,7 @@ This report provides a comprehensive analysis of the `@outfitter/monorepo` struc
 ## Dependency Relationships
 
 ### Core Dependencies Flow
+
 ```
 @outfitter/contracts (zero dependencies)
     ↓
@@ -1286,6 +1231,7 @@ Multiple packages depend on contracts:
 ```
 
 ### Configuration Dependencies
+
 ```
 @outfitter/typescript-config
     ↓
@@ -1322,12 +1268,14 @@ Used as devDependency by almost all packages
 ## Build Pipeline Flow
 
 ### 1. Initial Setup
+
 ```bash
 bun install  # Install all dependencies
 bun run prepare  # Runs lefthook install && bun config:mdlint
 ```
 
 ### 2. Build Order (Critical)
+
 ```bash
 # Must build contracts first (zero dependencies)
 bun run -F '@outfitter/contracts' build
@@ -1337,6 +1285,7 @@ bun run -F '@outfitter/*' build
 ```
 
 ### 3. Development Workflow
+
 ```bash
 # Type checking
 bun run type-check
@@ -1358,6 +1307,7 @@ bun run ci:local    # Format, lint, type-check, and test
 ```
 
 ### 4. Publishing Workflow
+
 ```bash
 # Create changeset
 bun run changeset
