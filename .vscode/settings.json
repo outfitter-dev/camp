@@ -9,8 +9,8 @@
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.expand": false,
   "explorer.fileNesting.patterns": {
-    "package.json": "pnpm-workspace.yaml,tsconfig.json,prettier.config.js,.markdownlint-cli2.jsonc,.gitignore,commitlint.config.js,eslint.config.js,lint-staged.config.js,vitest.config.ts,vitest.workspace.ts,pnpm-lock.yaml,lint-staged.config.mjs,biome.json,eslint.config.mjs,.markdownlint.json,.prettierignore,.biomeignore,commitlint.config.mjs,prettier.config.ts",
-    "AGENT.md": ".mcp.json,CLAUDE.md"
+    "package.json": "pnpm-*.yaml,*config.json,*.config.js,*.config.ts,.markdownlint-cli2.jsonc,lint-staged.config.mjs,biome.json,.markdownlint.json,.prettierignore,.biomeignore,commitlint.config.mjs,*.lock,lefthook.yml,bunfig.toml",
+    "AGENT.md": ".mcp.json,CLAUDE.md, AGENTS.md"
   },
   "typescript.preferences.includePackageJsonAutoImports": "auto",
   "typescript.suggest.autoImports": true,
@@ -68,5 +68,6 @@
   },
   "typescript.tsdk": "node_modules/typescript/lib",
   "editor.formatOnPaste": true,
-  "emmet.showExpandedAbbreviation": "never"
+  "emmet.showExpandedAbbreviation": "never",
+  "biome.configurationPath": ""
 }

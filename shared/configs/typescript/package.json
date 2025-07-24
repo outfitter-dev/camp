@@ -1,0 +1,35 @@
+{
+  "name": "@outfitter/typescript-config",
+  "version": "1.0.4",
+  "description": "Shared TypeScript configurations for Outfitter projects",
+  "main": "./base.json",
+  "exports": {
+    "./base": "./base.json",
+    "./base.json": "./base.json",
+    "./next": "./next.json",
+    "./next.json": "./next.json",
+    "./vite": "./vite.json",
+    "./vite.json": "./vite.json",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "*.json"
+  ],
+  "scripts": {
+    "build": "echo 'No build needed for JSON configs'",
+    "type-check": "tsc --noEmit"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/outfitter-dev/monorepo.git",
+    "directory": "packages/typescript-config"
+  },
+  "bugs": {
+    "url": "https://github.com/outfitter-dev/monorepo/issues"
+  },
+  "homepage": "https://github.com/outfitter-dev/monorepo/tree/main/packages/typescript-config#readme",
+  "publishConfig": {
+    "access": "public"
+  }
+}

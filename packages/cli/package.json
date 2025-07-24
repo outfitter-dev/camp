@@ -12,11 +12,10 @@
   ],
   "scripts": {
     "build": "tsc",
-    "dev": "tsx src/index.ts",
-    "lint": "eslint .",
-    "prepare": "npm run build",
-    "test": "vitest",
-    "type-check": "tsc --noEmit"
+    "dev": "bun src/index.ts",
+    "test": "bun test",
+    "type-check": "tsc --noEmit",
+    "prepare": "bun run build"
   },
   "dependencies": {
     "@outfitter/contracts": "workspace:*",

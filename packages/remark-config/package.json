@@ -37,7 +37,7 @@
     "dev": "tsup --watch",
     "type-check": "tsc --noEmit",
     "test": "vitest",
-    "prepublishOnly": "pnpm run build"
+    "prepublishOnly": "bun run build"
   },
   "dependencies": {
     "remark-preset-lint-recommended": "^7.0.1",

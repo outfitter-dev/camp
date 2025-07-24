@@ -15,20 +15,20 @@
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",
-    "prebuild": "pnpm run clean",
+    "prebuild": "bun run clean",
     "clean": "rm -f scripts/*.js scripts/*.js.map",
-    "lint": "pnpm run lint:md && pnpm run lint:frontmatter",
-    "lint:md": "markdownlint-cli2 \"**/*.md\" \"!node_modules/**\" \"!.pnpm/**\"",
+    "lint": "bun run lint:md && bun run lint:frontmatter",
+    "lint:md": "markdownlint-cli2 \"**/*.md\" \"!node_modules/**\" \"!.bun/**\"",
     "lint:frontmatter": "node scripts/validate-frontmatter.js",
-    "lint:fix": "pnpm run lint:md:fix",
-    "lint:md:fix": "markdownlint-cli2 \"**/*.md\" \"!node_modules/**\" \"!.pnpm/**\" --fix",
+    "lint:fix": "bun run lint:md:fix",
+    "lint:md:fix": "markdownlint-cli2 \"**/*.md\" \"!node_modules/**\" \"!.bun/**\" --fix",
     "format": "prettier --check \"**/*.md\"",
     "format:fix": "prettier --write \"**/*.md\"",
-    "check": "pnpm run lint",
-    "ci": "pnpm run check",
+    "check": "bun run lint",
+    "ci": "bun run check",
     "test": "echo 'No tests for documentation package'",
-    "prepare": "pnpm run build",
-    "postinstall": "pnpm run build"
+    "prepare": "bun run build",
+    "postinstall": "bun run build"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
@@ -40,7 +40,7 @@
   },
   "engines": {
     "node": ">=20.0.0",
-    "pnpm": ">=9.0.0"
+    "bun": ">=1.2.0"
   },
   "keywords": [
     "outfitter",

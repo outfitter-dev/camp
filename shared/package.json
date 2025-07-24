@@ -1,0 +1,30 @@
+{
+  "name": "@outfitter/shared",
+  "version": "0.0.0",
+  "description": "Shared configurations, testing utilities, and build tools for the Outfitter monorepo",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./configs/typescript": "./configs/typescript/index.js",
+    "./configs/biome": "./configs/biome/index.js", 
+    "./configs/remark": "./configs/remark/index.js",
+    "./configs/changeset": "./configs/changeset/index.js",
+    "./testing/vitest": "./testing/vitest.config.base.js",
+    "./build/tsup": "./build/tsup.config.base.js"
+  },
+  "files": [
+    "configs",
+    "testing", 
+    "build"
+  ],
+  "scripts": {
+    "build": "echo 'Shared configs - no build needed'",
+    "test": "echo 'Shared configs - no tests'"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3",
+    "vitest": "^1.6.1",
+    "tsup": "^8.3.0"
+  },
+  "license": "MIT"
+}

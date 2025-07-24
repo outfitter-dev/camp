@@ -1,0 +1,47 @@
+{
+  "name": "@outfitter/changeset-config",
+  "version": "1.0.4",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./config": "./config/config.json",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "config",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@changesets/cli": "^2.27.11"
+  },
+  "devDependencies": {
+    "@outfitter/typescript-config": "workspace:*",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/outfitter-dev/monorepo.git",
+    "directory": "packages/changeset-config"
+  },
+  "bugs": {
+    "url": "https://github.com/outfitter-dev/monorepo/issues"
+  },
+  "homepage": "https://github.com/outfitter-dev/monorepo/tree/main/packages/changeset-config#readme",
+  "publishConfig": {
+    "access": "public"
+  }
+}

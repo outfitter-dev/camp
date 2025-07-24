@@ -39,11 +39,11 @@
     "type-check": "tsc --noEmit",
     "lint": "oxlint",
     "format": "biome format --write .",
-    "ci": "pnpm run type-check && pnpm run test:run",
-    "prepublishOnly": "pnpm run build",
+    "ci": "bun run type-check && bun run test:run",
+    "prepublishOnly": "bun run build",
     "changeset": "changeset",
-    "version": "changeset version && pnpm install --lockfile-only",
-    "release": "pnpm run build && changeset publish"
+    "version": "changeset version && bun install --lockfile-only",
+    "release": "bun run build && changeset publish"
   },
   "dependencies": {
     "@inquirer/prompts": "^3.3.0",
