@@ -15,10 +15,10 @@
     "vitest.config.ts"
   ],
   "scripts": {
-    "build": "bun build src/index.ts --outdir=dist --format=esm --sourcemap=external && ../../../node_modules/.bin/tsc --emitDeclarationOnly && rm -f dist/env.js dist/error.js",
-    "dev": "bun build src/index.ts --outdir=dist --format=esm --sourcemap=external --watch && ../../../node_modules/.bin/tsc --emitDeclarationOnly && rm -f dist/env.js dist/error.js",
+    "build": "bun build src/index.ts --outdir=dist --format=esm --sourcemap=external && ../../node_modules/.bin/tsc --emitDeclarationOnly && rm -f dist/env.js dist/error.js",
+    "dev": "bun build src/index.ts --outdir=dist --format=esm --sourcemap=external --watch && ../../node_modules/.bin/tsc --emitDeclarationOnly && rm -f dist/env.js dist/error.js",
     "test": "vitest",
-    "type-check": "../../../node_modules/.bin/tsc --noEmit"
+    "type-check": "../../node_modules/.bin/tsc --noEmit"
   },
   "dependencies": {
     "@outfitter/contracts": "workspace:*"
