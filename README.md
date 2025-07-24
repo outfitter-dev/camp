@@ -19,7 +19,7 @@ This monorepo contains the following packages:
 
 ### Tools & CLI
 
-- **[outfitter (CLI)](./packages/cli)** - Globally installable command-line tool  
+- **[outfitter (CLI)](./packages/cli)** - Globally installable command-line tool
 - **[@outfitter/flint](./packages/flint)** - Unified formatting/linting setup
 - **[@outfitter/packlist](./packages/packlist)** - Development setup orchestration
 
@@ -40,7 +40,8 @@ import { changesetConfig } from '@outfitter/baselayer/changeset-config';
 ## Development
 
 **Requirements:**
-- Bun 1.2.19+ 
+
+- Bun 1.2.19+
 - Node.js 18+ LTS
 
 ```bash
@@ -65,7 +66,7 @@ bun run dev  # In specific package directory
 This monorepo is optimized for speed:
 
 - **Full build**: ~626ms (5-6x faster than baseline)
-- **Individual packages**: 18-24ms bundling (8-10x faster)  
+- **Individual packages**: 18-24ms bundling (8-10x faster)
 - **Turborepo + Cloudflare caching**: Intelligent build acceleration
 - **Bun hybrid builds**: JavaScript bundling + TypeScript declarations
 

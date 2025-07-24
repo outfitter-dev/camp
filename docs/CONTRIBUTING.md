@@ -31,7 +31,7 @@ bun run ci:local
 cd packages/contracts/typescript
 bun run dev  # Starts watch mode for instant rebuilds
 
-# Run tests during development  
+# Run tests during development
 bun test     # In any package directory
 
 # Before committing (runs automatically via Lefthook)
@@ -43,16 +43,19 @@ bun run ci:local  # Format, lint, type-check, test
 This monorepo uses modern tooling for maximum performance:
 
 ### Build System
+
 - **Bun hybrid builds**: JavaScript bundling (18-24ms) + TypeScript declarations
 - **Turborepo**: Task orchestration with intelligent caching
 - **Cloudflare Workers**: Remote cache for CI/CD acceleration
 
 ### Package Management
+
 - **Bun workspaces**: Fast dependency resolution and linking
 - **ESM-only**: All 12 packages use modern ES modules
 - **Sub-path exports**: Clean imports like `@outfitter/baselayer/biome-config`
 
 ### Development Workflow
+
 - **Lefthook**: Git hooks with parallel execution
 - **Heavy pre-push validation**: Full CI checks before push
 - **Incremental TypeScript**: Fast type checking with `.tsbuildinfo` caching
@@ -80,7 +83,7 @@ bun run dev
 bun test
 
 # Run tests in specific package
-cd packages/contracts/typescript  
+cd packages/contracts/typescript
 bun test
 
 # Run tests with UI
@@ -96,7 +99,7 @@ bun run ci:local
 # Just formatting
 bun run format:fix
 
-# Just linting  
+# Just linting
 bun run lint
 
 # Markdown linting
@@ -139,6 +142,7 @@ Monitor Turborepo cache performance:
 ### Common Issues
 
 **Build failing?**
+
 ```bash
 # Clean and rebuild
 rm -rf node_modules .turbo
@@ -147,6 +151,7 @@ bun run build
 ```
 
 **Tests failing?**
+
 ```bash
 # Some packages have pre-existing test issues from development
 # Focus on packages you're modifying
@@ -155,6 +160,7 @@ bun test
 ```
 
 **Type errors?**
+
 ```bash
 # Incremental builds can get confused
 rm -rf **/*.tsbuildinfo
@@ -162,6 +168,7 @@ bun run type-check
 ```
 
 **Git hooks not running?**
+
 ```bash
 # Reinstall Lefthook
 bunx lefthook install
@@ -186,7 +193,7 @@ bun run changeset
 # 2. Version packages (maintainers only)
 bun run changeset:version
 
-# 3. Publish to npm (maintainers only)  
+# 3. Publish to npm (maintainers only)
 bun run changeset:publish
 ```
 

@@ -113,7 +113,7 @@ packages/ui/
 export function calculateDiscount(
   items: LineItem[],
   customer: Customer,
-  promos: Promotion[]
+  promos: Promotion[],
 ): DiscountResult {
   // Complex business logic that must be consistent
 }
