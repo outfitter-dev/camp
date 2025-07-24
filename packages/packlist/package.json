@@ -25,9 +25,8 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@outfitter/changeset-config": "workspace:*",
+    "@outfitter/baselayer": "workspace:*",
     "@outfitter/contracts": "workspace:*",
-    "@outfitter/husky-config": "workspace:*",
     "@outfitter/typescript-config": "workspace:*",
     "commander": "^11.0.0",
     "execa": "^8.0.0",

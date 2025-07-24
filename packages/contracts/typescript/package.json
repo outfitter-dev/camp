@@ -48,7 +48,7 @@
     "dev": "bun build src/index.ts src/error.ts src/result.ts src/assert.ts src/types/index.ts src/types/branded.ts --outdir=dist --format=esm --sourcemap=external --watch",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "type-check": "tsc --noEmit"
+    "type-check": "../../../node_modules/.bin/tsc --noEmit"
   },
   "dependencies": {},
   "devDependencies": {

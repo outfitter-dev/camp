@@ -11,10 +11,10 @@
     "templates"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "../../../node_modules/.bin/tsc",
     "dev": "bun src/index.ts",
     "test": "bun test",
-    "type-check": "tsc --noEmit",
+    "type-check": "../../../node_modules/.bin/tsc --noEmit",
     "prepare": "bun run build"
   },
   "dependencies": {

@@ -15,10 +15,10 @@
     "vitest.config.ts"
   ],
   "scripts": {
-    "build": "bun build src/index.ts --outdir=dist --format=esm --sourcemap=external && tsc --emitDeclarationOnly && rm -f dist/env.js dist/error.js",
-    "dev": "bun build src/index.ts --outdir=dist --format=esm --sourcemap=external --watch && tsc --emitDeclarationOnly && rm -f dist/env.js dist/error.js",
+    "build": "bun build src/index.ts --outdir=dist --format=esm --sourcemap=external && ../../../node_modules/.bin/tsc --emitDeclarationOnly && rm -f dist/env.js dist/error.js",
+    "dev": "bun build src/index.ts --outdir=dist --format=esm --sourcemap=external --watch && ../../../node_modules/.bin/tsc --emitDeclarationOnly && rm -f dist/env.js dist/error.js",
     "test": "vitest",
-    "type-check": "tsc --noEmit"
+    "type-check": "../../../node_modules/.bin/tsc --noEmit"
   },
   "dependencies": {
     "@outfitter/contracts": "workspace:*"
@@ -29,7 +29,8 @@
   "devDependencies": {
     "@outfitter/typescript-config": "workspace:*",
     "typescript": "^5.8.3",
-    "vitest": "^1.6.1"
+    "vitest": "^1.6.1",
+    "zod": "^3.23.8"
   },
   "license": "MIT",
   "repository": {
