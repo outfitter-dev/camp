@@ -15,9 +15,9 @@
   ],
   "scripts": {
     "dev": "echo 'Use bun run dev in specific package directory'",
-    "build": "bun run -F '@outfitter/contracts' build && bun run -F '@outfitter/*' build",
-    "build:all": "bun run -F '@outfitter/*' build",
-    "test:all": "bun run -F '@outfitter/*' test",
+    "build": "turbo run build",
+    "build:all": "turbo run build",
+    "test:all": "turbo run test",
     "test": "bun test",
     "lint": "biome lint .",
     "lint:fix": "biome lint . --write",

@@ -54,7 +54,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
+    "@biomejs/biome": "^2.1.2",
     "@changesets/cli": "^2.27.1",
     "@commitlint/cli": "^19.0.0",
     "@commitlint/config-conventional": "^19.0.0",
@@ -68,7 +68,7 @@
     "stylelint-config-tailwindcss": "^0.0.7",
     "tsup": "^8.1.0",
     "typescript": "^5.4.5",
-    "ultracite": "^4.1.1",
+    "ultracite": "5.0.47",
     "vitest": "^2.0.0"
   },
   "peerDependencies": {
@@ -89,6 +89,6 @@
     "access": "public"
   },
   "engines": {
-    "node": ">=18.12"
+    "node": ">=20"
   }
 }

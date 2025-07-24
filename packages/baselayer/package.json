@@ -73,5 +73,8 @@
   "homepage": "https://github.com/outfitter-dev/monorepo/tree/main/packages/baselayer#readme",
   "publishConfig": {
     "access": "public"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

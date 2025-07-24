@@ -43,7 +43,7 @@ program
     }
     
     console.log(pc.green('✨ Flint initialized successfully!'));
-    console.log(pc.gray('Run `pnpm run check` to verify your setup.'));
+    console.log(pc.gray('Run `bun run check` to verify your setup.'));
   });
 
 // Clean command
