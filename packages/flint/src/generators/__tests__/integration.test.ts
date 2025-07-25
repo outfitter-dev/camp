@@ -3,7 +3,7 @@ import * as path from 'node:path';
 import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
 import { isSuccess } from '@outfitter/contracts';
-import { 
+import {
   generateBiomeConfig,
   generateOxlintConfig,
   generatePrettierConfig,
@@ -13,7 +13,7 @@ import {
   generateEditorconfigConfig,
   generateCommitlintConfig,
   setupVSCode,
-  updatePackageScripts
+  updatePackageScripts,
 } from '../index.js';
 
 describe('Generator Integration Tests', () => {
@@ -23,25 +23,32 @@ describe('Generator Integration Tests', () => {
   beforeEach(async () => {
     // Save original directory
     originalDir = process.cwd();
-    
+
     // Create a temporary directory for testing
     tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'flint-test-'));
     process.chdir(tempDir);
-    
+
     // Create a basic package.json
-    await fs.writeFile('package.json', JSON.stringify({
-      name: 'test-project',
-      version: '1.0.0',
-      scripts: {
-        test: 'vitest'
-      }
-    }, null, 2));
+    await fs.writeFile(
+      'package.json',
+      JSON.stringify(
+        {
+          name: 'test-project',
+          version: '1.0.0',
+          scripts: {
+            test: 'vitest',
+          },
+        },
+        null,
+        2
+      )
+    );
   });
 
   afterEach(async () => {
     // Restore original directory
     process.chdir(originalDir);
-    
+
     // Clean up temp directory
     await fs.rm(tempDir, { recursive: true, force: true });
   });
@@ -49,7 +56,7 @@ describe('Generator Integration Tests', () => {
   it('should generate all configuration files without conflicts', async () => {
     // Note: We mock the execSync calls since we don't want to actually run external commands
     vi.mock('node:child_process', () => ({
-      execSync: vi.fn()
+      execSync: vi.fn(),
     }));
 
     // Generate configs (except Biome and Oxlint which need mocking)
@@ -80,17 +87,26 @@ describe('Generator Integration Tests', () => {
     }
     expect(isSuccess(scriptsResult)).toBe(true);
 
+    // Helper function for cleaner assertions
+    const expectFileExists = async (path: string) =>
+      expect(
+        await fs
+          .access(path)
+          .then(() => true)
+          .catch(() => false)
+      ).toBe(true);
+
     // Verify files were created
-    expect(await fs.access('.prettierrc.json').then(() => true).catch(() => false)).toBe(true);
-    expect(await fs.access('.prettierignore').then(() => true).catch(() => false)).toBe(true);
-    expect(await fs.access('.markdownlint-cli2.yaml').then(() => true).catch(() => false)).toBe(true);
-    expect(await fs.access('.stylelintrc.json').then(() => true).catch(() => false)).toBe(true);
-    expect(await fs.access('.stylelintignore').then(() => true).catch(() => false)).toBe(true);
-    expect(await fs.access('lefthook.yml').then(() => true).catch(() => false)).toBe(true);
-    expect(await fs.access('.editorconfig').then(() => true).catch(() => false)).toBe(true);
-    expect(await fs.access('.commitlintrc.json').then(() => true).catch(() => false)).toBe(true);
-    expect(await fs.access('.vscode/settings.json').then(() => true).catch(() => false)).toBe(true);
-    expect(await fs.access('.vscode/extensions.json').then(() => true).catch(() => false)).toBe(true);
+    await expectFileExists('.prettierrc.json');
+    await expectFileExists('.prettierignore');
+    await expectFileExists('.markdownlint-cli2.yaml');
+    await expectFileExists('.stylelintrc.json');
+    await expectFileExists('.stylelintignore');
+    await expectFileExists('lefthook.yml');
+    await expectFileExists('.editorconfig');
+    await expectFileExists('.commitlintrc.json');
+    await expectFileExists('.vscode/settings.json');
+    await expectFileExists('.vscode/extensions.json');
 
     // Verify package.json was updated
     const packageJson = JSON.parse(await fs.readFile('package.json', 'utf-8'));
@@ -103,11 +119,14 @@ describe('Generator Integration Tests', () => {
   it('should generate valid YAML files', async () => {
     const markdownlintResult = await generateMarkdownlintConfig();
     expect(isSuccess(markdownlintResult)).toBe(true);
-    
+
     const lefthookResult = await generateLefthookConfig();
     expect(isSuccess(lefthookResult)).toBe(true);
 
-    const markdownlintContent = await fs.readFile('.markdownlint-cli2.yaml', 'utf-8');
+    const markdownlintContent = await fs.readFile(
+      '.markdownlint-cli2.yaml',
+      'utf-8'
+    );
     const lefthookContent = await fs.readFile('lefthook.yml', 'utf-8');
 
     // Basic YAML validation
@@ -123,16 +142,22 @@ describe('Generator Integration Tests', () => {
   it('should generate valid JSON files', async () => {
     const prettierResult = await generatePrettierConfig();
     expect(isSuccess(prettierResult)).toBe(true);
-    
+
     const stylelintResult = await generateStylelintConfig();
     expect(isSuccess(stylelintResult)).toBe(true);
-    
+
     const commitlintResult = await generateCommitlintConfig();
     expect(isSuccess(commitlintResult)).toBe(true);
 
-    const prettierConfig = JSON.parse(await fs.readFile('.prettierrc.json', 'utf-8'));
-    const stylelintConfig = JSON.parse(await fs.readFile('.stylelintrc.json', 'utf-8'));
-    const commitlintConfig = JSON.parse(await fs.readFile('.commitlintrc.json', 'utf-8'));
+    const prettierConfig = JSON.parse(
+      await fs.readFile('.prettierrc.json', 'utf-8')
+    );
+    const stylelintConfig = JSON.parse(
+      await fs.readFile('.stylelintrc.json', 'utf-8')
+    );
+    const commitlintConfig = JSON.parse(
+      await fs.readFile('.commitlintrc.json', 'utf-8')
+    );
 
     expect(prettierConfig).toHaveProperty('semi', true);
     expect(prettierConfig).toHaveProperty('singleQuote', true);

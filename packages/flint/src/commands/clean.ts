@@ -1,5 +1,11 @@
 import type { Result } from '@outfitter/contracts';
-import { success, failure, makeError, isSuccess, isFailure } from '@outfitter/contracts';
+import {
+  success,
+  failure,
+  makeError,
+  isSuccess,
+  isFailure,
+} from '@outfitter/contracts';
 import { confirm, select } from '@inquirer/prompts';
 import * as pc from 'picocolors';
 import { existsSync, readFileSync } from 'node:fs';
@@ -13,13 +19,20 @@ import { cleanupDependencies } from '../core/dependency-cleanup.js';
 /**
  * Clean up old configuration files
  */
-export async function clean(options: CleanOptions): Promise<Result<void, Error>> {
+export async function clean(
+  options: CleanOptions
+): Promise<Result<void, Error>> {
   try {
     const projectRoot = process.cwd();
     const packageJsonPath = join(projectRoot, 'package.json');
-    
+
     if (!existsSync(packageJsonPath)) {
-      return failure(makeError('NOT_FOUND', 'No package.json found. Please run this command in a project root.'));
+      return failure(
+        makeError(
+          'NOT_FOUND',
+          'No package.json found. Please run this command in a project root.'
+        )
+      );
     }
 
     const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
@@ -28,7 +41,12 @@ export async function clean(options: CleanOptions): Promise<Result<void, Error>>
     console.log(pc.gray('Detecting configuration files...'));
     const detectionResult = await detectExistingTools(projectRoot);
     if (isFailure(detectionResult)) {
-      return failure(makeError('INTERNAL_ERROR', `Detection failed: ${detectionResult.error.message}`));
+      return failure(
+        makeError(
+          'INTERNAL_ERROR',
+          `Detection failed: ${detectionResult.error.message}`
+        )
+      );
     }
     const detectedTools = detectionResult.data;
 
@@ -43,11 +61,11 @@ export async function clean(options: CleanOptions): Promise<Result<void, Error>>
       '.editorconfig',
     ];
 
-    const flintGeneratedConfigs = detectedTools.configs.filter(config => 
-      flintConfigs.some(flintConfig => config.path.endsWith(flintConfig))
+    const flintGeneratedConfigs = detectedTools.configs.filter((config) =>
+      flintConfigs.some((flintConfig) => config.path.endsWith(flintConfig))
     );
 
-    const oldToolConfigs = detectedTools.configs.filter(config =>
+    const oldToolConfigs = detectedTools.configs.filter((config) =>
       ['eslint', 'prettier', 'husky'].includes(config.tool)
     );
 
@@ -57,25 +75,29 @@ export async function clean(options: CleanOptions): Promise<Result<void, Error>>
     }
 
     // Show what we found
-    console.log(pc.yellow(`\nFound ${detectedTools.configs.length} configuration file(s):`));
-    
+    console.log(
+      pc.yellow(
+        `\nFound ${detectedTools.configs.length} configuration file(s):`
+      )
+    );
+
     if (oldToolConfigs.length > 0) {
       console.log(pc.bold('\nOld tool configurations:'));
-      oldToolConfigs.forEach(config => {
+      oldToolConfigs.forEach((config) => {
         console.log(pc.gray(`  - ${config.tool} (${config.path})`));
       });
     }
 
     if (flintGeneratedConfigs.length > 0) {
       console.log(pc.bold('\nFlint-generated configurations:'));
-      flintGeneratedConfigs.forEach(config => {
+      flintGeneratedConfigs.forEach((config) => {
         console.log(pc.gray(`  - ${config.path}`));
       });
     }
 
     // Ask what to clean
     let configsToClean: DetectedConfig[] = [];
-    
+
     if (!options.force) {
       const cleanupMode = await select({
         message: 'What would you like to clean?',
@@ -142,7 +164,7 @@ export async function clean(options: CleanOptions): Promise<Result<void, Error>>
 
       // Confirm cleanup
       console.log(pc.bold('\nThe following files will be removed:'));
-      configsToClean.forEach(config => {
+      configsToClean.forEach((config) => {
         console.log(pc.red(`  - ${config.path}`));
       });
 
@@ -163,22 +185,40 @@ export async function clean(options: CleanOptions): Promise<Result<void, Error>>
     // 2. Create backup
     console.log('\n' + pc.gray('Creating backup...'));
     const backupResult = await createBackup(configsToClean);
-    if (!backupResult.success) {
-      return failure(makeError('INTERNAL_ERROR', `Backup failed: ${backupResult.error.message}`));
+    if (isFailure(backupResult)) {
+      return failure(
+        makeError(
+          'INTERNAL_ERROR',
+          `Backup failed: ${backupResult.error.message}`
+        )
+      );
     }
     console.log(pc.green(`✓ Backup created: ${backupResult.data}`));
 
     // 3. Remove old files
     console.log('\n' + pc.gray('Removing configuration files...'));
-    const cleanupResult = await removeOldConfigs(configsToClean.map(c => c.path));
-    if (!cleanupResult.success) {
-      console.error(pc.red('❌ Some files could not be removed:'), cleanupResult.error.message);
-      console.log(pc.yellow('Note: Your backup is available at:'), backupResult.data);
-      return failure(makeError('INTERNAL_ERROR', `Cleanup failed: ${cleanupResult.error.message}`));
+    const cleanupResult = await removeOldConfigs(
+      configsToClean.map((c) => c.path)
+    );
+    if (isFailure(cleanupResult)) {
+      console.error(
+        pc.red('❌ Some files could not be removed:'),
+        cleanupResult.error.message
+      );
+      console.log(
+        pc.yellow('Note: Your backup is available at:'),
+        backupResult.data
+      );
+      return failure(
+        makeError(
+          'INTERNAL_ERROR',
+          `Cleanup failed: ${cleanupResult.error.message}`
+        )
+      );
     }
 
     // 4. Clean up dependencies if old tools were removed
-    const removedOldTools = configsToClean.some(config => 
+    const removedOldTools = configsToClean.some((config) =>
       ['eslint', 'prettier', 'husky'].includes(config.tool)
     );
 
@@ -191,8 +231,11 @@ export async function clean(options: CleanOptions): Promise<Result<void, Error>>
       if (cleanDeps) {
         console.log('\n' + pc.gray('Cleaning up dependencies...'));
         const depCleanupResult = await cleanupDependencies();
-        if (!depCleanupResult.success) {
-          console.warn(pc.yellow('Warning: Some dependencies could not be removed:'), depCleanupResult.error.message);
+        if (isFailure(depCleanupResult)) {
+          console.warn(
+            pc.yellow('Warning: Some dependencies could not be removed:'),
+            depCleanupResult.error.message
+          );
         } else {
           console.log(pc.green('✓ Dependencies cleaned up'));
         }
@@ -200,25 +243,39 @@ export async function clean(options: CleanOptions): Promise<Result<void, Error>>
     } else if (removedOldTools && options.force) {
       // In force mode, always clean dependencies
       console.log('\n' + pc.gray('Cleaning up dependencies...'));
-      const depCleanupResult = await cleanupDependencies(packageJson, projectRoot);
+      const depCleanupResult = await cleanupDependencies({
+        force: options.force,
+      });
       if (isFailure(depCleanupResult)) {
-        console.warn(pc.yellow('Warning: Some dependencies could not be removed:'), depCleanupResult.error.message);
+        console.warn(
+          pc.yellow('Warning: Some dependencies could not be removed:'),
+          depCleanupResult.error.message
+        );
       }
     }
 
     console.log('\n' + pc.green('✨ Cleanup completed successfully!'));
-    console.log(pc.gray(`Removed ${configsToClean.length} configuration file(s).`));
+    console.log(
+      pc.gray(`Removed ${configsToClean.length} configuration file(s).`)
+    );
     console.log(pc.gray(`Backup available at: ${backupResult.data}`));
 
     // Suggest next steps
     if (removedOldTools) {
       console.log('\n' + pc.bold('Next steps:'));
-      console.log('  1. Run ' + pc.cyan('flint init') + ' to set up modern tools');
+      console.log(
+        '  1. Run ' + pc.cyan('flint init') + ' to set up modern tools'
+      );
       console.log('  2. Or manually configure your preferred tools');
     }
 
     return success(undefined);
   } catch (error) {
-    return failure(makeError('INTERNAL_ERROR', `Clean failed: ${error instanceof Error ? error.message : 'Unknown error'}`));
+    return failure(
+      makeError(
+        'INTERNAL_ERROR',
+        `Clean failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      )
+    );
   }
 }

@@ -70,6 +70,10 @@
     {
       "incorrect": "react native",
       "correct": "React Native"
+    },
+    {
+      "incorrect": "BUN",
+      "correct": "Bun"
     }
   ]
 }

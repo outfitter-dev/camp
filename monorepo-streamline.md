@@ -202,15 +202,15 @@ IMPORTANT: Check off each item with `[x]` as you complete them.
 
 **Before starting Phase 2, be aware of these ESM requirements:**
 
-| Step               | Action                           | Common Gotcha                               |
-| ------------------ | -------------------------------- | ------------------------------------------- |
-| `"type": "module"` | Add to all package.json files    | Node treats `.js` as ESM now                |
-| Exports field      | Change `"import"` to `"default"` | Drop `"require"` completely                 |
-| Import extensions  | Add `.js` to relative imports    | TypeScript still uses `.ts` in source       |
-| Dynamic imports    | Already ESM-compatible           | No changes needed                           |
-| Bin files          | Update shebangs if needed        | Use `#!/usr/bin/env bun` for CLI tools      |
-| Test framework     | Vitest already supports ESM      | Jest would need `--experimental-vm-modules` |
-| Third-party tools  | Check ESM compatibility          | Most modern tools support it                |
+| Step | Action | Common Gotcha |
+| --- | --- | --- |
+| `"type": "module"` | Add to all package.json files | Node treats `.js` as ESM now |
+| Exports field | Change `"import"` to `"default"` | Drop `"require"` completely |
+| Import extensions | Add `.js` to relative imports | TypeScript still uses `.ts` in source |
+| Dynamic imports | Already ESM-compatible | No changes needed |
+| Bin files | Update shebangs if needed | Use `#!/usr/bin/env bun` for CLI tools |
+| Test framework | Vitest already supports ESM | Jest would need `--experimental-vm-modules` |
+| Third-party tools | Check ESM compatibility | Most modern tools support it |
 
 ### Tasks
 
@@ -404,12 +404,12 @@ bun build src/index.ts src/error.ts src/result.ts --outdir=dist --format=esm
 
 ✅ **All 4 Simple Packages Successfully Converted to Bun Build**
 
-| Package            | Bundle Time | Bundle Size | Performance Gain  | Status      |
-| ------------------ | ----------- | ----------- | ----------------- | ----------- |
-| `biome-config`     | **24ms**    | 2.43 KB     | **1.7x faster**   | ✅ Complete |
-| `changeset-config` | **23ms**    | 2.90 KB     | **50% faster**    | ✅ Complete |
-| `husky-config`     | **24ms**    | 2.21 KB     | **15-33x faster** | ✅ Complete |
-| `contracts-zod`    | **10ms**    | 129.1 KB    | **27% faster**    | ✅ Complete |
+| Package | Bundle Time | Bundle Size | Performance Gain | Status |
+| --- | --- | --- | --- | --- |
+| `biome-config` | **24ms** | 2.43 KB | **1.7x faster** | ✅ Complete |
+| `changeset-config` | **23ms** | 2.90 KB | **50% faster** | ✅ Complete |
+| `husky-config` | **24ms** | 2.21 KB | **15-33x faster** | ✅ Complete |
+| `contracts-zod` | **10ms** | 129.1 KB | **27% faster** | ✅ Complete |
 
 **Average bundling time: ~20ms (vs previous ~100-200ms = 5-10x improvement)**
 
@@ -540,9 +540,9 @@ With 4 simple packages successfully converted, we now have:
 
 ✅ **Complex Multi-Entry Package Successfully Converted**
 
-| Package                | Build Tool          | Bundle Time | Performance Gain | Complexity              | Status      |
-| ---------------------- | ------------------- | ----------- | ---------------- | ----------------------- | ----------- |
-| `contracts/typescript` | **Bun (6 entries)** | **18ms**    | **65x faster**   | Multi-entry (6 exports) | ✅ Complete |
+| Package | Build Tool | Bundle Time | Performance Gain | Complexity | Status |
+| --- | --- | --- | --- | --- | --- |
+| `contracts/typescript` | **Bun (6 entries)** | **18ms** | **65x faster** | Multi-entry (6 exports) | ✅ Complete |
 
 **Previous vs Bun build comparison:**
 
@@ -670,13 +670,13 @@ Perfect compatibility with Node.js ESM requirements.
 
 **🎉 Incredible Combined Results:**
 
-| Metric                       | Before Phase 2 | After Phase 2   | Improvement      |
-| ---------------------------- | -------------- | --------------- | ---------------- |
-| **Total packages migrated**  | 0 ESM-only     | **22 ESM-only** | 100% modern      |
-| **Packages using Bun build** | 0              | **5 packages**  | New capability   |
-| **Fastest build time**       | 1,181ms        | **18ms**        | **65x faster**   |
-| **Average bundle speed**     | ~200ms         | **~20ms**       | **10x faster**   |
-| **Full monorepo build**      | ~3-4s          | **358ms**       | **8-11x faster** |
+| Metric | Before Phase 2 | After Phase 2 | Improvement |
+| --- | --- | --- | --- |
+| **Total packages migrated** | 0 ESM-only | **22 ESM-only** | 100% modern |
+| **Packages using Bun build** | 0 | **5 packages** | New capability |
+| **Fastest build time** | 1,181ms | **18ms** | **65x faster** |
+| **Average bundle speed** | ~200ms | **~20ms** | **10x faster** |
+| **Full monorepo build** | ~3-4s | **358ms** | **8-11x faster** |
 
 **🔧 Packages Successfully Converted to Bun:**
 
@@ -784,12 +784,12 @@ The monorepo build system is now **dramatically faster, simpler, and more modern
 
 **Real-World Performance Results:**
 
-| Build Component                     | Before Phase 1 | After All Phases | Total Improvement |
-| ----------------------------------- | -------------- | ---------------- | ----------------- |
-| **Full Monorepo Build**             | 3-4 seconds    | **626ms**        | **5-6x faster**   |
-| **Individual Package Bundling**     | 200ms+         | **18-24ms**      | **8-10x faster**  |
-| **Multi-entry Complex (contracts)** | 1,181ms        | **175ms**        | **6.7x faster**   |
-| **Type Checking**                   | No caching     | **Incremental**  | Cached rebuilds   |
+| Build Component | Before Phase 1 | After All Phases | Total Improvement |
+| --- | --- | --- | --- |
+| **Full Monorepo Build** | 3-4 seconds | **626ms** | **5-6x faster** |
+| **Individual Package Bundling** | 200ms+ | **18-24ms** | **8-10x faster** |
+| **Multi-entry Complex (contracts)** | 1,181ms | **175ms** | **6.7x faster** |
+| **Type Checking** | No caching | **Incremental** | Cached rebuilds |
 
 **Architecture Transformation Complete:**
 
@@ -814,13 +814,13 @@ The monorepo build system is now **dramatically faster, simpler, and more modern
 
 **🏆 Mission Accomplished - All Success Metrics Exceeded:**
 
-| Success Metric           | Target                    | Achieved                         | Status          |
-| ------------------------ | ------------------------- | -------------------------------- | --------------- |
-| **Build Speed**          | 50%+ faster               | **5-6x faster**                  | ✅ **Exceeded** |
-| **Package Count**        | ~10 packages              | **12 packages**                  | ✅ **Met**      |
-| **Config Consolidation** | 5+ configs into baselayer | **3 configs + sub-paths**        | ✅ **Exceeded** |
-| **Developer Experience** | Single build command      | **Unified tooling + watch mode** | ✅ **Exceeded** |
-| **Type Safety**          | Maintained ESM support    | **Enhanced + incremental**       | ✅ **Exceeded** |
+| Success Metric | Target | Achieved | Status |
+| --- | --- | --- | --- |
+| **Build Speed** | 50%+ faster | **5-6x faster** | ✅ **Exceeded** |
+| **Package Count** | ~10 packages | **12 packages** | ✅ **Met** |
+| **Config Consolidation** | 5+ configs into baselayer | **3 configs + sub-paths** | ✅ **Exceeded** |
+| **Developer Experience** | Single build command | **Unified tooling + watch mode** | ✅ **Exceeded** |
+| **Type Safety** | Maintained ESM support | **Enhanced + incremental** | ✅ **Exceeded** |
 
 **🎁 Developer Experience Revolution:**
 
@@ -920,13 +920,13 @@ import { changesetConfig } from '@outfitter/baselayer/changeset-config';
 
 ✅ **Configuration Consolidation Implemented**
 
-| Configuration  | Status       | Sub-path Export                         | Strategy                               |
-| -------------- | ------------ | --------------------------------------- | -------------------------------------- |
-| **Biome**      | ✅ Complete  | `@outfitter/baselayer/biome-config`     | Extends ultracite + JSON parser config |
-| **Prettier**   | ✅ Complete  | `@outfitter/baselayer/prettier-config`  | JS import pattern, markdown overrides  |
-| **Changesets** | ✅ Complete  | `@outfitter/baselayer/changeset-config` | Standard public config with schema     |
-| **Remark**     | ✅ Removed   | N/A                                     | Using markdownlint-cli2 instead        |
-| **Stylelint**  | ✅ Relocated | Flint only                              | Only needed for UI projects            |
+| Configuration | Status | Sub-path Export | Strategy |
+| --- | --- | --- | --- |
+| **Biome** | ✅ Complete | `@outfitter/baselayer/biome-config` | Extends ultracite + JSON parser config |
+| **Prettier** | ✅ Complete | `@outfitter/baselayer/prettier-config` | JS import pattern, markdown overrides |
+| **Changesets** | ✅ Complete | `@outfitter/baselayer/changeset-config` | Standard public config with schema |
+| **Remark** | ✅ Removed | N/A | Using markdownlint-cli2 instead |
+| **Stylelint** | ✅ Relocated | Flint only | Only needed for UI projects |
 
 #### 🏗️ **Architecture Validation**
 
@@ -1153,6 +1153,8 @@ The monorepo streamlining project has **exceeded all success metrics** with dram
 ### Turborepo Config
 
 **File:** `turbo.json`
+
+**Note:** This shows the original v1 format. See lines 122-127 for the v2 format update.
 
 ```json
 {

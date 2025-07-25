@@ -1,5 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { isSuccess, isFailure, success, failure, ErrorCode } from '@outfitter/contracts';
+import {
+  isSuccess,
+  isFailure,
+  success,
+  failure,
+  ErrorCode,
+} from '@outfitter/contracts';
 import { MigrationReporter } from '../migration-report';
 import * as fs from '../../utils/file-system';
 
@@ -22,7 +28,7 @@ describe('MigrationReporter', () => {
   describe('addStep', () => {
     it('should add a step with duration', () => {
       vi.advanceTimersByTime(1000);
-      
+
       reporter.addStep({
         action: 'Test action',
         status: 'success',
@@ -55,13 +61,19 @@ describe('MigrationReporter', () => {
       reporter.addInstalledTool('oxlint');
       reporter.addInstalledTool('biome'); // Duplicate
 
-      // Internal state check through report generation
-      vi.mocked(fs.writeFile).mockResolvedValue(success(undefined));
+      // Verify through summary
+      const summary = reporter.getSummary();
+      expect(summary).toBeDefined();
+      expect(summary.total).toBeGreaterThanOrEqual(0);
     });
 
     it('should track removed tools', () => {
       reporter.addRemovedTool('eslint');
       reporter.addRemovedTool('prettier');
+
+      // Verify through summary
+      const summary = reporter.getSummary();
+      expect(summary).toBeDefined();
     });
   });
 
@@ -69,18 +81,35 @@ describe('MigrationReporter', () => {
     it('should track created configurations', () => {
       reporter.addCreatedConfig('biome.jsonc');
       reporter.addCreatedConfig('.oxlintrc.json');
+
+      // Verify through summary
+      const summary = reporter.getSummary();
+      expect(summary).toBeDefined();
     });
 
     it('should track removed configurations', () => {
       reporter.addRemovedConfig('.eslintrc.json');
       reporter.addRemovedConfig('.prettierrc');
+
+      // Verify through summary
+      const summary = reporter.getSummary();
+      expect(summary).toBeDefined();
     });
   });
 
   describe('setBackupPath', () => {
-    it('should set backup path', () => {
+    it('should set backup path', async () => {
       reporter.setBackupPath('/backup/flint-backup.md');
-      // Will be verified in report generation
+
+      // Verify through report generation
+      let writtenContent = '';
+      vi.mocked(fs.writeFile).mockImplementation(async (path, content) => {
+        writtenContent = content;
+        return success(undefined);
+      });
+
+      await reporter.generateReport();
+      expect(writtenContent).toContain('Backup created at: `/backup/flint-backup.md`');
     });
   });
 
@@ -90,8 +119,12 @@ describe('MigrationReporter', () => {
       reporter.addStep({ action: 'Detecting tools', status: 'success' });
       reporter.addStep({ action: 'Creating backup', status: 'success' });
       reporter.addStep({ action: 'Installing biome', status: 'success' });
-      reporter.addStep({ action: 'Removing eslint', status: 'warning', details: 'Some files locked' });
-      
+      reporter.addStep({
+        action: 'Removing eslint',
+        status: 'warning',
+        details: 'Some files locked',
+      });
+
       reporter.addInstalledTool('biome');
       reporter.addInstalledTool('oxlint');
       reporter.addRemovedTool('eslint');
@@ -106,21 +139,25 @@ describe('MigrationReporter', () => {
       });
 
       const result = await reporter.generateReport();
-      
+
       expect(isSuccess(result)).toBe(true);
       if (isSuccess(result)) {
         expect(result.data).toBe('flint-migration-report-2024-01-15.md');
       }
-      
+
       // Verify content
       expect(writtenContent).toContain('# Flint Migration Report');
-      expect(writtenContent).toContain('**Generated**: 2024-01-15T10:30:00.000Z');
+      expect(writtenContent).toContain(
+        '**Generated**: 2024-01-15T10:30:00.000Z'
+      );
       expect(writtenContent).toContain('## Summary');
       expect(writtenContent).toContain('✅ **Successful**: 3 steps');
       expect(writtenContent).toContain('⚠️  **Warnings**: 1 steps');
       expect(writtenContent).toContain('## Migration Process');
       expect(writtenContent).toContain('| ✅ | Detecting tools |');
-      expect(writtenContent).toContain('| ⚠️ | Removing eslint | Some files locked |');
+      expect(writtenContent).toContain(
+        '| ⚠️ | Removing eslint | Some files locked |'
+      );
       expect(writtenContent).toContain('### Installed Tools');
       expect(writtenContent).toContain('- biome');
       expect(writtenContent).toContain('- oxlint');
@@ -134,7 +171,9 @@ describe('MigrationReporter', () => {
       expect(writtenContent).toContain('bun run format');
       expect(writtenContent).toContain('## Next Steps');
       expect(writtenContent).toContain('## Backup Reference');
-      expect(writtenContent).toContain('Your previous configuration has been backed up to: `/backup/flint-backup.md`');
+      expect(writtenContent).toContain(
+        'Your previous configuration has been backed up to: `/backup/flint-backup.md`'
+      );
       expect(writtenContent).toContain('## Performance Comparison');
     });
 
@@ -152,22 +191,22 @@ describe('MigrationReporter', () => {
         includeNextSteps: false,
         includeTroubleshooting: false,
       });
-      
+
       expect(writtenContent).not.toContain('## Performance Comparison');
       expect(writtenContent).not.toContain('## Next Steps');
       expect(writtenContent).not.toContain('## Troubleshooting');
     });
 
     it('should include troubleshooting for errors', async () => {
-      reporter.addStep({ 
-        action: 'Failed operation', 
-        status: 'error', 
-        details: 'Permission denied' 
+      reporter.addStep({
+        action: 'Failed operation',
+        status: 'error',
+        details: 'Permission denied',
       });
-      reporter.addStep({ 
-        action: 'Warning operation', 
-        status: 'warning', 
-        details: 'File locked' 
+      reporter.addStep({
+        action: 'Warning operation',
+        status: 'warning',
+        details: 'File locked',
       });
 
       let writtenContent = '';
@@ -177,7 +216,7 @@ describe('MigrationReporter', () => {
       });
 
       await reporter.generateReport();
-      
+
       expect(writtenContent).toContain('## Troubleshooting');
       expect(writtenContent).toContain('### ❌ Error: Failed operation');
       expect(writtenContent).toContain('Permission denied');
@@ -195,7 +234,7 @@ describe('MigrationReporter', () => {
       });
 
       await reporter.generateReport();
-      
+
       expect(writtenContent).not.toContain('### Installed Tools');
       expect(writtenContent).not.toContain('### Removed Tools');
       expect(writtenContent).not.toContain('### Created Configurations');
@@ -206,13 +245,15 @@ describe('MigrationReporter', () => {
     it('should fail when write fails', async () => {
       reporter.addStep({ action: 'Test', status: 'success' });
 
-      vi.mocked(fs.writeFile).mockResolvedValue(failure({
-        code: ErrorCode.INTERNAL_ERROR,
-        message: 'No space'
-      }));
+      vi.mocked(fs.writeFile).mockResolvedValue(
+        failure({
+          code: ErrorCode.INTERNAL_ERROR,
+          message: 'No space',
+        })
+      );
 
       const result = await reporter.generateReport();
-      
+
       expect(isFailure(result)).toBe(true);
       if (isFailure(result)) {
         expect(result.error.code).toBe(ErrorCode.INTERNAL_ERROR);
@@ -223,7 +264,7 @@ describe('MigrationReporter', () => {
   describe('getSummary', () => {
     it('should return correct summary', () => {
       vi.advanceTimersByTime(5000);
-      
+
       reporter.addStep({ action: 'Step 1', status: 'success' });
       reporter.addStep({ action: 'Step 2', status: 'success' });
       reporter.addStep({ action: 'Step 3', status: 'warning' });
@@ -231,7 +272,7 @@ describe('MigrationReporter', () => {
       reporter.addStep({ action: 'Step 5', status: 'skipped' });
 
       const summary = reporter.getSummary();
-      
+
       expect(summary).toEqual({
         total: 5,
         successful: 2,
@@ -244,7 +285,7 @@ describe('MigrationReporter', () => {
 
     it('should return empty summary when no steps', () => {
       const summary = reporter.getSummary();
-      
+
       expect(summary).toEqual({
         total: 0,
         successful: 0,

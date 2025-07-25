@@ -194,7 +194,7 @@ Ultracite enforces strict type safety, accessibility standards, and consistent c
 - Don't use parameter properties in class constructors.
 - Don't use user-defined types.
 - Use `as const` instead of literal types and type annotations.
-- Use either `T[]` or `Array<T>` consistently.
+- Use `Array<T>` over `T[]` for array types (enforced by ESLint).
 - Initialize each enum member value explicitly.
 - Use `export type` for types.
 - Use `import type` for types.

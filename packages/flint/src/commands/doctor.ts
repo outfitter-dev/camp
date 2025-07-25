@@ -1,5 +1,11 @@
 import type { Result } from '@outfitter/contracts';
-import { success, failure, makeError, isSuccess, isFailure } from '@outfitter/contracts';
+import {
+  success,
+  failure,
+  makeError,
+  isSuccess,
+  isFailure,
+} from '@outfitter/contracts';
 import * as pc from 'picocolors';
 import { execSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
@@ -32,7 +38,17 @@ export async function doctor(): Promise<Result<DoctorReport, Error>> {
       return success({ issues });
     }
 
-    const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
+    let packageJson;
+    try {
+      packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
+    } catch (error) {
+      issues.push({
+        description: 'Failed to parse package.json',
+        severity: 'error',
+        fix: 'Check package.json for syntax errors',
+      });
+      return success({ issues });
+    }
 
     // 1. Check for conflicting configurations
     console.log(pc.gray('Checking for configuration conflicts...'));
@@ -45,14 +61,14 @@ export async function doctor(): Promise<Result<DoctorReport, Error>> {
       });
     } else {
       const detectedTools = detectionResult.data;
-      
+
       // Check for conflicting formatters
-      const formatters = detectedTools.configs.filter(c => 
+      const formatters = detectedTools.configs.filter((c) =>
         ['prettier', 'biome', 'eslint'].includes(c.tool)
       );
-      
+
       if (formatters.length > 1) {
-        const formatterNames = formatters.map(f => f.tool).join(', ');
+        const formatterNames = formatters.map((f) => f.tool).join(', ');
         issues.push({
           description: `Multiple formatters detected: ${formatterNames}`,
           severity: 'warning',
@@ -61,9 +77,9 @@ export async function doctor(): Promise<Result<DoctorReport, Error>> {
       }
 
       // Check for both ESLint and Oxlint
-      const hasEslint = detectedTools.configs.some(c => c.tool === 'eslint');
+      const hasEslint = detectedTools.configs.some((c) => c.tool === 'eslint');
       const hasOxlint = existsSync(join(projectRoot, 'oxlint.json'));
-      
+
       if (hasEslint && hasOxlint) {
         issues.push({
           description: 'Both ESLint and Oxlint are configured',
@@ -75,12 +91,17 @@ export async function doctor(): Promise<Result<DoctorReport, Error>> {
       // Check for old tools alongside new ones
       const oldTools = ['eslint', 'prettier', 'husky'];
       const newTools = ['biome', 'oxlint', 'lefthook'];
-      
-      const hasOldTools = detectedTools.configs.some(c => oldTools.includes(c.tool));
-      const hasNewTools = detectedTools.configs.some(c => 
-        newTools.includes(c.tool) || c.path.includes('biome.json') || c.path.includes('oxlint.json')
+
+      const hasOldTools = detectedTools.configs.some((c) =>
+        oldTools.includes(c.tool)
       );
-      
+      const hasNewTools = detectedTools.configs.some(
+        (c) =>
+          newTools.includes(c.tool) ||
+          c.path.includes('biome.json') ||
+          c.path.includes('oxlint.json')
+      );
+
       if (hasOldTools && hasNewTools) {
         issues.push({
           description: 'Mix of old and new tools detected',
@@ -120,7 +141,7 @@ export async function doctor(): Promise<Result<DoctorReport, Error>> {
 
     if (!detectedPackageManager) {
       issues.push({
-        description: 'No package manager detected (pnpm, yarn, or npm)',
+        description: 'No alternative package manager detected (pnpm, yarn, or bun)',
         severity: 'error',
         fix: 'Install pnpm (recommended): npm install -g pnpm',
       });
@@ -128,9 +149,11 @@ export async function doctor(): Promise<Result<DoctorReport, Error>> {
 
     // Check Node.js version
     try {
-      const nodeVersion = execSync('node --version', { encoding: 'utf-8' }).trim().slice(1);
+      const nodeVersion = execSync('node --version', { encoding: 'utf-8' })
+        .trim()
+        .slice(1);
       toolsToCheck[0].version = nodeVersion;
-      
+
       const [major] = nodeVersion.split('.').map(Number);
       if (major < 18) {
         issues.push({
@@ -148,19 +171,18 @@ export async function doctor(): Promise<Result<DoctorReport, Error>> {
     }
 
     // Check if Flint tools are installed
-    const flintDependencies = [
-      'ultracite',
-      'oxlint',
-      'markdownlint-cli2',
-    ];
+    const flintDependencies = ['ultracite', 'oxlint', 'markdownlint-cli2'];
 
     const installedDeps = {
-      ...packageJson.dependencies || {},
-      ...packageJson.devDependencies || {},
+      ...(packageJson.dependencies || {}),
+      ...(packageJson.devDependencies || {}),
     };
 
     for (const dep of flintDependencies) {
-      if (!installedDeps[dep] && !existsSync(join(projectRoot, 'node_modules', dep))) {
+      if (
+        !installedDeps[dep] &&
+        !existsSync(join(projectRoot, 'node_modules', dep))
+      ) {
         if (dep === 'ultracite') {
           issues.push({
             description: 'Ultracite (Biome wrapper) is not installed',
@@ -180,16 +202,23 @@ export async function doctor(): Promise<Result<DoctorReport, Error>> {
     // 3. Check VS Code settings
     console.log(pc.gray('Checking VS Code configuration...'));
     const vscodeSettingsPath = join(projectRoot, '.vscode', 'settings.json');
-    
+
     if (existsSync(vscodeSettingsPath)) {
       try {
-        const vscodeSettings = JSON.parse(readFileSync(vscodeSettingsPath, 'utf-8'));
-        
+        const vscodeSettings = JSON.parse(
+          readFileSync(vscodeSettingsPath, 'utf-8')
+        );
+
         // Check for conflicting default formatters
         const defaultFormatter = vscodeSettings['editor.defaultFormatter'];
-        if (defaultFormatter && defaultFormatter.includes('prettier') && existsSync(join(projectRoot, 'biome.json'))) {
+        if (
+          defaultFormatter &&
+          defaultFormatter.includes('prettier') &&
+          existsSync(join(projectRoot, 'biome.json'))
+        ) {
           issues.push({
-            description: 'VS Code is configured to use Prettier but Biome is installed',
+            description:
+              'VS Code is configured to use Prettier but Biome is installed',
             severity: 'warning',
             fix: 'Update VS Code settings to use Biome as default formatter for JS/TS files',
           });
@@ -221,9 +250,9 @@ export async function doctor(): Promise<Result<DoctorReport, Error>> {
     // 4. Validate package.json scripts
     console.log(pc.gray('Checking package.json scripts...'));
     const recommendedScripts = {
-      'format': 'Format code files',
-      'lint': 'Lint code files',
-      'check': 'Run all checks (format, lint, types)',
+      format: 'Format code files',
+      lint: 'Lint code files',
+      check: 'Run all checks (format, lint, types)',
     };
 
     const missingScripts = Object.entries(recommendedScripts)
@@ -235,7 +264,7 @@ export async function doctor(): Promise<Result<DoctorReport, Error>> {
 
     if (missingScripts.length > 0) {
       issues.push({
-        description: `Missing recommended scripts: ${missingScripts.map(s => s.script).join(', ')}`,
+        description: `Missing recommended scripts: ${missingScripts.map((s) => s.script).join(', ')}`,
         severity: 'info',
         fix: 'Run "flint init" to add recommended scripts to package.json',
       });
@@ -244,22 +273,34 @@ export async function doctor(): Promise<Result<DoctorReport, Error>> {
     // Check for outdated script patterns
     if (packageJson.scripts) {
       const scripts = packageJson.scripts;
-      
+
       // Check for ESLint in scripts when Oxlint is available
       const hasOxlintInstalled = existsSync(join(projectRoot, 'oxlint.json'));
-      if (hasOxlintInstalled && Object.values(scripts).some((script: string) => script.includes('eslint'))) {
+      if (
+        hasOxlintInstalled &&
+        Object.values(scripts).some((script: string) =>
+          script.includes('eslint')
+        )
+      ) {
         issues.push({
-          description: 'Scripts still reference ESLint but Oxlint is configured',
+          description:
+            'Scripts still reference ESLint but Oxlint is configured',
           severity: 'warning',
           fix: 'Update scripts to use Oxlint instead of ESLint',
         });
       }
 
       // Check for Prettier in scripts when Biome is available
-      if (existsSync(join(projectRoot, 'biome.json')) && 
-          Object.values(scripts).some((script: string) => script.includes('prettier') && !script.includes('--write'))) {
+      if (
+        existsSync(join(projectRoot, 'biome.json')) &&
+        Object.values(scripts).some(
+          (script: string) =>
+            script.includes('prettier') && !script.includes('--write')
+        )
+      ) {
         issues.push({
-          description: 'Scripts reference Prettier for JS/TS files but Biome is configured',
+          description:
+            'Scripts reference Prettier for JS/TS files but Biome is configured',
           severity: 'warning',
           fix: 'Update scripts to use Ultracite/Biome for JS/TS formatting',
         });
@@ -283,7 +324,9 @@ export async function doctor(): Promise<Result<DoctorReport, Error>> {
     if (hasTypeScript) {
       // Check if strict mode is enabled
       try {
-        const tsConfig = JSON.parse(readFileSync(join(projectRoot, 'tsconfig.json'), 'utf-8'));
+        const tsConfig = JSON.parse(
+          readFileSync(join(projectRoot, 'tsconfig.json'), 'utf-8')
+        );
         if (!tsConfig.compilerOptions?.strict) {
           issues.push({
             description: 'TypeScript strict mode is not enabled',
@@ -301,14 +344,20 @@ export async function doctor(): Promise<Result<DoctorReport, Error>> {
     }
 
     // Summary
-    const errorCount = issues.filter(i => i.severity === 'error').length;
-    const warningCount = issues.filter(i => i.severity === 'warning').length;
-    const infoCount = issues.filter(i => i.severity === 'info').length;
+    const errorCount = issues.filter((i) => i.severity === 'error').length;
+    const warningCount = issues.filter((i) => i.severity === 'warning').length;
+    const infoCount = issues.filter((i) => i.severity === 'info').length;
 
     console.log('\n' + pc.bold('Diagnostic Summary:'));
-    console.log(`  Errors:   ${errorCount > 0 ? pc.red(errorCount.toString()) : pc.green('0')}`);
-    console.log(`  Warnings: ${warningCount > 0 ? pc.yellow(warningCount.toString()) : pc.green('0')}`);
-    console.log(`  Info:     ${infoCount > 0 ? pc.blue(infoCount.toString()) : pc.green('0')}`);
+    console.log(
+      `  Errors:   ${errorCount > 0 ? pc.red(errorCount.toString()) : pc.green('0')}`
+    );
+    console.log(
+      `  Warnings: ${warningCount > 0 ? pc.yellow(warningCount.toString()) : pc.green('0')}`
+    );
+    console.log(
+      `  Info:     ${infoCount > 0 ? pc.blue(infoCount.toString()) : pc.green('0')}`
+    );
 
     // Sort issues by severity
     issues.sort((a, b) => {
@@ -318,6 +367,11 @@ export async function doctor(): Promise<Result<DoctorReport, Error>> {
 
     return success({ issues });
   } catch (error) {
-    return failure(makeError('INTERNAL_ERROR', `Doctor failed: ${error instanceof Error ? error.message : 'Unknown error'}`));
+    return failure(
+      makeError(
+        'INTERNAL_ERROR',
+        `Doctor failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      )
+    );
   }
 }

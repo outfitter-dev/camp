@@ -1,9 +1,18 @@
 /**
  * Detect existing tools and configurations
  */
-import { Result, success, failure, makeError, isSuccess, isFailure, ErrorCode } from '@outfitter/contracts';
-import { fileExists, readFile, findFiles } from '../utils/file-system';
-import * as path from 'node:path';
+
+import { join } from 'node:path';
+import {
+  ErrorCode,
+  failure,
+  isFailure,
+  isSuccess,
+  makeError,
+  type Result,
+  success,
+} from '@outfitter/contracts';
+import { fileExists, findFiles, readFile } from '../utils/file-system';
 
 export interface DetectedConfig {
   tool: string;
@@ -17,11 +26,8 @@ export interface DetectedTools {
   tools: Set<string>;
 }
 
-export interface DetectorError {
-  type: 'DETECTOR_ERROR';
-  code: string;
-  message: string;
-}
+// Use the error pattern from contracts for consistency
+export type DetectorError = ReturnType<typeof makeError>;
 
 // Configuration file patterns for various tools
 const TOOL_PATTERNS: Record<string, string[]> = {
@@ -51,14 +57,8 @@ const TOOL_PATTERNS: Record<string, string[]> = {
     'prettier.config.cjs',
     'prettier.config.mjs',
   ],
-  biome: [
-    'biome.json',
-    'biome.jsonc',
-  ],
-  oxlint: [
-    '.oxlintrc.json',
-    'oxlint.json',
-  ],
+  biome: ['biome.json', 'biome.jsonc'],
+  oxlint: ['.oxlintrc.json', 'oxlint.json'],
   stylelint: [
     '.stylelintrc',
     '.stylelintrc.js',
@@ -82,31 +82,25 @@ const TOOL_PATTERNS: Record<string, string[]> = {
     '.markdownlint-cli2.mjs',
     '.markdownlint-cli2.cjs',
   ],
-  tslint: [
-    'tslint.json',
-  ],
-  standard: [
-    '.standard.json',
-  ],
-  xo: [
-    '.xo-config',
-    '.xo-config.js',
-    '.xo-config.json',
-  ],
+  tslint: ['tslint.json'],
+  standard: ['.standard.json'],
+  xo: ['.xo-config', '.xo-config.js', '.xo-config.json'],
 };
 
 /**
  * Detect all existing tool configurations
  */
-export async function detectExistingTools(cwd: string = process.cwd()): Promise<Result<DetectedTools, DetectorError>> {
+export async function detectExistingTools(
+  cwd: string = process.cwd()
+): Promise<Result<DetectedTools, DetectorError>> {
   const configs: DetectedConfig[] = [];
   const tools = new Set<string>();
 
   for (const [tool, patterns] of Object.entries(TOOL_PATTERNS)) {
     for (const pattern of patterns) {
-      const filePath = path.join(cwd, pattern);
+      const filePath = join(cwd, pattern);
       const existsResult = await fileExists(filePath);
-      
+
       if (isSuccess(existsResult) && existsResult.data) {
         const contentResult = await readFile(filePath);
         if (isSuccess(contentResult)) {
@@ -126,7 +120,7 @@ export async function detectExistingTools(cwd: string = process.cwd()): Promise<
   if (isSuccess(pkgJsonResult)) {
     try {
       const pkg = JSON.parse(pkgJsonResult.data);
-      
+
       // Check for embedded configs in package.json
       const embeddedConfigs = [
         'eslintConfig',
@@ -148,7 +142,12 @@ export async function detectExistingTools(cwd: string = process.cwd()): Promise<
         }
       }
     } catch (error) {
-      return failure(makeError(ErrorCode.VALIDATION_ERROR, `Failed to parse package.json: ${error}`));
+      return failure(
+        makeError(
+          ErrorCode.VALIDATION_ERROR,
+          `Failed to parse package.json: ${error}`
+        )
+      );
     }
   }
 
@@ -162,7 +161,9 @@ export async function detectExistingTools(cwd: string = process.cwd()): Promise<
 /**
  * Detect if ESLint is configured
  */
-export async function detectEslintConfig(cwd: string = process.cwd()): Promise<Result<boolean, DetectorError>> {
+export async function detectEslintConfig(
+  cwd: string = process.cwd()
+): Promise<Result<boolean, DetectorError>> {
   const toolsResult = await detectExistingTools(cwd);
   if (isFailure(toolsResult)) {
     return failure(toolsResult.error);
@@ -174,7 +175,9 @@ export async function detectEslintConfig(cwd: string = process.cwd()): Promise<R
 /**
  * Detect if Prettier is configured
  */
-export async function detectPrettierConfig(cwd: string = process.cwd()): Promise<Result<boolean, DetectorError>> {
+export async function detectPrettierConfig(
+  cwd: string = process.cwd()
+): Promise<Result<boolean, DetectorError>> {
   const toolsResult = await detectExistingTools(cwd);
   if (isFailure(toolsResult)) {
     return failure(toolsResult.error);
@@ -186,7 +189,9 @@ export async function detectPrettierConfig(cwd: string = process.cwd()): Promise
 /**
  * Detect if project uses TypeScript
  */
-export async function detectTypeScript(cwd: string = process.cwd()): Promise<Result<boolean, DetectorError>> {
+export async function detectTypeScript(
+  cwd: string = process.cwd()
+): Promise<Result<boolean, DetectorError>> {
   const tsconfigResult = await fileExists(path.join(cwd, 'tsconfig.json'));
   if (isSuccess(tsconfigResult) && tsconfigResult.data) {
     return success(true);
@@ -208,7 +213,9 @@ export async function detectTypeScript(cwd: string = process.cwd()): Promise<Res
 /**
  * Detect if project uses React
  */
-export async function detectReact(cwd: string = process.cwd()): Promise<Result<boolean, DetectorError>> {
+export async function detectReact(
+  cwd: string = process.cwd()
+): Promise<Result<boolean, DetectorError>> {
   const pkgJsonResult = await readFile(path.join(cwd, 'package.json'));
   if (isFailure(pkgJsonResult)) {
     return success(false);
@@ -222,7 +229,9 @@ export async function detectReact(cwd: string = process.cwd()): Promise<Result<b
     };
 
     return success('react' in deps || 'react-dom' in deps);
-  } catch {
+  } catch (error) {
+    // JSON parsing failed, treat as no React detected
+    console.debug('Failed to parse package.json for React detection:', error);
     return success(false);
   }
 }
@@ -230,7 +239,9 @@ export async function detectReact(cwd: string = process.cwd()): Promise<Result<b
 /**
  * Detect if project uses CSS/SCSS/Less
  */
-export async function detectStyles(cwd: string = process.cwd()): Promise<Result<boolean, DetectorError>> {
+export async function detectStyles(
+  cwd: string = process.cwd()
+): Promise<Result<boolean, DetectorError>> {
   const styleFilesResult = await findFiles('**/*.{css,scss,sass,less}', {
     cwd,
     ignore: ['node_modules/**', 'dist/**', 'build/**'],
@@ -246,7 +257,9 @@ export async function detectStyles(cwd: string = process.cwd()): Promise<Result<
 /**
  * Detect if project has markdown files
  */
-export async function detectMarkdown(cwd: string = process.cwd()): Promise<Result<boolean, DetectorError>> {
+export async function detectMarkdown(
+  cwd: string = process.cwd()
+): Promise<Result<boolean, DetectorError>> {
   const mdFilesResult = await findFiles('**/*.{md,mdx}', {
     cwd,
     ignore: ['node_modules/**', 'dist/**', 'build/**'],
@@ -262,7 +275,9 @@ export async function detectMarkdown(cwd: string = process.cwd()): Promise<Resul
 /**
  * Detect if VS Code is used
  */
-export async function detectVSCode(cwd: string = process.cwd()): Promise<Result<boolean, DetectorError>> {
+export async function detectVSCode(
+  cwd: string = process.cwd()
+): Promise<Result<boolean, DetectorError>> {
   const vscodeResult = await fileExists(path.join(cwd, '.vscode'));
   if (isSuccess(vscodeResult) && vscodeResult.data) {
     return success(true);
@@ -274,7 +289,9 @@ export async function detectVSCode(cwd: string = process.cwd()): Promise<Result<
 /**
  * Detect git hooks setup
  */
-export async function detectGitHooks(cwd: string = process.cwd()): Promise<Result<string | null, DetectorError>> {
+export async function detectGitHooks(
+  cwd: string = process.cwd()
+): Promise<Result<string | null, DetectorError>> {
   // Check for husky
   const huskyResult = await fileExists(path.join(cwd, '.husky'));
   if (isSuccess(huskyResult) && huskyResult.data) {
@@ -295,8 +312,12 @@ export async function detectGitHooks(cwd: string = process.cwd()): Promise<Resul
       if (pkg['simple-git-hooks']) {
         return success('simple-git-hooks');
       }
-    } catch {
-      // Ignore
+    } catch (error) {
+      // JSON parsing failed, continue checking other hook systems
+      console.debug(
+        'Failed to parse package.json for git hooks detection:',
+        error
+      );
     }
   }
 
@@ -306,16 +327,18 @@ export async function detectGitHooks(cwd: string = process.cwd()): Promise<Resul
 /**
  * Get all configurations that need to be cleaned up
  */
-export async function getConfigsToCleanup(cwd: string = process.cwd()): Promise<Result<string[], DetectorError>> {
+export async function getConfigsToCleanup(
+  cwd: string = process.cwd()
+): Promise<Result<string[], DetectorError>> {
   const configsToRemove: string[] = [];
-  
+
   // Get all potential config files
   const allPatterns = Object.values(TOOL_PATTERNS).flat();
-  
+
   for (const pattern of allPatterns) {
     const filePath = path.join(cwd, pattern);
     const existsResult = await fileExists(filePath);
-    
+
     if (isSuccess(existsResult) && existsResult.data) {
       configsToRemove.push(pattern);
     }
