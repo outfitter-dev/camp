@@ -11,12 +11,11 @@
     "templates"
   ],
   "scripts": {
-    "build": "tsc",
-    "dev": "tsx src/index.ts",
-    "lint": "eslint .",
-    "prepare": "npm run build",
-    "test": "vitest",
-    "type-check": "tsc --noEmit"
+    "build": "../../node_modules/.bin/tsc",
+    "dev": "bun src/index.ts",
+    "test": "bun test",
+    "type-check": "../../node_modules/.bin/tsc --noEmit",
+    "prepare": "bun run build"
   },
   "dependencies": {
     "@outfitter/contracts": "workspace:*",
@@ -40,7 +39,7 @@
     "vitest": "^1.1.0"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20"
   },
   "keywords": [
     "cli",

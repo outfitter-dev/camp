@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-This is the `@outfitter/packlist` package - a unified development configuration manager for Outfitter projects. It orchestrates the installation and configuration of other Outfitter packages (ESLint, TypeScript, utilities) and provides both a CLI and programmatic API for project setup.
+This is the `@outfitter/packlist` package - a unified development configuration manager for Outfitter projects. It orchestrates the installation and configuration of other Outfitter packages (TypeScript, utilities) and provides both a CLI and programmatic API for project setup.
 
 ## Key Commands
 
@@ -12,17 +12,17 @@ This is the `@outfitter/packlist` package - a unified development configuration 
 
 ```bash
 # Build the package
-pnpm build
+bun run build
 
 # Watch mode for development
-pnpm dev
+bun run dev
 
 # Run tests
-pnpm test              # Watch mode
-pnpm test --run        # Single run
+bun run test              # Watch mode
+bun run test --run        # Single run
 
 # Type checking
-pnpm type-check
+bun run type-check
 ```
 
 ### CLI Usage (when installed)
@@ -46,8 +46,8 @@ packlist init --force --no-eslint
 
 ### Core Functionality
 
-- **Project Initialization**: Sets up ESLint, TypeScript, and other configurations
-- **Package Manager Detection**: Automatically detects npm, yarn, or pnpm
+- **Project Initialization**: Sets up TypeScript and other configurations
+- **Package Manager Detection**: Automatically detects npm, yarn, pnpm, or bun
 - **Configuration Generation**: Creates config files for various tools
 - **Dependency Management**: Installs required Outfitter packages
 
@@ -55,7 +55,6 @@ packlist init --force --no-eslint
 
 This package orchestrates the installation of:
 
-- `@outfitter/eslint-config` - ESLint configuration
 - `@outfitter/typescript-config` - TypeScript configurations
 - `@outfitter/contracts` - Utility functions with Result pattern
 - `@outfitter/husky-config` - Git hooks setup
@@ -65,10 +64,9 @@ This package orchestrates the installation of:
 
 ```typescript
 interface PacklistConfig {
-  eslint?: boolean; // Include ESLint config
   typescript?: boolean; // Include TypeScript config
-  utils?: boolean; // Include typescript-utils
-  prettier?: boolean; // Include Prettier config
+  utils?: boolean; // Include utilities
+  biome?: boolean; // Include Biome config
 }
 ```
 
@@ -85,17 +83,16 @@ await init();
 // Initialize with options
 await init({
   force: true, // Overwrite existing configs
-  eslint: true, // Include ESLint
   typescript: true, // Include TypeScript
   utils: true, // Include utilities
+  biome: true, // Include Biome
 });
 ```
 
 ### Configuration Files Created
 
-- `.eslintrc.js` - ESLint configuration
 - `tsconfig.json` - TypeScript configuration
-- `.prettierrc` - Prettier configuration (if enabled)
+- `biome.json` - Biome configuration (if enabled)
 
 ## Build Configuration
 

@@ -196,29 +196,21 @@ Teams must think differently:
 
 ## Making the Decision
 
-### Choose monorepo when you have:
+### Choose monorepo when you have
 
-✅ **Tight coupling between projects** - Changes frequently span boundaries
+- ✅ **Tight coupling between projects** - Changes frequently span boundaries
+- ✅ **Shared team ownership** - Same people work across projects
+- ✅ **Need for consistency** - Standards matter more than autonomy
+- ✅ **Frequent refactoring** - Architecture evolves rapidly
+- ✅ **Complex dependency graph** - Many shared libraries
 
-✅ **Shared team ownership** - Same people work across projects
+### Choose multi-repo when you have
 
-✅ **Need for consistency** - Standards matter more than autonomy
-
-✅ **Frequent refactoring** - Architecture evolves rapidly
-
-✅ **Complex dependency graph** - Many shared libraries
-
-### Choose multi-repo when you have:
-
-❌ **Strong autonomy needs** - Teams want full control
-
-❌ **Different deployment cadences** - Some projects release hourly, others quarterly
-
-❌ **Security boundaries** - Some code needs restricted access
-
-❌ **Technology diversity** - Little shared tooling benefit
-
-❌ **External contributors** - Open source or partner development
+- ❌ **Strong autonomy needs** - Teams want full control
+- ❌ **Different deployment cadences** - Some projects release hourly, others quarterly
+- ❌ **Security boundaries** - Some code needs restricted access
+- ❌ **Technology diversity** - Little shared tooling benefit
+- ❌ **External contributors** - Open source or partner development
 
 ## Success Patterns
 

@@ -1,0 +1,26 @@
+# Lefthook configuration
+pre-commit:
+  parallel: true
+  commands:
+    biome:
+      glob: "*.{js,ts,jsx,tsx,json}"
+      run: bunx biome check --write {staged_files}
+      stage_fixed: true
+    markdown:
+      glob: "*.md"
+      run: |
+        bunx prettier --write {staged_files} &&
+        bunx markdownlint-cli2 {staged_files}
+      stage_fixed: true
+
+commit-msg:
+  commands:
+    commitlint:
+      run: bunx commitlint --edit
+
+pre-push:
+  commands:
+    types:
+      run: turbo run type-check --affected
+    test:
+      run: turbo run test --affected

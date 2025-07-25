@@ -14,7 +14,8 @@
     "declarationMap": true,
     "composite": true,
     "incremental": true,
-    "noEmit": true
+    "noEmit": true,
+    "strictNullChecks": true
   },
   "files": [],
   "references": [
@@ -22,16 +23,7 @@
       "path": "./packages/typescript-config"
     },
     {
-      "path": "./packages/eslint-config"
-    },
-    {
       "path": "./packages/contracts/typescript"
-    },
-    {
-      "path": "./packages/husky-config"
-    },
-    {
-      "path": "./packages/changeset-config"
     },
     {
       "path": "./packages/packlist"
@@ -47,6 +39,9 @@
     },
     {
       "path": "./packages/baselayer"
+    },
+    {
+      "path": "./packages/flint"
     }
   ],
   "exclude": [

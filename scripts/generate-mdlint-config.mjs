@@ -19,7 +19,14 @@ const strictConfig = {
   MD048: { style: 'backtick' },
   MD049: { style: 'underscore' },
   MD050: { style: 'asterisk' },
-  ignores: ['node_modules/**', '.git/**', 'dist/**', 'build/**', 'coverage/**', '*.min.md'],
+  ignores: [
+    'node_modules/**',
+    '.git/**',
+    'dist/**',
+    'build/**',
+    'coverage/**',
+    '*.min.md',
+  ],
 };
 
 const standardConfig = {
@@ -30,8 +37,10 @@ const standardConfig = {
   MD007: { indent: 2 },
   MD013: false, // Line length handled by prettier
   MD024: { siblings_only: true },
+  MD026: false, // Allow trailing punctuation in headings
   MD029: { style: 'ordered' },
   MD033: false, // Allow inline HTML
+  MD036: false, // Allow emphasis as headings
   MD041: false, // First line doesn't need to be heading
   MD043: false, // Required heading structure
   MD046: { style: 'fenced' },
@@ -100,7 +109,12 @@ const defaultTerminology = [
 ];
 
 function generateConfig(options = {}) {
-  const { preset = 'standard', terminology = [], customRules = [], ignores = [] } = options;
+  const {
+    preset = 'standard',
+    terminology = [],
+    customRules = [],
+    ignores = [],
+  } = options;
   const config = getPresetConfig(preset);
 
   if (terminology.length > 0) {
@@ -121,10 +135,11 @@ const config = generateConfig({
   preset: 'standard',
   terminology: defaultTerminology,
   ignores: ['CHANGELOG.md'],
+  customRules: [], // Removed rightdown reference since package was deleted
 });
 
-const outputPath = join(process.cwd(), '.markdownlint-cli2.jsonc');
+const outputPath = join(process.cwd(), '.markdownlint.json');
 
 writeFileSync(outputPath, config);
 
-console.log(`✅ Generated .markdownlint-cli2.jsonc with 'standard' preset.`);
+console.log(`✅ Generated .markdownlint.json with 'standard' preset.`);

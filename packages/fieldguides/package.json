@@ -13,22 +13,14 @@
     "!node_modules/"
   ],
   "scripts": {
-    "build": "tsc",
-    "build:watch": "tsc --watch",
-    "prebuild": "pnpm run clean",
-    "clean": "rm -f scripts/*.js scripts/*.js.map",
-    "lint": "pnpm run lint:md && pnpm run lint:frontmatter",
-    "lint:md": "markdownlint-cli2 \"**/*.md\" \"!node_modules/**\" \"!.pnpm/**\"",
-    "lint:frontmatter": "node scripts/validate-frontmatter.js",
-    "lint:fix": "pnpm run lint:md:fix",
-    "lint:md:fix": "markdownlint-cli2 \"**/*.md\" \"!node_modules/**\" \"!.pnpm/**\" --fix",
+    "build": "echo 'No build needed for documentation package'",
+    "lint": "bun run lint:md",
+    "lint:md": "markdownlint-cli2 \"**/*.md\" \"!node_modules/**\" \"!.bun/**\"",
+    "lint:fix": "bun run lint:md:fix",
+    "lint:md:fix": "markdownlint-cli2 \"**/*.md\" \"!node_modules/**\" \"!.bun/**\" --fix",
     "format": "prettier --check \"**/*.md\"",
     "format:fix": "prettier --write \"**/*.md\"",
-    "check": "pnpm run lint",
-    "ci": "pnpm run check",
-    "test": "echo 'No tests for documentation package'",
-    "prepare": "pnpm run build",
-    "postinstall": "pnpm run build"
+    "test": "echo 'No tests for documentation package'"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
@@ -39,8 +31,8 @@
     "typescript": "^5.3.3"
   },
   "engines": {
-    "node": ">=20.0.0",
-    "pnpm": ">=9.0.0"
+    "node": ">=20",
+    "bun": ">=1.2.0"
   },
   "keywords": [
     "outfitter",

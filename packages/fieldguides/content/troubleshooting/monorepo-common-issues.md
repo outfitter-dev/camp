@@ -39,7 +39,7 @@ echo "hoist-pattern[]=''" >> .npmrc
 
 **Problem**: Multiple versions of React or other peer dependencies
 
-```
+```text
 ERR_PNPM_PEER_DEP_ISSUES  Unmet peer dependencies
 ```
 
@@ -69,7 +69,7 @@ module.exports = {
 
 **Problem**: `workspace:*` not resolving in builds
 
-```
+```text
 Cannot find module '@company/utils'
 ```
 
@@ -97,7 +97,7 @@ pnpm build --filter @company/app
 
 **Problem**: Packages depend on each other
 
-```
+```text
 Circular dependency detected:
 @company/ui -> @company/utils -> @company/ui
 ```
@@ -161,7 +161,7 @@ pnpm build
 
 **Problem**: Builds fail due to missing dependencies
 
-```
+```text
 Error: Cannot find module '@company/utils/dist/index.js'
 ```
 
@@ -206,7 +206,7 @@ module.exports = {
 
 **Problem**: Symlinks not working on Windows
 
-```
+```text
 EPERM: operation not permitted, symlink
 ```
 
@@ -227,7 +227,7 @@ prefer-symlinks=false
 
 **Problem**: Just added package not recognized
 
-```
+```text
 Cannot resolve '@company/new-package'
 ```
 
@@ -407,24 +407,33 @@ When things go wrong, try these in order:
 
 1. **Restart TypeScript server** (VS Code: Cmd+Shift+P → "Restart TS Server")
 2. **Clear and reinstall**:
+
    ```bash
    rm -rf node_modules .turbo
    pnpm install
    ```
+
 3. **Clean build**:
+
    ```bash
    pnpm clean
    pnpm build
    ```
+
 4. **Check for circular dependencies**:
+
    ```bash
    pnpm madge --circular packages/
    ```
+
 5. **Verify workspace setup**:
+
    ```bash
    pnpm ls --depth=0
    ```
+
 6. **Update pnpm**:
+
    ```bash
    npm install -g pnpm@latest
    ```

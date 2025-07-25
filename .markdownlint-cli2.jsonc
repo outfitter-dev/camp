@@ -1,75 +1,42 @@
 {
-  "extends": null,
-  "default": true,
-  "MD003": {
-    "style": "atx"
-  },
-  "MD004": {
-    "style": "dash"
-  },
-  "MD007": {
-    "indent": 2
-  },
-  "MD013": false,
-  "MD024": {
-    "siblings_only": true
-  },
-  "MD029": {
-    "style": "ordered"
-  },
-  "MD032": true,
-  "MD033": false,
-  "MD041": false,
-  "MD043": false,
-  "MD046": {
-    "style": "fenced"
-  },
-  "MD047": true,
-  "ignores": [
-    "node_modules/**",
-    ".git/**",
-    "dist/**",
-    "build/**",
-    "coverage/**",
-    "CHANGELOG.md",
-    "*.min.md"
-  ],
-  "terminology": [
-    {
-      "incorrect": "NPM",
-      "correct": "npm"
+  "config": {
+    "extends": null,
+    "default": true,
+    "MD003": {
+      "style": "atx"
     },
-    {
-      "incorrect": "Javascript",
-      "correct": "JavaScript"
+    "MD004": {
+      "style": "dash"
     },
-    {
-      "incorrect": "Typescript",
-      "correct": "TypeScript"
+    "MD007": {
+      "indent": 2
     },
-    {
-      "incorrect": "VSCode",
-      "correct": "VS Code"
+    "MD013": false,
+    "MD026": false,
+    "MD024": {
+      "siblings_only": true
     },
-    {
-      "incorrect": "MacOS",
-      "correct": "macOS"
+    "MD029": {
+      "style": "ordered"
     },
-    {
-      "incorrect": "Github",
-      "correct": "GitHub"
-    },
-    {
-      "incorrect": "gitlab",
-      "correct": "GitLab"
-    },
-    {
-      "incorrect": "nodejs",
-      "correct": "Node.js"
-    },
-    {
-      "incorrect": "react native",
-      "correct": "React Native"
+    "MD033": false,
+    "MD036": false,
+    "MD041": false,
+    "MD043": false,
+    "MD046": {
+      "style": "fenced"
     }
-  ]
+  },
+  "globs": ["**/*.md", "**/*.mdx", "**/*.mdc"],
+  "ignores": [
+    "**/node_modules",
+    "**/.git",
+    "**/dist",
+    "**/build",
+    "**/coverage",
+    "**/CHANGELOG.md",
+    "**/*.min.md"
+  ],
+  "fix": false,
+  "outputFormatters": [["markdownlint-cli2-formatter-default"]]
 }

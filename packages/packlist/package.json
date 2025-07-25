@@ -2,6 +2,7 @@
   "name": "@outfitter/packlist",
   "version": "1.0.5",
   "description": "Unified development configuration manager for Outfitter projects",
+  "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -11,8 +12,7 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "default": "./dist/index.mjs"
     }
   },
   "files": [
@@ -25,10 +25,8 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@outfitter/changeset-config": "workspace:*",
+    "@outfitter/baselayer": "workspace:*",
     "@outfitter/contracts": "workspace:*",
-    "@outfitter/eslint-config": "workspace:*",
-    "@outfitter/husky-config": "workspace:*",
     "@outfitter/typescript-config": "workspace:*",
     "commander": "^11.0.0",
     "execa": "^8.0.0",
