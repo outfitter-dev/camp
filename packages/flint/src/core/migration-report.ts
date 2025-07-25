@@ -1,9 +1,18 @@
 /**
  * Migration report generator
  */
-import { Result, success, failure, makeError, isSuccess, isFailure, ErrorCode } from '@outfitter/contracts';
-import { writeFile } from '../utils/file-system';
+
 import * as path from 'node:path';
+import {
+  ErrorCode,
+  failure,
+  isFailure,
+  isSuccess,
+  makeError,
+  type Result,
+  success,
+} from '@outfitter/contracts';
+import { writeFile } from '../utils/file-system.js';
 
 export interface MigrationStep {
   action: string;
@@ -87,7 +96,7 @@ export class MigrationReporter {
     const timestamp = new Date().toISOString();
     const date = timestamp.split('T')[0];
     const filename = `flint-migration-report-${date}.md`;
-    
+
     const content = this.generateMarkdownContent({
       timestamp,
       includePerformance,
@@ -97,7 +106,12 @@ export class MigrationReporter {
 
     const writeResult = await writeFile(filename, content);
     if (isFailure(writeResult)) {
-      return failure(makeError(ErrorCode.INTERNAL_ERROR, `Failed to write report: ${writeResult.error.message}`));
+      return failure(
+        makeError(
+          ErrorCode.INTERNAL_ERROR,
+          `Failed to write report: ${writeResult.error.message}`
+        )
+      );
     }
 
     return success(filename);
@@ -112,7 +126,12 @@ export class MigrationReporter {
     includeNextSteps: boolean;
     includeTroubleshooting: boolean;
   }): string {
-    const { timestamp, includePerformance, includeNextSteps, includeTroubleshooting } = options;
+    const {
+      timestamp,
+      includePerformance,
+      includeNextSteps,
+      includeTroubleshooting,
+    } = options;
     const lines: string[] = [];
     const totalDuration = Date.now() - this.startTime;
 
@@ -125,10 +144,10 @@ export class MigrationReporter {
     lines.push('');
 
     // Summary
-    const successful = this.steps.filter(s => s.status === 'success').length;
-    const warnings = this.steps.filter(s => s.status === 'warning').length;
-    const errors = this.steps.filter(s => s.status === 'error').length;
-    const skipped = this.steps.filter(s => s.status === 'skipped').length;
+    const successful = this.steps.filter((s) => s.status === 'success').length;
+    const warnings = this.steps.filter((s) => s.status === 'warning').length;
+    const errors = this.steps.filter((s) => s.status === 'error').length;
+    const skipped = this.steps.filter((s) => s.status === 'skipped').length;
 
     lines.push('## Summary');
     lines.push('');
@@ -152,7 +171,9 @@ export class MigrationReporter {
         skipped: '⏭️',
       }[step.status];
 
-      const time = step.duration ? `${(step.duration / 1000).toFixed(2)}s` : '-';
+      const time = step.duration
+        ? `${(step.duration / 1000).toFixed(2)}s`
+        : '-';
       const details = step.details || '-';
 
       lines.push(`| ${icon} | ${step.action} | ${details} | ${time} |`);
@@ -162,7 +183,7 @@ export class MigrationReporter {
     // Tools & Configuration
     lines.push('## Tools & Configuration');
     lines.push('');
-    
+
     if (this.toolsInstalled.size > 0) {
       lines.push('### Installed Tools');
       lines.push('');
@@ -226,10 +247,18 @@ export class MigrationReporter {
     if (includeNextSteps) {
       lines.push('## Next Steps');
       lines.push('');
-      lines.push('1. **Test the setup**: Run `bun run check` to verify everything works');
-      lines.push('2. **Fix any issues**: Run `bun run check:fix` to auto-fix problems');
-      lines.push('3. **Commit changes**: The pre-commit hooks will now format your code');
-      lines.push('4. **VS Code**: Restart VS Code to activate the new extensions');
+      lines.push(
+        '1. **Test the setup**: Run `bun run check` to verify everything works'
+      );
+      lines.push(
+        '2. **Fix any issues**: Run `bun run check:fix` to auto-fix problems'
+      );
+      lines.push(
+        '3. **Commit changes**: The pre-commit hooks will now format your code'
+      );
+      lines.push(
+        '4. **VS Code**: Restart VS Code to activate the new extensions'
+      );
       lines.push('');
     }
 
@@ -238,9 +267,13 @@ export class MigrationReporter {
       lines.push('## Troubleshooting');
       lines.push('');
 
-      const issues = this.steps.filter(s => s.status === 'error' || s.status === 'warning');
+      const issues = this.steps.filter(
+        (s) => s.status === 'error' || s.status === 'warning'
+      );
       for (const issue of issues) {
-        lines.push(`### ${issue.status === 'error' ? '❌ Error' : '⚠️ Warning'}: ${issue.action}`);
+        lines.push(
+          `### ${issue.status === 'error' ? '❌ Error' : '⚠️ Warning'}: ${issue.action}`
+        );
         if (issue.details) {
           lines.push(issue.details);
           lines.push('');
@@ -252,7 +285,9 @@ export class MigrationReporter {
     if (this.backupPath) {
       lines.push('## Backup Reference');
       lines.push('');
-      lines.push(`Your previous configuration has been backed up to: \`${this.backupPath}\``);
+      lines.push(
+        `Your previous configuration has been backed up to: \`${this.backupPath}\``
+      );
       lines.push('');
       lines.push('If you need to restore any settings, refer to that file.');
       lines.push('');
@@ -264,8 +299,12 @@ export class MigrationReporter {
       lines.push('');
       lines.push('Based on typical JavaScript/TypeScript projects:');
       lines.push('');
-      lines.push('| Operation | Before (ESLint + Prettier) | After (Biome + Oxlint) | Improvement |');
-      lines.push('|-----------|----------------------------|------------------------|-------------|');
+      lines.push(
+        '| Operation | Before (ESLint + Prettier) | After (Biome + Oxlint) | Improvement |'
+      );
+      lines.push(
+        '|-----------|----------------------------|------------------------|-------------|'
+      );
       lines.push('| Format 1000 files | ~5s | ~0.3s | **16x faster** |');
       lines.push('| Lint 1000 files | ~10s | ~0.2s | **50x faster** |');
       lines.push('| Pre-commit (100 files) | ~2s | ~0.1s | **20x faster** |');
@@ -288,10 +327,10 @@ export class MigrationReporter {
   } {
     return {
       total: this.steps.length,
-      successful: this.steps.filter(s => s.status === 'success').length,
-      warnings: this.steps.filter(s => s.status === 'warning').length,
-      errors: this.steps.filter(s => s.status === 'error').length,
-      skipped: this.steps.filter(s => s.status === 'skipped').length,
+      successful: this.steps.filter((s) => s.status === 'success').length,
+      warnings: this.steps.filter((s) => s.status === 'warning').length,
+      errors: this.steps.filter((s) => s.status === 'error').length,
+      skipped: this.steps.filter((s) => s.status === 'skipped').length,
       duration: Date.now() - this.startTime,
     };
   }
@@ -300,6 +339,6 @@ export class MigrationReporter {
    * Check if migration was successful
    */
   isSuccessful(): boolean {
-    return this.steps.filter(s => s.status === 'error').length === 0;
+    return this.steps.filter((s) => s.status === 'error').length === 0;
   }
 }
